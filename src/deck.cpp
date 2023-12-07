@@ -86,6 +86,16 @@ void Deck::shuffle() noexcept{
     }
 }
 
+Card Deck::draw(){
+    // draw card from deck
+    if(this->len == 0){
+        PLOG_FATAL << "Deck is empty";
+        throw std::logic_error("Deck is empty");
+    }
+    this->len--;
+    return this->cards[this->len];
+}
+
 std::string Deck::toString(const std::string sep) const{
     // print deck
     std::string str = "";

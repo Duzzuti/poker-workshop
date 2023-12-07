@@ -11,7 +11,7 @@ class Deck{
     public:
         Deck() noexcept;
         void shuffle() noexcept;
-        Card draw() noexcept;
+        Card draw();
         std::string toString(const std::string sep="\n") const;
 
         ~Deck(){
