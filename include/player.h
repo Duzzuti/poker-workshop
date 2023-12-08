@@ -21,6 +21,8 @@ public:
 
     virtual Action turn(const TurnData& data) const noexcept = 0;
 
+    virtual ~Player() noexcept = default;
+
 protected:
     Player(const std::string& name) noexcept : name(name) {};
     const std::string name;

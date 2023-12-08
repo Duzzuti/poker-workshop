@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install sudo -y
 RUN apt-get update && apt-get install wget -y
 RUN apt-get update && apt-get install git -y
 RUN apt-get update && apt-get install g++ -y
+RUN apt-get update && apt-get install clang-format -y
 RUN apt-get update && apt-get install cmake -y
 RUN apt-get update && apt-get install gdb -y
 RUN apt-get update && apt-get install locales -y
