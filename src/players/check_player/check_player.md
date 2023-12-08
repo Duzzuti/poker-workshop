@@ -1,0 +1,1 @@
+This player is checking if possible, else it is calling if it has enough chips, else it is folding.
