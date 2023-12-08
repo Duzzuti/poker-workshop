@@ -10,19 +10,19 @@ std::string Card::toString() const{
     switch (+this->suit){
         case 0:
             // Diamonds
-            str += "D";
+            str += "♢";
             break;
         case 1:
             // Hearts
-            str += "H";
+            str += "♡";
             break;
         case 2:
             // Spades
-            str += "S";
+            str += "♠";
             break;
         case 3:
             // Clubs
-            str += "C";
+            str += "♣";
             break;
         
         default:
