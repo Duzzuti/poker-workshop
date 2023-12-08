@@ -1,7 +1,6 @@
 #include "config.h"
 #include "game.h"
 #include "logger.h"
-#include "deck.h"
 
 int main() {
 
@@ -16,11 +15,8 @@ int main() {
     Config config = BaseConfig();
     Game game{config};
 
-    //game.run();
+    game.run();
 
-    Deck deck;
-    deck.shuffle();
-    std::cout << deck.toString();
 
     PLOG_INFO << "Finished Application";
 
