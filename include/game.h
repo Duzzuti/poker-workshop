@@ -7,12 +7,14 @@ public:
     Game(const Config& config) noexcept
         : m_config(config) {}
 
-    void run() const noexcept;
+    void run() const;
 
 private:
 
-    void setBlinds(Player* players[], TurnData& turnData) const noexcept;
-    void startRound(Player* players[], TurnData& turnData, Deck& deck, const u_int8_t dealerPos) const noexcept;
+    void setBlinds(Player* players[], Data& turnData) const noexcept;
+    void startRound(Player* players[], Data& turnData, Deck& deck, const bool firstRound) const noexcept;
+    BetRoundResult betRound(Player* players[], Data& turnData) const;
+    bool bet(Player* players[], Data& turnData, const u_int64_t amount) const noexcept;
 
     Config m_config;
 };

@@ -19,7 +19,7 @@ public:
     
     virtual bool hasChips() const noexcept final;
 
-    virtual Action turn(const TurnData& data) const noexcept = 0;
+    virtual Action turn(const Data& data) const noexcept = 0;
 
     virtual ~Player() noexcept = default;
 
