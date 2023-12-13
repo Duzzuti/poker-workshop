@@ -76,12 +76,12 @@ void Game::startRound(Player* players[], Data& data, Deck& deck, const bool firs
 }
 
 BetRoundResult Game::betRound(Player* players[], Data& data) const {
-    bool allPlayersChecked = false;
+    short firstChecker = -1;    // position of the first player that checked
     // this loop will run until all players have either folded, checked or called
     // we can only exit if it is a players turn and he is in the game, has the same bet as the current bet and all players have checked if the bet is 0
     // we need to consider the case where every player folds except one, then the last player wins the pot
     while(data.roundData.playerFolded[data.betRoundData.playerPos] || data.gameData.playerOut[data.betRoundData.playerPos] || 
-    data.betRoundData.currentBet != data.betRoundData.playerBets[data.betRoundData.playerPos] || (data.betRoundData.currentBet == 0 && !allPlayersChecked)){
+    data.betRoundData.currentBet != data.betRoundData.playerBets[data.betRoundData.playerPos] || (data.betRoundData.currentBet == 0 && firstChecker != data.betRoundData.playerPos)){
 
         if(data.roundData.playerFolded[data.betRoundData.playerPos] || data.gameData.playerOut[data.betRoundData.playerPos]){
             // player is out of the game or folded, skip turn
@@ -92,66 +92,42 @@ BetRoundResult Game::betRound(Player* players[], Data& data) const {
         switch (action.action) {
             case Actions::FOLD:
                 data.roundData.playerFolded[data.betRoundData.playerPos] = true;
-                // if only one player is left, he wins the pot
-                if(std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) == 1){
-                    return BetRoundResult{};    //TODO add arguments
-                }
                 data.nextPlayer();
                 break;
             
             case Actions::CHECK:
                 if(data.betRoundData.currentBet != 0){
                     // illegal move leads to loss of the game
-                    data.gameData.playerOut[data.betRoundData.playerPos] = true;
-                    // if only one player is left, he wins the game
-                    if(std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) == 1){
-                        return BetRoundResult{};    //TODO add arguments
-                    }
+                    if(playerOut(players, data))
+                        return BetRoundResult{.gameWon = true};
+                }else{
+                    if(firstChecker == -1)
+                        firstChecker = data.betRoundData.playerPos;
+                    data.nextPlayer();
                 }
-                // if the player is the dealer, all players have checked (because all players before him have checked)
-                if(data.betRoundData.playerPos == data.roundData.dealerPos)
-                    allPlayersChecked = true;
-                data.nextPlayer();
                 break;
             
             case Actions::CALL:
                 if(!this->bet(players, data, data.betRoundData.currentBet)){
                     // illegal move leads to loss of the game
-                    data.gameData.playerOut[data.betRoundData.playerPos] = true;
-                    // if only one player is left, he wins the game
-                    if(std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) == 1){
-                        return BetRoundResult{};    //TODO add arguments
-                    }
+                    if(playerOut(players, data))
+                        return BetRoundResult{.gameWon = true};
                 }
                 break;
             
             case Actions::RAISE:
                 if(!this->bet(players, data, action.bet)){
                     // illegal move leads to loss of the game
-                    data.gameData.playerOut[data.betRoundData.playerPos] = true;
-                    // if only one player is left, he wins the game
-                    if(std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) == 1){
-                        return BetRoundResult{};    //TODO add arguments
-                    }
+                    if(playerOut(players, data))
+                        return BetRoundResult{.gameWon = true};
                 }
                 break;
 
             case Actions::BET:
-                if(data.betRoundData.currentBet != 0){
+                if(data.betRoundData.currentBet != 0 || !this->bet(players, data, action.bet)){
                     // illegal move leads to loss of the game
-                    data.gameData.playerOut[data.betRoundData.playerPos] = true;
-                    // if only one player is left, he wins the game
-                    if(std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) == 1){
-                        return BetRoundResult{};    //TODO add arguments
-                    }
-                }
-                if(!this->bet(players, data, action.bet)){
-                    // illegal move leads to loss of the game
-                    data.gameData.playerOut[data.betRoundData.playerPos] = true;
-                    // if only one player is left, he wins the game
-                    if(std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) == 1){
-                        return BetRoundResult{};    //TODO add arguments
-                    }
+                    if(playerOut(players, data))
+                        return BetRoundResult{.gameWon = true};
                 }
                 break;
 
@@ -181,4 +157,11 @@ bool Game::bet(Player* players[], Data& data, const u_int64_t amount) const noex
     data.betRoundData.playerBets[data.betRoundData.playerPos] = amount;
     data.nextPlayer();
     return true;
+}
+
+bool Game::playerOut(Player* players[], Data& data) const noexcept {
+    data.gameData.playerOut[data.betRoundData.playerPos] = true;
+    data.nextPlayer();
+    // if only one player is left, he wins the game
+    return (std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) == 1);
 }

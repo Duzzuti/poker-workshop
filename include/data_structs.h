@@ -68,5 +68,6 @@ struct Data{
 };
 
 struct BetRoundResult{
-
+    bool gameWon = false;           // true if the game was won and only one player is left with chips
+    bool potWon = false;            // true if the pot was won and the round is over
 };
