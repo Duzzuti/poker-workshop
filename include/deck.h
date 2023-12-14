@@ -8,16 +8,16 @@ struct Card{
 };
 
 class Deck{
-    public:
-        Deck() noexcept;
-        void shuffle() noexcept;
-        Card draw();
-        std::string toString(const std::string sep="\n") const;
+public:
+    Deck() noexcept;
+    void shuffle() noexcept;
+    Card draw();
+    std::string toString(const std::string sep="\n") const;
 
-        ~Deck(){
-            delete[] cards;
-        };
-    private:
-        Card* cards;
-        unsigned char len;
+    ~Deck(){
+        delete[] cards;
+    };
+private:
+    Card* cards;
+    unsigned char len;
 };

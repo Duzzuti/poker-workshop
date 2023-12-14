@@ -2,6 +2,7 @@
 #include <time.h>
 
 #include "player.h"
+#include "logger.h"
 
 void shufflePlayers(Player* players[], u_int8_t numPlayer) noexcept{
     // shuffle deck
@@ -14,5 +15,10 @@ void shufflePlayers(Player* players[], u_int8_t numPlayer) noexcept{
         Player* temp = players[i];
         players[i] = players[j];
         players[j] = temp;
+    }
+    PLOG_INFO << "Shuffled players, new order:";
+    for(u_int8_t i = 0; i < numPlayer; i++){
+        players[i]->setPlayerPosNum(i);
+        PLOG_INFO << players[i]->getName();
     }
 }

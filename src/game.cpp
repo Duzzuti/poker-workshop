@@ -2,6 +2,7 @@
 
 #include "game.h"
 #include "check_player/check_player.h"
+#include "rand_player/rand_player.h"
 #include "deck.h"
 #include "player.h"
 #include "utils.h"
@@ -11,31 +12,62 @@ void Game::run() const {
     // config players
     Player* players[m_config.numPlayers];
     // init players
-    for (u_int8_t i = 0; i < m_config.numPlayers; i++) {
-        players[i] = new CheckPlayer();
-        players[i]->setChips(m_config.startingChips);
-    }
+    players[0] = new CheckPlayer(1);
+    players[1] = new RandPlayer(2);
+    players[2] = new CheckPlayer(3);
+    players[3] = new RandPlayer(4);
+
 
     Data data;
     data.numPlayers = m_config.numPlayers;
 
     // run for the number of games specified in the config
-    for (u_int64_t round = 0; round < m_config.numRounds; round++) {
+    for (u_int64_t game = 0; game < m_config.numRounds; game++) {
         // ONE GAME
         // shuffle players
+        PLOG_DEBUG << "Starting game " << game;
         shufflePlayers(players, m_config.numPlayers);
         data.gameData.playerOut = std::vector<bool>(m_config.numPlayers, false);
+        data.gameData.playerChips = std::vector<u_int64_t>(m_config.numPlayers, m_config.startingChips);
         bool firstRound = true;
+        int32_t round = -1;
 
         while(std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) > 1){
             // ONE ROUND
+            round++;
             Deck deck;
             
+            PLOG_DEBUG << "Starting round " << round;
             this->startRound(players, data, deck, firstRound);
             firstRound = false;
 
             // PREFLOP
+            PLOG_DEBUG << "Starting PREFLOP bet round";
             this->betRound(players, data);
+
+            // FLOP
+            this->setupBetRound(data);
+            PLOG_DEBUG << "Starting FLOP bet round";
+            for (u_int8_t i = 0; i < 3; i++) {
+                data.roundData.communityCards.push_back(deck.draw());    // draw flop card
+            }
+            this->betRound(players, data);
+
+            // TURN
+            this->setupBetRound(data);
+            PLOG_DEBUG << "Starting TURN bet round";
+            data.roundData.communityCards.push_back(deck.draw());    // draw turn card
+            this->betRound(players, data);
+
+            // RIVER
+            this->setupBetRound(data);
+            PLOG_DEBUG << "Starting RIVER bet round";
+            data.roundData.communityCards.push_back(deck.draw());    // draw river card
+            this->betRound(players, data);
+
+            // SHOWDOWN
+            PLOG_DEBUG << "Run till SHOWDOWN";
+            // TODO
         }
     }
 
@@ -47,9 +79,17 @@ void Game::run() const {
 
 void Game::setBlinds(Player* players[], Data& data) const noexcept {
     // blinds
+    PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " bets small blind " << data.roundData.smallBlind;
+    this->bet(data, data.roundData.smallBlind);
+    PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " bets big blind " << data.roundData.bigBlind;
+    this->bet(data, data.roundData.bigBlind);
+}
+
+void Game::setupBetRound(Data& data) const noexcept {
+    data.betRoundData.playerPos = data.roundData.dealerPos;
     data.nextPlayer();
-    this->bet(players, data, data.roundData.smallBlind);
-    this->bet(players, data, data.roundData.bigBlind);
+    data.betRoundData.playerBets = std::vector<u_int64_t>(m_config.numPlayers, 0);
+    data.betRoundData.currentBet = 0;
 }
 
 void Game::startRound(Player* players[], Data& data, Deck& deck, const bool firstRound) const noexcept {
@@ -61,9 +101,8 @@ void Game::startRound(Player* players[], Data& data, Deck& deck, const bool firs
     data.roundData.bigBlind = m_config.bigBlind;
     data.roundData.pot = 0;
     data.roundData.playerFolded = std::vector<bool>(m_config.numPlayers, false);
-    data.betRoundData.playerPos = data.roundData.dealerPos;
-    data.betRoundData.playerBets = std::vector<u_int64_t>(m_config.numPlayers, 0);
-    data.betRoundData.currentBet = 0;
+    data.roundData.communityCards = std::vector<Card>();
+    this->setupBetRound(data);
 
     // deal cards
     for (u_int8_t i = 0; i < m_config.numPlayers; i++) {
@@ -88,60 +127,74 @@ BetRoundResult Game::betRound(Player* players[], Data& data) const {
             data.nextPlayer();
             continue;
         }
-        Action action = players[data.betRoundData.playerPos]->turn(data);
-        switch (action.action) {
-            case Actions::FOLD:
-                data.roundData.playerFolded[data.betRoundData.playerPos] = true;
-                data.nextPlayer();
-                break;
-            
-            case Actions::CHECK:
-                if(data.betRoundData.currentBet != 0){
-                    // illegal move leads to loss of the game
-                    if(playerOut(players, data))
-                        return BetRoundResult{.gameWon = true};
-                }else{
-                    if(firstChecker == -1)
-                        firstChecker = data.betRoundData.playerPos;
-                    data.nextPlayer();
-                }
-                break;
-            
-            case Actions::CALL:
-                if(!this->bet(players, data, data.betRoundData.currentBet)){
-                    // illegal move leads to loss of the game
-                    if(playerOut(players, data))
-                        return BetRoundResult{.gameWon = true};
-                }
-                break;
-            
-            case Actions::RAISE:
-                if(!this->bet(players, data, action.bet)){
-                    // illegal move leads to loss of the game
-                    if(playerOut(players, data))
-                        return BetRoundResult{.gameWon = true};
-                }
-                break;
-
-            case Actions::BET:
-                if(data.betRoundData.currentBet != 0 || !this->bet(players, data, action.bet)){
-                    // illegal move leads to loss of the game
-                    if(playerOut(players, data))
-                        return BetRoundResult{.gameWon = true};
-                }
-                break;
-
-            default:
-                throw std::logic_error("Invalid action");
-                PLOG_FATAL << "Invalid action: " << static_cast<int>(action.action);
-        }
+        if(this->playerTurn(players, data, &firstChecker).gameWon)
+            return BetRoundResult{.gameWon = true};
     }
+
+    PLOG_DEBUG << "Bet round finished with bet " << data.betRoundData.currentBet << " and pot " << data.roundData.pot;
 
     // TODO bet round result
     return BetRoundResult{};
 }
 
-bool Game::bet(Player* players[], Data& data, const u_int64_t amount) const noexcept {
+BetRoundResult Game::playerTurn(Player* players[], Data& data, short* firstChecker) const {
+
+    Action action = players[data.betRoundData.playerPos]->turn(data);
+    switch (action.action) {
+        case Actions::FOLD:
+            PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " folded";
+            data.roundData.playerFolded[data.betRoundData.playerPos] = true;
+            data.nextPlayer();
+            break;
+        
+        case Actions::CHECK:
+            PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " checked";
+            if(data.betRoundData.currentBet != 0){
+                // illegal move leads to loss of the game
+                if(playerOut(players, data))
+                    return BetRoundResult{.gameWon = true};
+            }else{
+                if(*firstChecker == -1)
+                    *firstChecker = data.betRoundData.playerPos;
+                data.nextPlayer();
+            }
+            break;
+        
+        case Actions::CALL:
+            PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " called";
+            if(!this->bet(data, data.betRoundData.currentBet)){
+                // illegal move leads to loss of the game
+                if(playerOut(players, data))
+                    return BetRoundResult{.gameWon = true};
+            }
+            break;
+        
+        case Actions::RAISE:
+            PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " raised to " << action.bet;
+            if(!this->bet(data, action.bet)){
+                // illegal move leads to loss of the game
+                if(playerOut(players, data))
+                    return BetRoundResult{.gameWon = true};
+            }
+            break;
+
+        case Actions::BET:
+            PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " bet " << action.bet;
+            if(data.betRoundData.currentBet != 0 || !this->bet(data, action.bet)){
+                // illegal move leads to loss of the game
+                if(playerOut(players, data))
+                    return BetRoundResult{.gameWon = true};
+            }
+            break;
+
+        default:
+            throw std::logic_error("Invalid action");
+            PLOG_FATAL << "Invalid action: " << static_cast<int>(action.action);
+    }
+    return BetRoundResult{};
+}
+
+bool Game::bet(Data& data, const u_int64_t amount) const noexcept {
     // amount is the whole bet, not the amount that is added to the pot
     if(amount < data.betRoundData.currentBet ||     // call condition
         amount > data.betRoundData.currentBet && amount < data.betRoundData.currentBet*2 || // raise condition
@@ -149,7 +202,7 @@ bool Game::bet(Player* players[], Data& data, const u_int64_t amount) const noex
     )
         return false;
     u_int64_t addAmount = amount - data.betRoundData.playerBets[data.betRoundData.playerPos];
-    bool success = players[data.betRoundData.playerPos]->removeChips(addAmount);
+    bool success = data.removeChips(addAmount);
     if(!success) 
         return success;
     data.betRoundData.currentBet = amount;
@@ -160,6 +213,7 @@ bool Game::bet(Player* players[], Data& data, const u_int64_t amount) const noex
 }
 
 bool Game::playerOut(Player* players[], Data& data) const noexcept {
+    PLOG_DEBUG << "Player " << players[data.betRoundData.playerPos]->getName() << " is out";
     data.gameData.playerOut[data.betRoundData.playerPos] = true;
     data.nextPlayer();
     // if only one player is left, he wins the game
