@@ -1,0 +1,1 @@
+This player is choosing their moves randomly but is checking if the move is valid. If the move is not valid, it is choosing another one.
