@@ -1,30 +1,11 @@
 #include "player.h"
 
-void Player::setChips(u_int64_t chips) noexcept {
-    this->chips = chips;
+const std::string Player::getName() const noexcept{
+    return std::to_string(this->playerPosNum) + ":" + this->name;
 }
 
-u_int64_t Player::getChips() const noexcept {
-    return this->chips;
-}
-
-const std::string &Player::getName() const noexcept{
-    return this->name;
-}
-
-void Player::addChips(u_int64_t chips) noexcept {
-    this->chips += chips;
-}
-
-bool Player::removeChips(u_int64_t chips) noexcept {
-    if(this->chips < chips)
-        return false;
-    this->chips -= chips;
-    return true;
-}
-
-bool Player::hasChips() const noexcept {
-    return this->chips > 0;
+void Player::setPlayerPosNum(u_int8_t num) noexcept {
+    this->playerPosNum = num;
 }
 
 void Player::setHand(const Card card1, const Card card2) noexcept{

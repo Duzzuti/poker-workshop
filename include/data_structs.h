@@ -29,11 +29,13 @@ struct RoundData{
     u_int8_t dealerPos; // position of the dealer
     u_int64_t pot;      // current pot
     std::vector<bool> playerFolded; // true if player folded
+    std::vector<Card> communityCards;   // community cards
 };
 
 // contains the data for a single game (until only one player is left)
 struct GameData{
     std::vector<bool> playerOut;    // true if player is out of the game
+    std::vector<u_int64_t> playerChips; // chips of the players
 };
 
 // contains all Data for a game set (multiple games)
@@ -64,6 +66,17 @@ struct Data{
                 this->roundData.dealerPos = (this->roundData.dealerPos + 1) % this->numPlayers;
             }while(this->gameData.playerOut[this->roundData.dealerPos]);
         }
+    }
+
+    bool removeChips(u_int64_t chips) noexcept {
+        if(this->gameData.playerChips[this->betRoundData.playerPos] < chips)
+            return false;
+        this->gameData.playerChips[this->betRoundData.playerPos] -= chips;
+        return true;
+    }
+
+    u_int64_t getChips() const noexcept{
+        return this->gameData.playerChips[this->betRoundData.playerPos];
     }
 };
 
