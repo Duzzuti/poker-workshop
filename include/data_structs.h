@@ -78,9 +78,23 @@ struct Data{
     u_int64_t getChips() const noexcept{
         return this->gameData.playerChips[this->betRoundData.playerPos];
     }
+
+    u_int64_t getCallAdd() const noexcept{
+        return this->betRoundData.currentBet - this->betRoundData.playerBets[this->betRoundData.playerPos];
+    }
+
+    u_int64_t getRaiseAdd(const u_int64_t bet) const noexcept{
+        return bet - this->betRoundData.playerBets[this->betRoundData.playerPos];
+    }
 };
 
-struct BetRoundResult{
-    bool gameWon = false;           // true if the game was won and only one player is left with chips
-    bool potWon = false;            // true if the pot was won and the round is over
+// struct BetRoundResult{
+//     bool gameWon = false;           // true if the game was won and only one player is left with chips
+//     bool potWon = false;            // true if the pot was won and the round is over
+// };
+
+enum class OutEnum{
+    ROUND_CONTINUE,
+    GAME_WON,
+    ROUND_WON,
 };
