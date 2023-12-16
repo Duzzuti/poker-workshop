@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "player.h"
+#include "utils.h"
 #include "logger.h"
 
 void shufflePlayers(Player* players[], u_int8_t numPlayer) noexcept{
@@ -21,4 +21,8 @@ void shufflePlayers(Player* players[], u_int8_t numPlayer) noexcept{
         players[i]->setPlayerPosNum(i);
         PLOG_INFO << players[i]->getName();
     }
+}
+
+std::string getPlayerInfo(Player* players[], const Data& data) noexcept{
+    return "Player " + players[data.betRoundData.playerPos]->getName() + "[" + std::to_string(data.getChips()) + "]";
 }
