@@ -12,5 +12,5 @@ public:
 private:
     mutable std::random_device dev;
     mutable std::mt19937 rng{dev()};
-    mutable std::uniform_int_distribution<std::mt19937::result_type> dist10{0,9}; // distribution in range [0, 9]
+    mutable std::uniform_int_distribution<std::mt19937::result_type> dist{0, INT32_MAX}; // distribution in max u_int32 range
 };

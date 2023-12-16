@@ -1,7 +1,3 @@
-#include <iostream>
-#include <stdlib.h>
-#include <time.h>
-
 #include "deck.h"
 #include "logger.h"
 
@@ -74,10 +70,8 @@ Deck::Deck() noexcept{
 
 void Deck::shuffle() noexcept{
     // shuffle deck
-    srand(static_cast<unsigned int>(time(nullptr))); // Seed for randomization
-
     for (unsigned char i = this->len - 1; i > 0; --i) {
-        unsigned char j = rand() % (i + 1); // Generate a random index within the unshuffled part of the array
+        unsigned char j = this->dist(this->rng) % (i + 1); // Generate a random index within the unshuffled part of the array
 
         // Swap characters at indices i and j
         Card temp = this->cards[i];
