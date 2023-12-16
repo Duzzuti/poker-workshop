@@ -6,6 +6,7 @@
 #include "deck.h"
 #include "utils.h"
 #include "logger.h"
+#include "hand_strengths.h"
 
 void Game::run() const {
     // config players
@@ -101,8 +102,26 @@ void Game::run() const {
             }
 
             // SHOWDOWN
-            PLOG_DEBUG << "Run till SHOWDOWN";
-            // TODO
+            PLOG_DEBUG << "SHOWDOWN!!! Community cards: " 
+                << data.roundData.communityCards[0].toString() << " " 
+                << data.roundData.communityCards[1].toString() << " " 
+                << data.roundData.communityCards[2].toString() << " " 
+                << data.roundData.communityCards[3].toString() << " " 
+                << data.roundData.communityCards[4].toString();
+            // get hand strength for each player
+            std::vector<HandStrengths> handStrengths = HandStrengths::getHandStrengths(players, data);
+            // get winner
+
+            for(u_int8_t i = 0; i < data.numPlayers; i++){
+                if(data.gameData.playerOut[i] || data.roundData.playerFolded[i])
+                    continue;
+                PLOG_DEBUG << "Player " << +i << " has hand " 
+                    << players[i]->getHand().first.toString() << " " 
+                    << players[i]->getHand().second.toString() << " and hand strength " 
+                    << handStrengths[i].handkind << " " 
+                    << handStrengths[i].rankStrength;
+            }
+
         }
     }
 
@@ -281,7 +300,7 @@ OutEnum Game::playerFolded(Player* players[], Data& data) const noexcept {
     return this->getOutEnum(data);
 }
 
-OutEnum Game::getOutEnum(Data& data) const noexcept {
+OutEnum Game::getOutEnum(const Data& data) const noexcept {
     u_int8_t numActivePlayers = 0;  // number of players that are not out and not folded
     u_int8_t numNonOutPlayers = 0;  // number of players that are not out
     for(u_int8_t i = 0; i < data.numPlayers; i++){
