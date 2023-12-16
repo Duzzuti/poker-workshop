@@ -12,6 +12,7 @@ public:
     virtual void setPlayerPosNum(u_int8_t num) noexcept final;
 
     virtual void setHand(const Card card1, const Card card2) noexcept final;
+    virtual const std::pair<Card, Card> getHand() const noexcept final;
     
     virtual Action turn(const Data& data) const noexcept = 0;
 

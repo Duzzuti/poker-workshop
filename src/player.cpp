@@ -11,3 +11,7 @@ void Player::setPlayerPosNum(u_int8_t num) noexcept {
 void Player::setHand(const Card card1, const Card card2) noexcept{
     this->hand = std::pair<Card, Card>(card1, card2);
 }
+
+const std::pair<Card, Card> Player::getHand() const noexcept { 
+    return this->hand;
+}
