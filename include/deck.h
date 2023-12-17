@@ -20,7 +20,7 @@ public:
     Card draw();
     std::string toString(const std::string sep="\n") const;
 
-    static Card getRandomCardExcept(const std::vector<Card>& cards) noexcept;
+    static Card getRandomCardExcept(const std::vector<Card>& cards, const int8_t suit=-1, const std::vector<u_int8_t> ranks={}) noexcept;
 
     ~Deck(){
         delete[] cards;
