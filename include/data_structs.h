@@ -10,6 +10,13 @@ enum class Actions{
     BET,
 };
 
+enum CardSuits{
+    DIAMONDS = 0,
+    HEARTS,
+    SPADES,
+    CLUBS,
+};
+
 enum HandKinds{
     NO_HAND = 0,
     HIGH_CARD,
@@ -40,6 +47,7 @@ struct BetRoundData{
 struct RoundData{
     u_int64_t smallBlind; // small blind
     u_int64_t bigBlind;   // big blind
+    u_int64_t addBlind;   // add blind amount every time the dealer is again at position 0
     u_int8_t dealerPos; // position of the dealer
     u_int64_t pot;      // current pot
     std::vector<bool> playerFolded; // true if player folded

@@ -112,6 +112,9 @@ void Game::run() const {
             std::vector<HandStrengths> handStrengths = HandStrengths::getHandStrengths(players, data);
             // get winner
 
+            HandStrengths strongestHand = HandStrengths(HandKinds::NO_HAND, 0);
+            std::vector<u_int8_t> winners;
+
             for(u_int8_t i = 0; i < data.numPlayers; i++){
                 if(data.gameData.playerOut[i] || data.roundData.playerFolded[i])
                     continue;
@@ -120,6 +123,19 @@ void Game::run() const {
                     << players[i]->getHand().second.toString() << " and hand strength " 
                     << handStrengths[i].handkind << " " 
                     << handStrengths[i].rankStrength;
+                if(handStrengths[i] > strongestHand){
+                    strongestHand = handStrengths[i];
+                    winners.clear();
+                    winners.push_back(i);
+                }else if(handStrengths[i] == strongestHand){
+                    winners.push_back(i);
+                }
+            }
+
+            // distribute pot
+            u_int64_t potPerWinner = data.roundData.pot / winners.size();
+            for(u_int8_t i = 0; i < winners.size(); i++){
+                data.gameData.playerChips[winners[i]] += potPerWinner;
             }
 
         }
