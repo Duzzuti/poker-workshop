@@ -6,6 +6,7 @@ build
 
 #data
 data
+issues.txt
 
 # Prerequisites
 *.d

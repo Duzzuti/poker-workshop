@@ -160,11 +160,17 @@ void Game::setupBetRound(Data& data) const noexcept {
 
 OutEnum Game::startRound(Player* players[], Data& data, Deck& deck, const bool firstRound) const noexcept {
     deck.shuffle();
-
+    u_int8_t dealerPos;
+    if(!firstRound)
+        dealerPos = data.roundData.dealerPos;
     data.selectDealer(firstRound);
 
-    data.roundData.smallBlind = m_config.smallBlind;
-    data.roundData.bigBlind = m_config.bigBlind;
+    data.roundData.addBlind = m_config.addBlindPerDealer0;
+    if(firstRound)
+        data.roundData.smallBlind = m_config.smallBlind;
+    else if(data.roundData.dealerPos < dealerPos)   // if the dealer is at position 0 again (or skipped 0), add the addBlind amount
+        data.roundData.smallBlind += m_config.addBlindPerDealer0;
+    data.roundData.bigBlind = data.roundData.smallBlind*2;
     data.roundData.pot = 0;
     data.roundData.playerFolded = std::vector<bool>(m_config.numPlayers, false);
     data.roundData.communityCards = std::vector<Card>();

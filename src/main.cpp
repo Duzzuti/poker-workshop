@@ -7,7 +7,7 @@ int main() {
     // init logger
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     // add file logger
-    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("data/log.txt", 1024 , 3);
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("log.txt", 1024*1024*10 , 5);
     plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
 
     PLOG_INFO << "Starting Application";
