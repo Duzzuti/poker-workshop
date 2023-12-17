@@ -7,6 +7,10 @@ struct Card{
     unsigned char suit;  // 0-3  (0 = Diamonds, 1 = Hearts, 2 = Spades, 3 = Clubs)
 
     std::string toString() const;
+
+    friend bool operator==(const Card& lhs, const Card& rhs) noexcept{
+        return lhs.rank == rhs.rank && lhs.suit == rhs.suit;
+    };
 };
 
 class Deck{
@@ -15,6 +19,8 @@ public:
     void shuffle() noexcept;
     Card draw();
     std::string toString(const std::string sep="\n") const;
+
+    static Card getRandomCardExcept(const std::vector<Card>& cards) noexcept;
 
     ~Deck(){
         delete[] cards;

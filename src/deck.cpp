@@ -99,3 +99,17 @@ std::string Deck::toString(const std::string sep) const{
     return str;
 }
 
+Card Deck::getRandomCardExcept(const std::vector<Card>& cards) noexcept {
+    // get random card from deck except cards in vector
+
+    std::random_device dev;
+    std::mt19937 rng{dev()};
+    std::uniform_int_distribution<std::mt19937::result_type> dist{0, INT32_MAX}; // distribution in max u_int32 range
+
+    while(true){
+        Card card{.rank = (dist(rng) % 13) + 2, .suit = (dist(rng) % 4)};
+        if(std::find(cards.begin(), cards.end(), card) == cards.end()){
+            return card;
+        }
+    }
+}

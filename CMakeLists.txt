@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.0)
 project(PokerWorkshop)
 
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 
 include(FetchContent)
 
@@ -20,4 +21,8 @@ include_directories(${plog_SOURCE_DIR}/include)
 get_cmake_property(_variableNames VARIABLES)
 
 add_subdirectory(src)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_subdirectory(tests)
+endif()
 
