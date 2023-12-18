@@ -139,7 +139,7 @@ TEST(HandStrengths, Flush) {
             std::vector<Card> flushCards{};
             cards.reserve(7);
             flushCards.reserve(7);
-            // should discard FULL_HOUSEy (impossible), FOUR_OF_A_KINDy (impossible), STRAIGHT_FLUSH, ROYAL_FLUSH
+            // should discard FULL_HOUSEy (impossible), FOUR_OF_A_KINDy (impossible), STRAIGHT_FLUSHy, ROYAL_FLUSHy
             // we only need to discard straight flushes
             while(true){
                 cards.clear();
@@ -181,6 +181,51 @@ TEST(HandStrengths, Flush) {
     }
 }
 
+TEST(HandStrengths, Straight) {
+    for(u_int64_t iters = 0; iters < ITERATIONS; iters++){
+        for(u_int8_t rank = 6; rank < 14; rank++){
+            std::vector<Card> cards{};
+            cards.reserve(7);
+            // should discard FLUSHy, FULL_HOUSEy (impossible), FOUR_OF_A_KINDy (impossible), STRAIGHT_FLUSHy, ROYAL_FLUSHy
+            // we only need to discard flushes
+            // select random straight
+            u_int8_t suits[4] = {0};
+            for(u_int8_t j = rank - 4; j <= rank; j++){
+                std::vector<Card> cards1{Card{j, 0}, Card{j, 1}, Card{j, 2}, Card{j, 3}};
+                std::random_shuffle(cards1.begin(), cards1.end());
+                suits[cards1.back().suit]++;
+                if(std::count(suits, suits + 4, 5) == 0)
+                    cards.push_back(cards1.back());
+                else{
+                    suits[cards1.back().suit]--;
+                    j--;
+                }
+            }
+            // add two random cards
+            for(u_int8_t j = 0; j < 2; j++){
+                while(true){
+                    cards.push_back(Deck::getRandomCardExcept(cards, -1, {(u_int8_t)(rank + 1)}));  // dont spawn higher straights
+                    suits[cards.back().suit]++;
+                    if(std::count(suits, suits + 4, 5) == 0)
+                        break;
+                    else{
+                        suits[cards.back().suit]--;
+                        cards.pop_back();
+                    }
+                }
+            }
+            
+            u_int32_t rankStrength = +rank;
+            for(u_int8_t iter = 0; iter < 20; iter++){
+                EXPECT_EQ(cards.size(), 7);
+                std::random_shuffle(cards.begin(), cards.end());
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                EXPECT_EQ(hs.handkind, HandKinds::STRAIGHT);
+                EXPECT_EQ(hs.rankStrength, rankStrength);
+            }
+        }
+    }
+}
 
 TEST(HandStrengths, ThreeOfAKind) {
     for(u_int64_t iters = 0; iters < ITERATIONS; iters++){
