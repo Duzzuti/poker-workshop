@@ -76,6 +76,62 @@ TEST(HandStrengths, FourOfAKind) {
     }
 }
 
+TEST(HandStrengths, FullHouse) {
+    for(u_int64_t iters = 0; iters < ITERATIONS; iters++){
+        for(u_int8_t rank = 2; rank < 15; rank++){
+            std::vector<Card> cards{Card{rank, 0}, Card{rank, 1}, Card{rank, 2}, Card{rank, 3}};
+            u_int8_t ranks[15] = {0};
+            // should discard FOUR_OF_A_KINDy (flush is not possible)
+            std::random_shuffle(cards.begin(), cards.end());
+            cards.pop_back();   // select one triple
+            cards.push_back(Deck::getRandomCardExcept(cards, -1, {rank}));
+            ranks[cards.back().rank]++;
+            cards.push_back(Deck::getRandomCardExcept(cards, -1, {rank}));
+            ranks[cards.back().rank]++;
+            cards.push_back(Deck::getRandomCardExcept(cards, -1, {rank}));
+            ranks[cards.back().rank]++;
+
+            // make sure that there is at least one other pair
+            Card card = Deck::getRandomCardExcept(cards, -1, {rank});
+            ranks[card.rank]++;
+            while(std::count(ranks, ranks + 15, 2) == 0 && std::count(ranks, ranks + 15, 3) == 0){
+                // draw new card if there is no pair or triple found
+                ranks[card.rank]--;
+                card = Deck::getRandomCardExcept(cards, -1, {rank});
+                ranks[card.rank]++;
+            }
+            cards.push_back(card);
+
+            // calculate rankStrength
+            u_int32_t rankStrength = 0;
+            for(u_int8_t j = 14; j >= 2; j--){
+                if(j == rank){
+                    if((rankStrength & 0x000000F0) == 0)
+                        rankStrength += rank*2*2*2*2;
+                    else if((rankStrength & 0x0000000F) == 0)
+                        rankStrength += rank;
+                }else if(ranks[j] == 2 && ((rankStrength & 0x0000000F) == 0))
+                    rankStrength += j;
+                else if(ranks[j] == 3 && ((rankStrength & 0x000000F0) == 0))
+                    rankStrength += j*2*2*2*2;
+                else if(ranks[j] == 3 && ((rankStrength & 0x000000F0) != 0) && ((rankStrength & 0x0000000F) == 0))
+                    rankStrength += j;
+                else if(((rankStrength & 0x000000F0) != 0) && ((rankStrength & 0x0000000F) != 0))
+                    break;
+            }
+
+            
+            for(u_int8_t iter = 0; iter < 20; iter++){
+                EXPECT_EQ(cards.size(), 7);
+                std::random_shuffle(cards.begin(), cards.end());
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                EXPECT_EQ(hs.handkind, HandKinds::FULL_HOUSE);
+                EXPECT_EQ(hs.rankStrength, rankStrength);
+            }
+        }
+    }
+}
+
 TEST(HandStrengths, ThreeOfAKind) {
     for(u_int64_t iters = 0; iters < ITERATIONS; iters++){
         for(u_int8_t rank = 2; rank < 15; rank++){
