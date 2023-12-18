@@ -132,6 +132,56 @@ TEST(HandStrengths, FullHouse) {
     }
 }
 
+TEST(HandStrengths, Flush) {
+    for(u_int64_t iters = 0; iters < 30; iters++){
+        for(u_int8_t suit = 0; suit < 4; suit++){
+            std::vector<Card> cards{};
+            std::vector<Card> flushCards{};
+            cards.reserve(7);
+            flushCards.reserve(7);
+            // should discard FULL_HOUSEy (impossible), FOUR_OF_A_KINDy (impossible), STRAIGHT_FLUSH, ROYAL_FLUSH
+            // we only need to discard straight flushes
+            while(true){
+                cards.clear();
+                flushCards.clear();
+                for(u_int8_t j = 0; j < 7; j++){
+                    cards.push_back(Deck::getRandomCardExcept(cards));
+                    if(cards.back().suit == suit)
+                        flushCards.push_back(cards.back());
+                }
+                if(flushCards.size() < 5)
+                    continue;
+                std::sort(flushCards.begin(), flushCards.end(), [](const Card& a, const Card& b) -> bool {return a.rank > b.rank;});
+                bool breakFlag = true;
+                for(u_int8_t j = 0; j < flushCards.size() - 4; j++){
+                    if(flushCards[j].rank == flushCards[j + 4].rank + 4){
+                        breakFlag = false;
+                        break;
+                    }
+                }
+                if(breakFlag)
+                    break;
+            }
+            
+            u_int32_t rankStrength = 
+                flushCards[4].rank + 
+                flushCards[3].rank*2*2*2*2 + 
+                flushCards[2].rank*2*2*2*2*2*2*2*2 + 
+                flushCards[1].rank*2*2*2*2*2*2*2*2*2*2*2*2 + 
+                flushCards[0].rank*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2;
+
+            for(u_int8_t iter = 0; iter < 20; iter++){
+                EXPECT_EQ(cards.size(), 7);
+                std::random_shuffle(cards.begin(), cards.end());
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                EXPECT_EQ(hs.handkind, HandKinds::FLUSH);
+                EXPECT_EQ(hs.rankStrength, rankStrength);
+            }
+        }
+    }
+}
+
+
 TEST(HandStrengths, ThreeOfAKind) {
     for(u_int64_t iters = 0; iters < ITERATIONS; iters++){
         for(u_int8_t rank = 2; rank < 15; rank++){
