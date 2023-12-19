@@ -374,3 +374,61 @@ TEST(HandStrengths, TwoPair) {
         }
     }
 }
+
+TEST(HandStrengths, Pair) {
+    for(u_int64_t iters = 0; iters < ITERATIONS/2*3; iters++){
+        for(u_int8_t rank = 2; rank < 15; rank++){
+            std::vector<Card> cards{Card{rank, 0}, Card{rank, 1}, Card{rank, 2}, Card{rank, 3}};
+            std::vector<u_int8_t> ranks{rank};  // discard three of a kind and another pair
+            u_int8_t suits[4] = {0};
+            // should discard TWO_PAIRy, THREE_OF_A_KINDy, STRAIGHT, FLUSH, 
+            // FULL_HOUSEy (discarded by THREE_OF_A_KIND), FOUR_OF_A_KINDy (discarded by THREE_OF_A_KIND), STRAIGHT_FLUSHy (discarded by flush), ROYAL_FLUSHy (discarded by flush)
+            std::random_shuffle(cards.begin(), cards.end());
+            cards.pop_back();
+            cards.pop_back();
+            for(u_int8_t j = 0; j < 3; j++){
+                cards.push_back(Deck::getRandomCardExcept(cards, -1, ranks));
+                ranks.push_back(cards.back().rank);
+            }
+            for(u_int8_t j = 0; j < cards.size(); j++)
+                suits[cards[j].suit]++;
+
+            // add the other cards while avoiding flush and straight
+            while(cards.size() < 7){
+                cards.push_back(Deck::getRandomCardExcept(cards, -1, ranks));
+                suits[cards.back().suit]++;
+
+                // avoid flush
+                if(std::find(suits, suits + 4, 5) != suits + 4){
+                    suits[cards.back().suit]--;
+                    cards.pop_back();
+                    continue;
+                }
+                ranks.push_back(cards.back().rank);
+                std::vector<u_int8_t> sortedRanks = ranks;
+                std::sort(sortedRanks.begin(), sortedRanks.end());
+                // we dont need to delete duplicates because there is only one pair and the rank is only in the vector once
+                // avoid straight
+                for(u_int8_t j = 0; j < sortedRanks.size() - 4; j++){
+                    if(sortedRanks[j] == sortedRanks[j + 4] - 4){
+                        suits[cards.back().suit]--;
+                        ranks.pop_back();
+                        cards.pop_back();
+                        break;
+                    }
+                }
+            }
+            ranks.erase(ranks.begin()); // remove pair rank
+            std::sort(ranks.begin(), ranks.end()); // sort ranks
+
+            u_int32_t rankStrength = rank*2*2*2*2*2*2*2*2*2*2*2*2 + ranks[4]*2*2*2*2*2*2*2*2 + ranks[3]*2*2*2*2 + ranks[2];
+            for(u_int8_t iter = 0; iter < 20; iter++){
+                EXPECT_EQ(cards.size(), 7);
+                std::random_shuffle(cards.begin(), cards.end());
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                EXPECT_EQ(hs.handkind, HandKinds::PAIR);
+                EXPECT_EQ(hs.rankStrength, rankStrength);
+            }
+        }
+    }
+}
