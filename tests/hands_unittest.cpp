@@ -432,3 +432,54 @@ TEST(HandStrengths, Pair) {
         }
     }
 }
+
+TEST(HandStrengths, HighCard) {
+    for(u_int64_t iters = 0; iters < ITERATIONS*14; iters++){
+        std::vector<Card> cards{};
+        std::vector<u_int8_t> ranks{};
+        cards.reserve(7);
+        ranks.reserve(7);
+        u_int8_t suits[4] = {0};
+        u_int32_t rankStrength = 0;
+        // should discard PAIR, STRAIGHT, FLUSH,
+        // TWO_PAIRy (discarded by PAIR), THREE_OF_A_KINDy (discarded by PAIR),
+        // FULL_HOUSEy (discarded by PAIR), FOUR_OF_A_KINDy (discarded by PAIR), STRAIGHT_FLUSHy (discarded by flush), ROYAL_FLUSHy (discarded by flush)
+        
+        // add the other cards while avoiding flush, straight and pair
+        while(cards.size() < 7){
+            cards.push_back(Deck::getRandomCardExcept(cards, -1, ranks));
+            suits[cards.back().suit]++;
+
+            // avoid flush
+            if(std::find(suits, suits + 4, 5) != suits + 4){
+                suits[cards.back().suit]--;
+                cards.pop_back();
+                continue;
+            }
+            ranks.push_back(cards.back().rank);
+            std::vector<u_int8_t> sortedRanks = ranks;
+            std::sort(sortedRanks.begin(), sortedRanks.end());
+            // we dont need to delete duplicates because there is no pair
+            // avoid straight
+            for(int8_t j = 0; j < sortedRanks.size() - 4; j++){
+                if(sortedRanks[j] == sortedRanks[j + 4] - 4){
+                    suits[cards.back().suit]--;
+                    ranks.pop_back();
+                    cards.pop_back();
+                    break;
+                }
+            }
+        }
+
+        std::sort(ranks.begin(), ranks.end()); // sort ranks
+
+        rankStrength = ranks[6]*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2 + ranks[5]*2*2*2*2*2*2*2*2*2*2*2*2 + ranks[4]*2*2*2*2*2*2*2*2 + ranks[3]*2*2*2*2 + ranks[2];
+        for(u_int8_t iter = 0; iter < 20; iter++){
+            EXPECT_EQ(cards.size(), 7);
+            std::random_shuffle(cards.begin(), cards.end());
+            HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+            EXPECT_EQ(hs.handkind, HandKinds::HIGH_CARD);
+            EXPECT_EQ(hs.rankStrength, rankStrength);
+        }
+    }
+}
