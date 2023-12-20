@@ -78,7 +78,7 @@ TEST(HandStrengths, FourOfAKind) {
             cards.push_back(Deck::getRandomCardExcept(cards));
             cards.push_back(Deck::getRandomCardExcept(cards));
             // rank strength is the rank of the four of a kind + the highest rank of the extra cards
-            u_int32_t rankStrength = rank*2*2*2*2 + std::max<u_int8_t>(std::max<u_int8_t>(cards[4].rank, cards[5].rank), cards[6].rank);
+            u_int32_t rankStrength = (rank << 4) + std::max<u_int8_t>(std::max<u_int8_t>(cards[4].rank, cards[5].rank), cards[6].rank);
             for(u_int8_t iter = 0; iter < 20; iter++){
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
@@ -132,12 +132,12 @@ TEST(HandStrengths, FullHouse) {
             if(highest3 != ranks + 15){
                 // if there is an other triple, rankStrength is the rank of the higher triple + the rank of the lower triple
                 if(highest3 > ranks + rank)
-                    rankStrength = (highest3 - ranks)*2*2*2*2 + rank;
+                    rankStrength = ((highest3 - ranks) << 4) + rank;
                 else
-                    rankStrength = rank*2*2*2*2 + (highest3 - ranks);
+                    rankStrength = (rank << 4) + (highest3 - ranks);
             }else
                 // if there is no other triple, rankStrength is the rank of the triple + the rank of the pair
-                rankStrength = rank*2*2*2*2 + (rfind<u_int8_t>(ranks + 2, ranks + 15, 2) - ranks);
+                rankStrength = (rank << 4) + (rfind<u_int8_t>(ranks + 2, ranks + 15, 2) - ranks);
 
             for(u_int8_t iter = 0; iter < 20; iter++){
                 EXPECT_EQ(cards.size(), 7);
@@ -190,12 +190,7 @@ TEST(HandStrengths, Flush) {
             }
             
             // flushcards are sorted from highest to lowest rank
-            u_int32_t rankStrength = 
-                flushCards[4].rank + 
-                flushCards[3].rank*2*2*2*2 + 
-                flushCards[2].rank*2*2*2*2*2*2*2*2 + 
-                flushCards[1].rank*2*2*2*2*2*2*2*2*2*2*2*2 + 
-                flushCards[0].rank*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2;
+            u_int32_t rankStrength = (flushCards[0].rank << 16) + (flushCards[1].rank << 12) + (flushCards[2].rank << 8) + (flushCards[3].rank << 4) + flushCards[4].rank;
 
             for(u_int8_t iter = 0; iter < 20; iter++){
                 EXPECT_EQ(cards.size(), 7);
@@ -323,7 +318,7 @@ TEST(HandStrengths, ThreeOfAKind) {
                 secondHighestRank = cards.back().rank;
 
             // rank strength is the rank of the triplet + the highest ranks of the extra cards
-            u_int32_t rankStrength = rank*2*2*2*2*2*2*2*2 + highestRank*2*2*2*2 + secondHighestRank;
+            u_int32_t rankStrength = (rank << 8) + (highestRank << 4) + secondHighestRank;
             for(u_int8_t iter = 0; iter < 20; iter++){
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
@@ -399,7 +394,7 @@ TEST(HandStrengths, TwoPair) {
                         tmpRanks = {rank1, rank2, cards[6].rank};
                     // sort the pair ranks to get the highest and second highest pair for rankStrength
                     std::sort(tmpRanks.begin(), tmpRanks.end());
-                    rankStrength = tmpRanks[2]*2*2*2*2*2*2*2*2 + tmpRanks[1]*2*2*2*2;
+                    rankStrength = (tmpRanks[2] << 8) + (tmpRanks[1] << 4);
                     
                     // check if there is a straight
                     u_int8_t ranks[15] = {0};
@@ -488,7 +483,7 @@ TEST(HandStrengths, Pair) {
             ranks.erase(ranks.begin()); // remove pair rank
             std::sort(ranks.begin(), ranks.end()); // sort ranks
 
-            u_int32_t rankStrength = rank*2*2*2*2*2*2*2*2*2*2*2*2 + ranks[4]*2*2*2*2*2*2*2*2 + ranks[3]*2*2*2*2 + ranks[2];
+            u_int32_t rankStrength = (rank << 12) + (ranks[4] << 8) + (ranks[3] << 4) + ranks[2];
             for(u_int8_t iter = 0; iter < 20; iter++){
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
@@ -531,7 +526,7 @@ TEST(HandStrengths, HighCard) {
                 std::sort(sortedRanks.begin(), sortedRanks.end());
                 // we dont need to delete duplicates because there is no pair
                 // avoid straight
-                for(int8_t j = 0; j < sortedRanks.size() - 4; j++){
+                for(int8_t j = 0; j < (int8_t)sortedRanks.size() - 4; j++){
                     if(sortedRanks[j] == sortedRanks[j + 4] - 4){
                         suits[cards.back().suit]--;
                         ranks.pop_back();
@@ -542,11 +537,7 @@ TEST(HandStrengths, HighCard) {
             }
         }
 
-        rankStrength =  sortedRanks[6]*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2 + 
-                        sortedRanks[5]*2*2*2*2*2*2*2*2*2*2*2*2 + 
-                        sortedRanks[4]*2*2*2*2*2*2*2*2 + 
-                        sortedRanks[3]*2*2*2*2 + 
-                        sortedRanks[2];
+        rankStrength = (sortedRanks[6] << 16) + (sortedRanks[5] << 12) + (sortedRanks[4] << 8) + (sortedRanks[3] << 4) + sortedRanks[2];
         for(u_int8_t iter = 0; iter < 20; iter++){
             EXPECT_EQ(cards.size(), 7);
             std::random_shuffle(cards.begin(), cards.end());
