@@ -233,7 +233,7 @@ OutEnum Game::playerTurn(Player* players[], Data& data, short* firstChecker) con
     switch (action.action) {
         case Actions::FOLD:
             PLOG_DEBUG << getPlayerInfo(players, data) << " folded";
-            res = playerFolded(players, data);
+            res = playerFolded(data);
             if(res != OutEnum::ROUND_CONTINUE)
                 return res;
             break;
@@ -291,9 +291,9 @@ OutEnum Game::playerTurn(Player* players[], Data& data, short* firstChecker) con
 
 bool Game::bet(Data& data, const u_int64_t amount) const noexcept {
     // amount is the whole bet, not the amount that is added to the pot
-    if(amount < data.betRoundData.currentBet ||     // call condition
-        amount > data.betRoundData.currentBet && amount < data.betRoundData.currentBet*2 || // raise condition
-        amount < data.roundData.smallBlind // bet condition
+    if((amount < data.betRoundData.currentBet) ||     // call condition
+        ((amount > data.betRoundData.currentBet) && (amount < data.betRoundData.currentBet*2)) || // raise condition
+        (amount < data.roundData.smallBlind) // bet condition
     )
         return false;
     u_int64_t addAmount = amount - data.betRoundData.playerBets[data.betRoundData.playerPos];
@@ -315,7 +315,7 @@ OutEnum Game::playerOut(Player* players[], Data& data) const noexcept {
     return this->getOutEnum(data);
 }
 
-OutEnum Game::playerFolded(Player* players[], Data& data) const noexcept {
+OutEnum Game::playerFolded(Data& data) const noexcept {
     data.roundData.playerFolded[data.betRoundData.playerPos] = true;
     data.nextPlayer();
     // if only one player is left, he wins the pot

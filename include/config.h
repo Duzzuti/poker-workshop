@@ -11,7 +11,7 @@ public:
     
     // Constructor
     Config(u_int16_t rounds, u_int8_t players, u_int64_t chips, u_int64_t small, u_int64_t addBlind) noexcept
-        : numRounds(rounds) ,numPlayers(players), startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind) {}
+        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numRounds(rounds) ,numPlayers(players){}
 };
 
 class BaseConfig : public Config {

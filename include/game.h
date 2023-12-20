@@ -34,7 +34,7 @@ private:
     OutEnum playerOut(Player* players[], Data& data) const noexcept;
 
     // selects the current player as folded and returns true if only one player is left in this round, selects the next player
-    OutEnum playerFolded(Player* players[], Data& data) const noexcept;
+    OutEnum playerFolded(Data& data) const noexcept;
 
     OutEnum getOutEnum(const Data& data) const noexcept;
 
