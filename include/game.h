@@ -3,14 +3,12 @@
 #include "player.h"
 
 class Game {
-public:
-    Game(const Config& config) noexcept
-        : m_config(config) {}
+   public:
+    Game(const Config& config) noexcept : m_config(config) {}
 
     void run() const;
 
-private:
-
+   private:
     // starts a round by shuffling the deck, setting the dealer and the blinds
     OutEnum startRound(Player* players[], Data& data, Deck& deck, const bool firstRound) const noexcept;
 
