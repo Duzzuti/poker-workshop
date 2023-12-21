@@ -117,3 +117,23 @@ Card Deck::getRandomCardExcept(const std::vector<Card>& cards, const int8_t suit
         }
     }
 }
+
+Card Deck::getRandomCardExceptCardsWith(const std::vector<Card>& exceptionCards, const int8_t suit, const int8_t rank) noexcept {
+    // get random card from deck with suit if suit != -1 and rank if rank != -1
+
+    std::random_device dev;
+    std::mt19937 rng{dev()};
+    std::uniform_int_distribution<std::mt19937::result_type> dist{0, INT32_MAX}; // distribution in max u_int32 range
+    Card card;
+    do{
+        if(suit == -1 && rank == -1)    // get random card
+            card = Card{.rank = (u_int8_t)((dist(rng) % 13) + 2), .suit = (u_int8_t)(dist(rng) % 4)};
+        else if(suit == -1)             // get random card with rank
+            card = Card{.rank = (u_int8_t)rank, .suit = (u_int8_t)(dist(rng) % 4)};
+        else if(rank == -1)             // get random card with suit
+            card = Card{.rank = (u_int8_t)((dist(rng) % 13) + 2), .suit = (u_int8_t)suit};
+        else                            // get card with suit and rank   
+            card = Card{.rank = (u_int8_t)rank, .suit = (u_int8_t)suit};
+    }while(std::find(exceptionCards.begin(), exceptionCards.end(), card) != exceptionCards.end());
+    return card;
+}
