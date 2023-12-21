@@ -126,7 +126,7 @@ void Game::run() const {
 
             // distribute pot
             u_int64_t potPerWinner = data.roundData.pot / winners.size();
-            for (u_int8_t i = 0; i < winners.size(); i++) {
+            for (u_int8_t i = 0; i < (u_int8_t)winners.size(); i++) {
                 data.gameData.playerChips[winners[i]] += potPerWinner;
             }
         }
