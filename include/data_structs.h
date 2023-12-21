@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include "deck.h"
+
 enum class Actions {
     FOLD,
     CALL,
