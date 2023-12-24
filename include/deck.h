@@ -3,12 +3,13 @@
 #include <random>
 
 struct Card {
-    unsigned char rank;  // 2-14
-    unsigned char suit;  // 0-3  (0 = Diamonds, 1 = Hearts, 2 = Spades, 3 = Clubs)
+    u_int8_t rank;  // 2-14
+    u_int8_t suit;  // 0-3  (0 = Diamonds, 1 = Hearts, 2 = Spades, 3 = Clubs)
 
     std::string toString() const;
 
     friend bool operator==(const Card& lhs, const Card& rhs) noexcept { return lhs.rank == rhs.rank && lhs.suit == rhs.suit; };
+    friend bool operator!=(const Card& lhs, const Card& rhs) noexcept { return !(lhs == rhs); };
 };
 
 class Deck {
@@ -21,12 +22,16 @@ class Deck {
     static Card getRandomCardExcept(const std::vector<Card>& cards, const int8_t suit = -1, const std::vector<u_int8_t> ranks = {}) noexcept;
     static Card getRandomCardExceptCardsWith(const std::vector<Card>& exceptionCards, const int8_t suit = -1, const int8_t rank = -1) noexcept;
 
-    ~Deck() { delete[] cards; };
+    friend bool operator==(const Deck& lhs, const Deck& rhs) noexcept {
+        if (lhs.len != rhs.len) return false;
+        for (u_int8_t i = 0; i < lhs.len; i++) {
+            if (lhs.cards[i] != rhs.cards[i]) return false;
+        }
+        return true;
+    };
+    friend bool operator!=(const Deck& lhs, const Deck& rhs) noexcept { return !(lhs == rhs); };
 
    private:
-    Card* cards;
-    unsigned char len;
-    std::random_device dev;
-    std::mt19937 rng{dev()};
-    std::uniform_int_distribution<std::mt19937::result_type> dist{0, INT32_MAX};  // distribution in max u_int32 range
+    Card cards[52];
+    u_int8_t len = 52;
 };

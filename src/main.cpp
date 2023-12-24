@@ -3,6 +3,7 @@
 #include "logger.h"
 
 int main(int argc, char** argv) {
+    srand(time(NULL));  // init random seed
     // init logger
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     // add file logger
