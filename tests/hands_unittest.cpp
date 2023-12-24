@@ -9,7 +9,7 @@ every test generates random 7 cards that form the tested hand.
 the tests are designed to generate every possible hand for every category.
 the tests are generating random combination. You can set the ITERATIONS constant to a higher value to generate more combinations.
 */
-const constexpr u_int64_t ITERATIONS = 1000;
+const constexpr u_int64_t ITERATIONS = 2000;
 
 // get last occurence of an element in an array
 template <typename T>
@@ -69,7 +69,7 @@ TEST(HandStrengths, StraightFlush) {
 
 TEST(HandStrengths, FourOfAKind) {
     // generate four of a kind hands and test if it is detected as four of a kind
-    for (u_int64_t iters = 0; iters < ITERATIONS * 2; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 4; iters++) {
         // generate four of a kind for every rank
         for (u_int8_t rank = 2; rank < 15; rank++) {
             // there cannot be a straight flush because there are only 3 extra cards
@@ -92,7 +92,7 @@ TEST(HandStrengths, FourOfAKind) {
 
 TEST(HandStrengths, FullHouse) {
     // generate full house hands and test if it is detected as full house
-    for (u_int64_t iters = 0; iters < ITERATIONS; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 4; iters++) {
         // generate the triple of full house for every rank
         for (u_int8_t rank = 2; rank < 15; rank++) {
             // start with a quad and remove a random card
@@ -152,7 +152,7 @@ TEST(HandStrengths, FullHouse) {
 
 TEST(HandStrengths, Flush) {
     // generate flush hands and test if it is detected as flush
-    for (u_int64_t iters = 0; iters < ITERATIONS * 3; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 8; iters++) {
         // generate flush for every suit
         for (u_int8_t suit = 0; suit < 4; suit++) {
             // store every choosen card and every card with the choosen suit
@@ -203,7 +203,7 @@ TEST(HandStrengths, Flush) {
 
 TEST(HandStrengths, Straight) {
     // generate straight hands and test if it is detected as straight
-    for (u_int64_t iters = 0; iters < ITERATIONS * 4; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 5; iters++) {
         // generate straights for every rank (rank is the highest rank of the straight)
         for (u_int8_t rank = 6; rank < 15; rank++) {
             std::vector<Card> cards{};
@@ -251,7 +251,7 @@ TEST(HandStrengths, Straight) {
 
 TEST(HandStrengths, ThreeOfAKind) {
     // generate three of a kind hands and test if it is detected as three of a kind
-    for (u_int64_t iters = 0; iters < ITERATIONS * 2; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 4; iters++) {
         // generate three of a kind for every rank
         for (u_int8_t rank = 2; rank < 15; rank++) {
             // start with a quad and remove one random cards
@@ -330,7 +330,7 @@ TEST(HandStrengths, ThreeOfAKind) {
 
 TEST(HandStrengths, TwoPair) {
     // generate two pair hands and test if it is detected as two pair
-    for (u_int64_t iters = 0; iters < ITERATIONS / 6 + 1; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS / 3 + 1; iters++) {
         // generate two pair for every rank
         for (u_int8_t rank1 = 2; rank1 < 15; rank1++) {
             for (u_int8_t rank2 = 2; rank2 < 15; rank2++) {
@@ -429,7 +429,7 @@ TEST(HandStrengths, TwoPair) {
 
 TEST(HandStrengths, Pair) {
     // generate pair hands and test if it is detected as pair
-    for (u_int64_t iters = 0; iters < ITERATIONS / 2 * 3 + 1; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 3; iters++) {
         for (u_int8_t rank = 2; rank < 15; rank++) {
             // start with a quad and remove two random cards
             std::vector<Card> cards{Card{rank, 0}, Card{rank, 1}, Card{rank, 2}, Card{rank, 3}};
@@ -492,7 +492,7 @@ TEST(HandStrengths, Pair) {
 
 TEST(HandStrengths, HighCard) {
     // generate high card hands and test if it is detected as high card
-    for (u_int64_t iters = 0; iters < ITERATIONS * 14; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 40; iters++) {
         std::vector<Card> cards{};
         std::vector<u_int8_t> ranks{};
         u_int8_t suits[4] = {0};
