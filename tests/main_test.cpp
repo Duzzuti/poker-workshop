@@ -10,6 +10,7 @@ int main(int argc, char** argv) {
     // add file logger
     static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("data/log.txt", 1024 * 1024 * 10, 3);
     plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
-    ::testing::InitGoogleTest(&argc, argv);
+    //plog::init(plog::verbose, &fileAppender);
+    testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

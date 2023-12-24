@@ -26,7 +26,7 @@ void Game::run() const {
         // ONE GAME
         // shuffle players
         PLOG_DEBUG << "Starting game " << game;
-        shufflePlayers(players, m_config.numPlayers);
+        initPlayerOrder(players, m_config.numPlayers);
         data.gameData.playerOut = std::vector<bool>(m_config.numPlayers, false);
         data.gameData.playerChips = std::vector<u_int64_t>(m_config.numPlayers, m_config.startingChips);
         bool firstRound = true;

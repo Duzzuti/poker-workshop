@@ -9,6 +9,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(PLAYER_DIR ${SRC_DIR}/players)
+set(CHECK_PLAYER ${PLAYER_DIR}/check_player/check_player.cpp)
+set(RAND_PLAYER ${PLAYER_DIR}/rand_player/rand_player.cpp)
 
 include(FetchContent)
 
