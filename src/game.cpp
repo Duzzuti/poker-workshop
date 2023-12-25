@@ -29,7 +29,6 @@ void Game::run() const {
         initPlayerOrder(players, m_config.numPlayers);
         data.gameData.playerOut = std::vector<bool>(m_config.numPlayers, false);
         data.gameData.playerChips = std::vector<u_int64_t>(m_config.numPlayers, m_config.startingChips);
-        bool firstRound = true;
         int32_t round = -1;
 
         while (std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) > 1) {
@@ -39,7 +38,7 @@ void Game::run() const {
             OutEnum result = OutEnum::ROUND_CONTINUE;
 
             PLOG_DEBUG << "Starting round " << round;
-            result = this->startRound(players, data, deck, firstRound);
+            result = this->startRound(players, data, deck, round == 0);
             if (result == OutEnum::GAME_WON) {
                 PLOG_INFO << "Game " << game << " ended in round " << round;
                 break;
@@ -47,7 +46,6 @@ void Game::run() const {
                 PLOG_DEBUG << "Pot won, starting new round";
                 continue;
             }
-            firstRound = false;
 
             // PREFLOP
             PLOG_DEBUG << "Starting PREFLOP bet round";
@@ -64,7 +62,7 @@ void Game::run() const {
             this->setupBetRound(data);
             PLOG_DEBUG << "Starting FLOP bet round";
             for (u_int8_t i = 0; i < 3; i++) {
-                data.roundData.communityCards.push_back(deck.draw());  // draw flop card
+                data.roundData.communityCards.push_back(deck.draw());  // draw flop cards
             }
             result = this->betRound(players, data);
             if (result == OutEnum::GAME_WON) {

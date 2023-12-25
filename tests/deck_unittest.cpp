@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <algorithm>
 #include <unordered_map>
 #include <list>

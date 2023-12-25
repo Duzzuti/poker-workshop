@@ -1,7 +1,4 @@
 #include "utils.h"
-
-#include <random>
-
 #include "logger.h"
 
 void initPlayerOrder(Player* players[], u_int8_t numPlayer) noexcept {

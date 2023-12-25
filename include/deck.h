@@ -1,6 +1,7 @@
 #pragma once
 
-#include <random>
+#include <iostream>
+#include <vector>
 
 struct Card {
     u_int8_t rank;  // 2-14
