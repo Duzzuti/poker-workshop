@@ -1,68 +1,42 @@
 #pragma once
 #include "game.h"
 
-class GameTest : public Game{
-    public:
-        GameTest(const Config& config) noexcept : Game(config) {}
+class GameTest : public Game {
+   public:
+    GameTest(const Config& config) noexcept : Game(config) {}
 
-        void setPlayers(Player* players[]) noexcept {
-            delete[] this->players;
-            this->players = players;
-        }
+    void setPlayers(Player* players[]) noexcept {
+        delete[] this->players;
+        this->players = players;
+    }
 
-        void initPlayerOrder() noexcept {
-            Game::initPlayerOrder();
-        }
+    void initPlayerOrder() noexcept { Game::initPlayerOrder(); }
 
-        OutEnum startRound(Data& data, Deck& deck, const bool firstRound) const noexcept {
-            return Game::startRound(data, deck, firstRound);
-        }
+    OutEnum startRound(Deck& deck, const bool firstRound) noexcept { return Game::startRound(deck, firstRound); }
 
-        OutEnum setBlinds(Data& data) const noexcept {
-            return Game::setBlinds(data);
-        }
+    OutEnum setBlinds() noexcept { return Game::setBlinds(); }
 
-        void setupBetRound(Data& data) const noexcept {
-            Game::setupBetRound(data);
-        }
+    void setupBetRound() noexcept { Game::setupBetRound(); }
 
-        OutEnum betRound(Data& data) const {
-            return Game::betRound(data);
-        }
+    OutEnum betRound() { return Game::betRound(); }
 
-        OutEnum playerTurn(Data& data, short* firstChecker) const {
-            return Game::playerTurn(data, firstChecker);
-        }
+    OutEnum playerTurn(short* firstChecker) { return Game::playerTurn(firstChecker); }
 
-        bool bet(Data& data, const u_int64_t amount) const noexcept {
-            return Game::bet(data, amount);
-        }
+    bool bet(const u_int64_t amount) noexcept { return Game::bet(amount); }
 
-        OutEnum playerOut(Data& data) const noexcept {
-            return Game::playerOut(data);
-        }
+    OutEnum playerOut() noexcept { return Game::playerOut(); }
 
-        OutEnum playerFolded(Data& data) const noexcept {
-            return Game::playerFolded(data);
-        }
+    OutEnum playerFolded() noexcept { return Game::playerFolded(); }
 
-        OutEnum getOutEnum(const Data& data) const noexcept {
-            return Game::getOutEnum(data);
-        }
+    OutEnum getOutEnum() const noexcept { return Game::getOutEnum(); }
 
-        OutEnum preflop(Data& data, OutEnum lastRes) const noexcept {
-            return Game::preflop(data, lastRes);
-        }
+    OutEnum preflop(OutEnum lastRes) { return Game::preflop(lastRes); }
 
-        OutEnum flop(Data& data, Deck& deck, OutEnum lastRes) const noexcept {
-            return Game::flop(data, deck, lastRes);
-        }
+    OutEnum flop(Deck& deck, OutEnum lastRes) { return Game::flop(deck, lastRes); }
 
-        OutEnum turn(Data& data, Deck& deck, OutEnum lastRes) const noexcept {
-            return Game::turn(data, deck, lastRes);
-        }
+    OutEnum turn(Deck& deck, OutEnum lastRes) { return Game::turn(deck, lastRes); }
 
-        OutEnum river(Data& data, Deck& deck, OutEnum lastRes) const noexcept {
-            return Game::river(data, deck, lastRes);
-        }
+    OutEnum river(Deck& deck, OutEnum lastRes) { return Game::river(deck, lastRes); }
+
+    std::string getPlayerInfo() const noexcept { return Game::getPlayerInfo(); }
 };

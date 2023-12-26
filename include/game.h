@@ -18,45 +18,46 @@ class Game {
     }
 
    private:
-    std::string getPlayerInfo(const Data& data) const noexcept;
+    std::string getPlayerInfo() const noexcept;
 
     void initPlayerOrder() noexcept;
 
     // starts a round by shuffling the deck, setting the dealer and the blinds
-    OutEnum startRound(Data& data, Deck& deck, const bool firstRound) const noexcept;
+    OutEnum startRound(Deck& deck, const bool firstRound) noexcept;
 
     // sets the blinds for the round by betting the small and big blind automatically
-    OutEnum setBlinds(Data& data) const noexcept;
+    OutEnum setBlinds() noexcept;
 
     // sets up the data for a bet round (preflop, flop, turn, river)
-    void setupBetRound(Data& data) const noexcept;
+    void setupBetRound() noexcept;
 
     // runs a single bet round (preflop, flop, turn, river)
-    OutEnum betRound(Data& data) const;
+    OutEnum betRound();
 
     // runs a single non out player turn
-    OutEnum playerTurn(Data& data, short* firstChecker) const;
+    OutEnum playerTurn(short* firstChecker);
 
     // the current player bets amount and the next player is selected
     // note that amount is the total amount that the player bets (e.g. if the player has to call 200 but he already bet 100 => amount is still 200)
-    bool bet(Data& data, const u_int64_t amount) const noexcept;
+    bool bet(const u_int64_t amount) noexcept;
 
     // selects the current player as out and returns true if only one player is left in this game, selects the next player
-    OutEnum playerOut(Data& data) const noexcept;
+    OutEnum playerOut() noexcept;
 
     // selects the current player as folded and returns true if only one player is left in this round, selects the next player
-    OutEnum playerFolded(Data& data) const noexcept;
+    OutEnum playerFolded() noexcept;
 
-    OutEnum getOutEnum(const Data& data) const noexcept;
+    OutEnum getOutEnum() const noexcept;
 
-    OutEnum preflop(Data& data, OutEnum lastRes) const noexcept;
+    OutEnum preflop(OutEnum lastRes);
 
-    OutEnum flop(Data& data, Deck& deck, OutEnum lastRes) const noexcept;
+    OutEnum flop(Deck& deck, OutEnum lastRes);
 
-    OutEnum turn(Data& data, Deck& deck, OutEnum lastRes) const noexcept;
+    OutEnum turn(Deck& deck, OutEnum lastRes);
 
-    OutEnum river(Data& data, Deck& deck, OutEnum lastRes) const noexcept;
+    OutEnum river(Deck& deck, OutEnum lastRes);
 
     Config m_config;
     Player** players;
+    Data data;
 };
