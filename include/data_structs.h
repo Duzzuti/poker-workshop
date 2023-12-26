@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 
+#include "config.h"
 #include "deck.h"
 
 enum class Actions {
@@ -48,25 +49,25 @@ enum class OutEnum {
 struct BetRoundData {
     u_int8_t playerPos;                 // position of the player that is currently playing
     u_int64_t currentBet;               // current bet
-    std::vector<u_int64_t> playerBets;  // bets of the players in the current round
+    u_int64_t playerBets[MAX_PLAYERS];  // bets of the players in the current round
 };
 
 // contains the data for a single round (until the pot is won)
 struct RoundData {
-    u_int64_t smallBlind;              // small blind
-    u_int64_t bigBlind;                // big blind
-    u_int64_t addBlind;                // add blind amount every time the dealer is again at position 0
-    u_int8_t dealerPos;                // position of the dealer
-    u_int64_t pot;                     // current pot
-    std::vector<bool> playerFolded;    // true if player folded
-    std::vector<Card> communityCards;  // community cards
-    OutEnum result;                    // whats the state of the round (continue, round won, game won)
+    u_int64_t smallBlind;            // small blind
+    u_int64_t bigBlind;              // big blind
+    u_int64_t addBlind;              // add blind amount every time the dealer is again at position 0
+    u_int8_t dealerPos;              // position of the dealer
+    u_int64_t pot;                   // current pot
+    bool playerFolded[MAX_PLAYERS];  // true if player folded
+    Card communityCards[5];          // community cards
+    OutEnum result;                  // whats the state of the round (continue, round won, game won)
 };
 
 // contains the data for a single game (until only one player is left)
 struct GameData {
-    std::vector<bool> playerOut;         // true if player is out of the game
-    std::vector<u_int64_t> playerChips;  // chips of the players
+    bool playerOut[MAX_PLAYERS];         // true if player is out of the game
+    u_int64_t playerChips[MAX_PLAYERS];  // chips of the players
 };
 
 // contains all Data for a game set (multiple games)

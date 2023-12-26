@@ -35,7 +35,7 @@ class Game {
     OutEnum betRound();
 
     // runs a single non out player turn
-    OutEnum playerTurn(short* firstChecker);
+    OutEnum playerTurn(short& firstChecker);
 
     // the current player bets amount and the next player is selected
     // note that amount is the total amount that the player bets (e.g. if the player has to call 200 but he already bet 100 => amount is still 200)

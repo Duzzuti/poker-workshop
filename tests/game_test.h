@@ -20,7 +20,7 @@ class GameTest : public Game {
 
     OutEnum betRound() { return Game::betRound(); }
 
-    OutEnum playerTurn(short* firstChecker) { return Game::playerTurn(firstChecker); }
+    OutEnum playerTurn(short& firstChecker) { return Game::playerTurn(firstChecker); }
 
     bool bet(const u_int64_t amount) noexcept { return Game::bet(amount); }
 

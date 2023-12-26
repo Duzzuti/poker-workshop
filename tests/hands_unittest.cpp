@@ -33,7 +33,7 @@ TEST(HandStrengths, RoyalFlush) {
             for (u_int8_t iter = 0; iter < 20; iter++) {
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
-                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                 EXPECT_EQ(hs.handkind, HandKinds::ROYAL_FLUSH);
                 EXPECT_EQ(hs.rankStrength, 0);
             }
@@ -58,7 +58,7 @@ TEST(HandStrengths, StraightFlush) {
                 for (u_int8_t iter = 0; iter < 20; iter++) {
                     EXPECT_EQ(cards.size(), 7);
                     std::random_shuffle(cards.begin(), cards.end());
-                    HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                    HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                     EXPECT_EQ(hs.handkind, HandKinds::STRAIGHT_FLUSH);
                     EXPECT_EQ(hs.rankStrength, +rank);  // rank strength is the highest rank of the straight
                 }
@@ -82,7 +82,7 @@ TEST(HandStrengths, FourOfAKind) {
             for (u_int8_t iter = 0; iter < 20; iter++) {
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
-                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                 EXPECT_EQ(hs.handkind, HandKinds::FOUR_OF_A_KIND);
                 EXPECT_EQ(hs.rankStrength, rankStrength);
             }
@@ -142,7 +142,7 @@ TEST(HandStrengths, FullHouse) {
             for (u_int8_t iter = 0; iter < 20; iter++) {
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
-                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                 EXPECT_EQ(hs.handkind, HandKinds::FULL_HOUSE);
                 EXPECT_EQ(hs.rankStrength, rankStrength);
             }
@@ -193,7 +193,7 @@ TEST(HandStrengths, Flush) {
             for (u_int8_t iter = 0; iter < 20; iter++) {
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
-                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                 EXPECT_EQ(hs.handkind, HandKinds::FLUSH);
                 EXPECT_EQ(hs.rankStrength, rankStrength);
             }
@@ -241,7 +241,7 @@ TEST(HandStrengths, Straight) {
             for (u_int8_t iter = 0; iter < 20; iter++) {
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
-                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                 EXPECT_EQ(hs.handkind, HandKinds::STRAIGHT);
                 EXPECT_EQ(hs.rankStrength, rankStrength);
             }
@@ -320,7 +320,7 @@ TEST(HandStrengths, ThreeOfAKind) {
             for (u_int8_t iter = 0; iter < 20; iter++) {
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
-                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                 EXPECT_EQ(hs.handkind, HandKinds::THREE_OF_A_KIND);
                 EXPECT_EQ(hs.rankStrength, rankStrength);
             }
@@ -418,7 +418,7 @@ TEST(HandStrengths, TwoPair) {
                 for (u_int8_t iter = 0; iter < 20; iter++) {
                     EXPECT_EQ(cards.size(), 7);
                     std::random_shuffle(cards.begin(), cards.end());
-                    HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                    HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                     EXPECT_EQ(hs.handkind, HandKinds::TWO_PAIR);
                     EXPECT_EQ(hs.rankStrength, rankStrength);
                 }
@@ -482,7 +482,7 @@ TEST(HandStrengths, Pair) {
             for (u_int8_t iter = 0; iter < 20; iter++) {
                 EXPECT_EQ(cards.size(), 7);
                 std::random_shuffle(cards.begin(), cards.end());
-                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+                HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
                 EXPECT_EQ(hs.handkind, HandKinds::PAIR);
                 EXPECT_EQ(hs.rankStrength, rankStrength);
             }
@@ -536,7 +536,7 @@ TEST(HandStrengths, HighCard) {
         for (u_int8_t iter = 0; iter < 20; iter++) {
             EXPECT_EQ(cards.size(), 7);
             std::random_shuffle(cards.begin(), cards.end());
-            HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::vector<Card>{cards[2], cards[3], cards[4], cards[5], cards[6]});
+            HandStrengths hs = HandStrengths::getHandStrength(std::pair<Card, Card>{cards[0], cards[1]}, std::array<Card, 5>{cards[2], cards[3], cards[4], cards[5], cards[6]}.data());
             EXPECT_EQ(hs.handkind, HandKinds::HIGH_CARD);
             EXPECT_EQ(hs.rankStrength, rankStrength);
         }

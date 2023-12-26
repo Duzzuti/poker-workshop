@@ -16,7 +16,7 @@ std::vector<HandStrengths> HandStrengths::getHandStrengths(Player* const players
     return handStrengths;
 }
 
-HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, const std::vector<Card>& community) noexcept {
+HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, const Card community[]) noexcept {
     u_int8_t suits[4] = {0, 0, 0, 0};
     u_int8_t ranks[13] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     suits[hand.first.suit]++;
