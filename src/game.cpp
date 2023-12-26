@@ -39,58 +39,15 @@ void Game::run() const {
 
             PLOG_DEBUG << "Starting round " << round;
             result = this->startRound(players, data, deck, round == 0);
-            if (result == OutEnum::GAME_WON) {
-                PLOG_INFO << "Game " << game << " ended in round " << round;
-                break;
-            } else if (result == OutEnum::ROUND_WON) {
-                PLOG_DEBUG << "Pot won, starting new round";
-                continue;
-            }
-
             // PREFLOP
-            PLOG_DEBUG << "Starting PREFLOP bet round";
-            result = this->betRound(players, data);
-            if (result == OutEnum::GAME_WON) {
-                PLOG_INFO << "Game " << game << " ended in round " << round;
-                break;
-            } else if (result == OutEnum::ROUND_WON) {
-                PLOG_DEBUG << "Pot won, starting new round";
-                continue;
-            }
-
+            result = this->preflop(players, data, result);
             // FLOP
-            this->setupBetRound(data);
-            PLOG_DEBUG << "Starting FLOP bet round";
-            for (u_int8_t i = 0; i < 3; i++) {
-                data.roundData.communityCards.push_back(deck.draw());  // draw flop cards
-            }
-            result = this->betRound(players, data);
-            if (result == OutEnum::GAME_WON) {
-                PLOG_INFO << "Game " << game << " ended in round " << round;
-                break;
-            } else if (result == OutEnum::ROUND_WON) {
-                PLOG_DEBUG << "Pot won, starting new round";
-                continue;
-            }
-
+            result = this->flop(players, data, deck, result);
             // TURN
-            this->setupBetRound(data);
-            PLOG_DEBUG << "Starting TURN bet round";
-            data.roundData.communityCards.push_back(deck.draw());  // draw turn card
-            result = this->betRound(players, data);
-            if (result == OutEnum::GAME_WON) {
-                PLOG_INFO << "Game " << game << " ended in round " << round;
-                break;
-            } else if (result == OutEnum::ROUND_WON) {
-                PLOG_DEBUG << "Pot won, starting new round";
-                continue;
-            }
-
+            result = this->turn(players, data, deck, result);
             // RIVER
-            this->setupBetRound(data);
-            PLOG_DEBUG << "Starting RIVER bet round";
-            data.roundData.communityCards.push_back(deck.draw());  // draw river card
-            result = this->betRound(players, data);
+            result = this->river(players, data, deck, result);
+
             if (result == OutEnum::GAME_WON) {
                 PLOG_INFO << "Game " << game << " ended in round " << round;
                 break;
@@ -315,4 +272,36 @@ OutEnum Game::getOutEnum(const Data& data) const noexcept {
     } else {
         return OutEnum::ROUND_CONTINUE;
     }
+}
+
+OutEnum Game::preflop(Player* players[], Data& data, OutEnum lastRes) const noexcept {
+    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+    PLOG_DEBUG << "Starting PREFLOP bet round";
+    return this->betRound(players, data);
+}
+
+OutEnum Game::flop(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept {
+    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+    this->setupBetRound(data);
+    PLOG_DEBUG << "Starting FLOP bet round";
+    for (u_int8_t i = 0; i < 3; i++) {
+        data.roundData.communityCards.push_back(deck.draw());  // draw flop cards
+    }
+    return this->betRound(players, data);
+}
+
+OutEnum Game::turn(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept {
+    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+    this->setupBetRound(data);
+    PLOG_DEBUG << "Starting TURN bet round";
+    data.roundData.communityCards.push_back(deck.draw());  // draw turn card
+    return this->betRound(players, data);
+}
+
+OutEnum Game::river(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept {
+    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+    this->setupBetRound(data);
+    PLOG_DEBUG << "Starting RIVER bet round";
+    data.roundData.communityCards.push_back(deck.draw());  // draw river card
+    return this->betRound(players, data);
 }

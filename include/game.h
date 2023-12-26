@@ -36,5 +36,13 @@ class Game {
 
     OutEnum getOutEnum(const Data& data) const noexcept;
 
+    OutEnum preflop(Player* players[], Data& data, OutEnum lastRes) const noexcept;
+
+    OutEnum flop(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept;
+
+    OutEnum turn(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept;
+
+    OutEnum river(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept;
+
     Config m_config;
 };
