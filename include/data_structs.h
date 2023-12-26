@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <vector>
 
 #include "config.h"
 #include "deck.h"

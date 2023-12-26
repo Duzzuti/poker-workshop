@@ -91,7 +91,7 @@ std::string Deck::toString(const std::string sep) const {
 }
 
 Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, const int8_t suit, const u_int8_t ranks[], const u_int8_t rankLen) noexcept {
-    // get random card from deck except cards in vector
+    // get random card from deck except cards in array
     // or with suit if suit != -1
     // or with ranks if ranks.size() > 0
     while (true) {

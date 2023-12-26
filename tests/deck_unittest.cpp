@@ -12,7 +12,7 @@ TEST(Deck, Constructor) {
     Card cards[52];
     for (u_int8_t suit = 0; suit < 4; suit++) {
         for (u_int8_t rank = 2; rank < 15; rank++) {
-            cards[suit*13 + rank-2] = Card{rank, suit};
+            cards[suit * 13 + rank - 2] = Card{rank, suit};
         }
     }
     std::reverse(cards, &cards[52]);
@@ -30,7 +30,7 @@ TEST(Deck, getRandomCardExcept) {
     Card cards[52];
     for (u_int8_t suit = 0; suit < 4; suit++) {
         for (u_int8_t rank = 2; rank < 15; rank++) {
-            cards[suit*13 + rank-2] = Card{rank, suit};
+            cards[suit * 13 + rank - 2] = Card{rank, suit};
         }
     }
 }

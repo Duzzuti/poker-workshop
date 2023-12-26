@@ -49,7 +49,7 @@ TEST(HandStrengths, StraightFlush) {
             for (u_int8_t rank = 6; rank < 14; rank++) {
                 Card cards[8]{Card{rank, suit}, Card{(u_int8_t)(rank - 1), suit}, Card{(u_int8_t)(rank - 2), suit}, Card{(u_int8_t)(rank - 3), suit}, Card{(u_int8_t)(rank - 4), suit}};
                 // avoid that the straight gets higher than rank
-                cards[7] = Card{(u_int8_t)(rank + 1), suit};    // this cards is not part of the straight and gets ignored
+                cards[7] = Card{(u_int8_t)(rank + 1), suit};  // this cards is not part of the straight and gets ignored
                 cards[5] = Deck::getRandomCardExcept(cards, 8);
                 cards[6] = Deck::getRandomCardExcept(cards, 8);
                 for (u_int8_t iter = 0; iter < 20; iter++) {
@@ -221,7 +221,7 @@ TEST(HandStrengths, Straight) {
             while (cardSize < 7) {
                 cards[cardSize] = Deck::getRandomCardExcept(cards, cardSize, avoidSuit, std::array<u_int8_t, 1>{(u_int8_t)(rank + 1)}.data(), 1);  // dont spawn higher straights
                 cardSize++;
-                suits[cards[cardSize-1].suit]++;
+                suits[cards[cardSize - 1].suit]++;
                 // check if there is a flush
                 if (std::find(suits, suits + 4, 5) != suits + 4) {
                     avoidSuit = cards[--cardSize].suit;  // avoid this suit for the next card
@@ -255,7 +255,7 @@ TEST(HandStrengths, ThreeOfAKind) {
             // cards[3] gets discarded
             // add three random cards by avoiding quads and pairs
             for (u_int8_t j = 3; j < 6; j++) {
-                cards[j] = Deck::getRandomCardExcept(cards, j,  -1, ranks, j - 2);
+                cards[j] = Deck::getRandomCardExcept(cards, j, -1, ranks, j - 2);
                 ranks[j - 2] = cards[j].rank;
             }
 
@@ -418,7 +418,7 @@ TEST(HandStrengths, TwoPair) {
 
 TEST(HandStrengths, Pair) {
     // generate pair hands and test if it is detected as pair
-    for (u_int64_t iters = 0; iters < ITERATIONS*3; iters++) {
+    for (u_int64_t iters = 0; iters < ITERATIONS * 3; iters++) {
         for (u_int8_t rank = 2; rank < 15; rank++) {
             // start with a quad and remove two random cards
             Card cards[7]{Card{rank, 0}, Card{rank, 1}, Card{rank, 2}, Card{rank, 3}};
@@ -430,7 +430,7 @@ TEST(HandStrengths, Pair) {
             // discard cards[3] and cards[2]
             // add 3 random cards by avoiding triplets and pairs
             for (u_int8_t j = 2; j < 5; j++) {
-                cards[j] = Deck::getRandomCardExcept(cards, j,  -1, ranks, j - 1);
+                cards[j] = Deck::getRandomCardExcept(cards, j, -1, ranks, j - 1);
                 ranks[j - 1] = cards[j].rank;
             }
             for (u_int8_t j = 0; j < 5; j++) suits[cards[j].suit]++;
@@ -452,7 +452,7 @@ TEST(HandStrengths, Pair) {
                     suits[cards[cardSize].suit]++;
                     cardSize++;
                 }
-                ranks[ranksSize++] = cards[cardSize-1].rank;
+                ranks[ranksSize++] = cards[cardSize - 1].rank;
                 u_int8_t sortedRankSize = ranksSize;
                 u_int8_t sortedRanks[sortedRankSize];
                 std::memcpy(sortedRanks, ranks, sortedRankSize);
@@ -507,7 +507,7 @@ TEST(HandStrengths, HighCard) {
                 suits[avoidSuit]--;
                 continue;
             }
-            ranks[ranksSize++] = cards[cardSize-1].rank;
+            ranks[ranksSize++] = cards[cardSize - 1].rank;
             if (ranksSize > 4) {
                 std::memcpy(sortedRanks, ranks, ranksSize);
                 std::sort(sortedRanks, &sortedRanks[ranksSize]);

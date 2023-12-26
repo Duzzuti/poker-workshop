@@ -89,14 +89,11 @@ HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, 
         Card flush_cards[7];
         u_int8_t flush_length = 0;
 
-        if (hand.first.suit == flush_suit) 
-            flush_cards[flush_length++] = hand.first;
-        if (hand.second.suit == flush_suit)
-            flush_cards[flush_length++] = hand.second;
+        if (hand.first.suit == flush_suit) flush_cards[flush_length++] = hand.first;
+        if (hand.second.suit == flush_suit) flush_cards[flush_length++] = hand.second;
 
         for (u_int8_t j = 0; j < 5; j++) {
-            if (community[j].suit == flush_suit)
-                flush_cards[flush_length++] = community[j];
+            if (community[j].suit == flush_suit) flush_cards[flush_length++] = community[j];
         }
         std::sort(flush_cards, &flush_cards[flush_length], [](const Card& card1, const Card& card2) { return card1.rank > card2.rank; });
         for (u_int8_t j = 0; j < flush_length - 4; j++) {
