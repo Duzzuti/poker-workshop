@@ -57,11 +57,13 @@ void Game::run() {
             PLOG_DEBUG << "SHOWDOWN!!! Community cards: " << this->data.roundData.communityCards[0].toString() << " " << this->data.roundData.communityCards[1].toString() << " "
                        << this->data.roundData.communityCards[2].toString() << " " << this->data.roundData.communityCards[3].toString() << " " << this->data.roundData.communityCards[4].toString();
             // get hand strength for each player
-            std::vector<HandStrengths> handStrengths = HandStrengths::getHandStrengths(this->players, this->data);
+            HandStrengths handStrengths[data.numPlayers];
+            HandStrengths::getHandStrengths(this->players, this->data, handStrengths);
             // get winner
 
             HandStrengths strongestHand = HandStrengths(HandKinds::NO_HAND, 0);
-            std::vector<u_int8_t> winners;
+            u_int8_t winners[this->data.numPlayers];
+            u_int8_t numWinners = 0;
 
             for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
                 if (this->data.gameData.playerOut[i] || this->data.roundData.playerFolded[i]) continue;
@@ -69,16 +71,16 @@ void Game::run() {
                            << handStrengths[i].handkind << " " << handStrengths[i].rankStrength;
                 if (handStrengths[i] > strongestHand) {
                     strongestHand = handStrengths[i];
-                    winners.clear();
-                    winners.push_back(i);
+                    numWinners = 1;
+                    winners[0] = i;
                 } else if (handStrengths[i] == strongestHand) {
-                    winners.push_back(i);
+                    winners[numWinners++] = i;
                 }
             }
 
             // distribute pot
-            u_int64_t potPerWinner = this->data.roundData.pot / winners.size();
-            for (u_int8_t i = 0; i < (u_int8_t)winners.size(); i++) {
+            u_int64_t potPerWinner = this->data.roundData.pot / numWinners;
+            for (u_int8_t i = 0; i < numWinners; i++) {
                 this->data.gameData.playerChips[winners[i]] += potPerWinner;
             }
         }

@@ -2,18 +2,12 @@
 
 #include <algorithm>
 
-std::vector<HandStrengths> HandStrengths::getHandStrengths(Player* const players[], const Data& data) noexcept {
-    std::vector<HandStrengths> handStrengths;
-    handStrengths.reserve(data.numPlayers);
-
+void HandStrengths::getHandStrengths(Player* const players[], const Data& data, HandStrengths result[]) noexcept {
     for (u_int8_t i = 0; i < data.numPlayers; i++) {
-        if (data.gameData.playerOut[i] || data.roundData.playerFolded[i]) {
-            handStrengths.emplace_back(HandKinds::NO_HAND, 0);
-            continue;
+        if (!(data.gameData.playerOut[i] || data.roundData.playerFolded[i])) {
+            result[i] = getHandStrength(players[i]->getHand(), data.roundData.communityCards);
         }
-        handStrengths.push_back(getHandStrength(players[i]->getHand(), data.roundData.communityCards));
     }
-    return handStrengths;
 }
 
 HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, const Card community[]) noexcept {
@@ -92,21 +86,19 @@ HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, 
     if (flush_suit != -1) {
         // flush
         // available hands: flush, full house, four of a kind, straight flush, royal flush
-        std::vector<Card> flush_cards;
-        flush_cards.reserve(7);
-        if (hand.first.suit == flush_suit) {
-            flush_cards.push_back(hand.first);
-        }
-        if (hand.second.suit == flush_suit) {
-            flush_cards.push_back(hand.second);
-        }
+        Card flush_cards[7];
+        u_int8_t flush_length = 0;
+
+        if (hand.first.suit == flush_suit) 
+            flush_cards[flush_length++] = hand.first;
+        if (hand.second.suit == flush_suit)
+            flush_cards[flush_length++] = hand.second;
+
         for (u_int8_t j = 0; j < 5; j++) {
-            if (community[j].suit == flush_suit) {
-                flush_cards.push_back(community[j]);
-            }
+            if (community[j].suit == flush_suit)
+                flush_cards[flush_length++] = community[j];
         }
-        std::sort(flush_cards.begin(), flush_cards.end(), [](const Card& card1, const Card& card2) { return card1.rank > card2.rank; });
-        u_int8_t flush_length = flush_cards.size();
+        std::sort(flush_cards, &flush_cards[flush_length], [](const Card& card1, const Card& card2) { return card1.rank > card2.rank; });
         for (u_int8_t j = 0; j < flush_length - 4; j++) {
             if (flush_cards[j].rank == flush_cards[j + 4].rank + 4) {
                 if (flush_cards[j].rank == 14) {
@@ -162,7 +154,7 @@ HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, 
     }
 }
 
-u_int32_t HandStrengths::getRankStrength(const std::vector<Card> sortedCards, const u_int8_t num) noexcept {
+u_int32_t HandStrengths::getRankStrength(const Card sortedCards[], const u_int8_t num) noexcept {
     u_int32_t rankStrength = 0;
     for (u_int8_t i = 0; i < num; i++) {
         rankStrength |= sortedCards[i].rank << 4 * (num - i - 1);

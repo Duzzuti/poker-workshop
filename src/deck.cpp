@@ -90,19 +90,19 @@ std::string Deck::toString(const std::string sep) const {
     return str;
 }
 
-Card Deck::getRandomCardExcept(const std::vector<Card>& cards, const int8_t suit, const std::vector<u_int8_t> ranks) noexcept {
+Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, const int8_t suit, const u_int8_t ranks[], const u_int8_t rankLen) noexcept {
     // get random card from deck except cards in vector
     // or with suit if suit != -1
     // or with ranks if ranks.size() > 0
     while (true) {
         Card card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)};
-        if (std::find(cards.begin(), cards.end(), card) == cards.end() && (suit == -1 || card.suit != suit) && (ranks.size() == 0 || std::find(ranks.begin(), ranks.end(), card.rank) == ranks.end())) {
+        if (std::find(cards, &cards[cardsLen], card) == &cards[cardsLen] && (suit == -1 || card.suit != suit) && (!rankLen || std::find(ranks, &ranks[rankLen], card.rank) == &ranks[rankLen])) {
             return card;
         }
     }
 }
 
-Card Deck::getRandomCardExceptCardsWith(const std::vector<Card>& exceptionCards, const int8_t suit, const int8_t rank) noexcept {
+Card Deck::getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int8_t cardsLen, const int8_t suit, const int8_t rank) noexcept {
     // get random card from deck with suit if suit != -1 and rank if rank != -1
 
     Card card;
@@ -115,6 +115,6 @@ Card Deck::getRandomCardExceptCardsWith(const std::vector<Card>& exceptionCards,
             card = Card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)suit};
         else  // get card with suit and rank
             card = Card{.rank = (u_int8_t)rank, .suit = (u_int8_t)suit};
-    } while (std::find(exceptionCards.begin(), exceptionCards.end(), card) != exceptionCards.end());
+    } while (std::find(exceptionCards, &exceptionCards[cardsLen], card) != &exceptionCards[cardsLen]);
     return card;
 }

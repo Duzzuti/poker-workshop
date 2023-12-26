@@ -9,15 +9,14 @@
 
 TEST(Deck, Constructor) {
     Deck deck;
-    std::vector<Card> cards;
+    Card cards[52];
     for (u_int8_t suit = 0; suit < 4; suit++) {
         for (u_int8_t rank = 2; rank < 15; rank++) {
-            cards.push_back(Card{rank, suit});
+            cards[suit*13 + rank-2] = Card{rank, suit};
         }
     }
-    std::reverse(cards.begin(), cards.end());
-    EXPECT_EQ(cards.size(), 52);
-    for (u_int8_t ind = 0; ind < cards.size(); ind++) {
+    std::reverse(cards, &cards[52]);
+    for (u_int8_t ind = 0; ind < 52; ind++) {
         Card card = deck.draw();
         EXPECT_EQ(card.rank, cards[ind].rank);
         EXPECT_EQ(card.suit, cards[ind].suit);
@@ -28,13 +27,12 @@ TEST(Deck, Constructor) {
 
 TEST(Deck, getRandomCardExcept) {
     Deck deck;
-    std::vector<Card> cards;
+    Card cards[52];
     for (u_int8_t suit = 0; suit < 4; suit++) {
         for (u_int8_t rank = 2; rank < 15; rank++) {
-            cards.push_back(Card{rank, suit});
+            cards[suit*13 + rank-2] = Card{rank, suit};
         }
     }
-    EXPECT_EQ(cards.size(), 52);
 }
 
 TEST(Deck, shuffle) {
@@ -108,12 +106,12 @@ TEST(Deck, Perfdraw) {
 
 TEST(Deck, PerfrandomCardExcept) {
     for (u_int64_t ind = 0; ind < 1000000; ind++) {
-        Deck::getRandomCardExcept({}, -1, {});
+        Deck::getRandomCardExcept({}, 0);
     }
 }
 
 TEST(Deck, PerfrandomCardExceptCardsWith) {
     for (u_int64_t ind = 0; ind < 1000000; ind++) {
-        Deck::getRandomCardExceptCardsWith({}, -1, -1);
+        Deck::getRandomCardExceptCardsWith({}, 0);
     }
 }

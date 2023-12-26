@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
 
 struct Card {
     u_int8_t rank;  // 2-14
@@ -20,8 +19,8 @@ class Deck {
     Card draw();
     std::string toString(const std::string sep = "\n") const;
 
-    static Card getRandomCardExcept(const std::vector<Card>& cards, const int8_t suit = -1, const std::vector<u_int8_t> ranks = {}) noexcept;
-    static Card getRandomCardExceptCardsWith(const std::vector<Card>& exceptionCards, const int8_t suit = -1, const int8_t rank = -1) noexcept;
+    static Card getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, const int8_t suit = -1, const u_int8_t ranks[] = {}, const u_int8_t rankLen = 0) noexcept;
+    static Card getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int8_t cardsLen, const int8_t suit = -1, const int8_t rank = -1) noexcept;
 
     friend bool operator==(const Deck& lhs, const Deck& rhs) noexcept {
         if (lhs.len != rhs.len) return false;

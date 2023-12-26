@@ -5,8 +5,8 @@
 #include "rand_player/rand_player.h"
 
 TEST(Utils, PerfinitPlayerOrder) {
-    GameTest game{Config(100, 100, 100, 100, 100)};
-    u_int8_t numPlayer = 100;
+    GameTest game{Config(100, 10, 100, 100, 100)};
+    u_int8_t numPlayer = 10;
     Player** players = new Player*[numPlayer];
     for (u_int8_t i = 0; i < numPlayer; i += 2) {
         players[i] = new RandPlayer("Player " + std::to_string(i));
