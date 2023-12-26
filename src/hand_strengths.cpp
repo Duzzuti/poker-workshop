@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-std::vector<HandStrengths> HandStrengths::getHandStrengths(Player* players[], const Data& data) noexcept {
+std::vector<HandStrengths> HandStrengths::getHandStrengths(Player* const players[], const Data& data) noexcept {
     std::vector<HandStrengths> handStrengths;
     handStrengths.reserve(data.numPlayers);
 

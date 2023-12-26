@@ -7,28 +7,26 @@
 #include "hand_strengths.h"
 #include "logger.h"
 #include "rand_player/rand_player.h"
-#include "utils.h"
 
-void Game::run() const {
+void Game::run() {
     // config players
-    Player* players[m_config.numPlayers];
     // init players
-    players[0] = new CheckPlayer(1);
-    players[1] = new RandPlayer(2);
-    players[2] = new CheckPlayer(3);
-    players[3] = new RandPlayer(4);
+    this->players[0] = new CheckPlayer(1);
+    this->players[1] = new RandPlayer(2);
+    this->players[2] = new CheckPlayer(3);
+    this->players[3] = new RandPlayer(4);
 
     Data data;
-    data.numPlayers = m_config.numPlayers;
+    data.numPlayers = this->m_config.numPlayers;
 
     // run for the number of games specified in the config
-    for (u_int64_t game = 0; game < m_config.numRounds; game++) {
+    for (u_int64_t game = 0; game < this->m_config.numRounds; game++) {
         // ONE GAME
         // shuffle players
         PLOG_DEBUG << "Starting game " << game;
-        initPlayerOrder(players, m_config.numPlayers);
-        data.gameData.playerOut = std::vector<bool>(m_config.numPlayers, false);
-        data.gameData.playerChips = std::vector<u_int64_t>(m_config.numPlayers, m_config.startingChips);
+        initPlayerOrder();
+        data.gameData.playerOut = std::vector<bool>(this->m_config.numPlayers, false);
+        data.gameData.playerChips = std::vector<u_int64_t>(this->m_config.numPlayers, this->m_config.startingChips);
         int32_t round = -1;
 
         while (std::count(data.gameData.playerOut.begin(), data.gameData.playerOut.end(), false) > 1) {
@@ -38,15 +36,15 @@ void Game::run() const {
             OutEnum result = OutEnum::ROUND_CONTINUE;
 
             PLOG_DEBUG << "Starting round " << round;
-            result = this->startRound(players, data, deck, round == 0);
+            result = this->startRound(data, deck, round == 0);
             // PREFLOP
-            result = this->preflop(players, data, result);
+            result = this->preflop(data, result);
             // FLOP
-            result = this->flop(players, data, deck, result);
+            result = this->flop(data, deck, result);
             // TURN
-            result = this->turn(players, data, deck, result);
+            result = this->turn(data, deck, result);
             // RIVER
-            result = this->river(players, data, deck, result);
+            result = this->river(data, deck, result);
 
             if (result == OutEnum::GAME_WON) {
                 PLOG_INFO << "Game " << game << " ended in round " << round;
@@ -60,7 +58,7 @@ void Game::run() const {
             PLOG_DEBUG << "SHOWDOWN!!! Community cards: " << data.roundData.communityCards[0].toString() << " " << data.roundData.communityCards[1].toString() << " "
                        << data.roundData.communityCards[2].toString() << " " << data.roundData.communityCards[3].toString() << " " << data.roundData.communityCards[4].toString();
             // get hand strength for each player
-            std::vector<HandStrengths> handStrengths = HandStrengths::getHandStrengths(players, data);
+            std::vector<HandStrengths> handStrengths = HandStrengths::getHandStrengths(this->players, data);
             // get winner
 
             HandStrengths strongestHand = HandStrengths(HandKinds::NO_HAND, 0);
@@ -68,7 +66,7 @@ void Game::run() const {
 
             for (u_int8_t i = 0; i < data.numPlayers; i++) {
                 if (data.gameData.playerOut[i] || data.roundData.playerFolded[i]) continue;
-                PLOG_DEBUG << "Player " << +i << " has hand " << players[i]->getHand().first.toString() << " " << players[i]->getHand().second.toString() << " and hand strength "
+                PLOG_DEBUG << "Player " << +i << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
                            << handStrengths[i].handkind << " " << handStrengths[i].rankStrength;
                 if (handStrengths[i] > strongestHand) {
                     strongestHand = handStrengths[i];
@@ -86,27 +84,34 @@ void Game::run() const {
             }
         }
     }
+}
 
-    // delete players, free memory
-    for (u_int8_t i = 0; i < m_config.numPlayers; i++) {
-        delete players[i];
+std::string Game::getPlayerInfo(const Data& data) const noexcept { return "Player " + this->players[data.betRoundData.playerPos]->getName() + "[" + std::to_string(data.getChips()) + "]"; }
+
+void Game::initPlayerOrder() noexcept {
+    // shuffle deck
+    std::random_shuffle(&this->players[0], &this->players[this->m_config.numPlayers]);
+    PLOG_INFO << "Shuffled players, new order:";
+    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) {
+        this->players[i]->setPlayerPosNum(i);
+        PLOG_INFO << this->players[i]->getName();
     }
 }
 
-OutEnum Game::setBlinds(Player* players[], Data& data) const noexcept {
+OutEnum Game::setBlinds(Data& data) const noexcept {
     // blinds
     OutEnum res = OutEnum::ROUND_CONTINUE;
-    PLOG_DEBUG << getPlayerInfo(players, data) << " bets small blind " << data.roundData.smallBlind;
+    PLOG_DEBUG << this->getPlayerInfo(data) << " bets small blind " << data.roundData.smallBlind;
     while (!this->bet(data, data.roundData.smallBlind)) {
-        res = this->playerOut(players, data);
+        res = this->playerOut(data);
         if (res != OutEnum::ROUND_CONTINUE) return res;
-        PLOG_DEBUG << getPlayerInfo(players, data) << " bets small blind " << data.roundData.smallBlind;
+        PLOG_DEBUG << this->getPlayerInfo(data) << " bets small blind " << data.roundData.smallBlind;
     }
-    PLOG_DEBUG << getPlayerInfo(players, data) << " bets big blind " << data.roundData.bigBlind;
+    PLOG_DEBUG << this->getPlayerInfo(data) << " bets big blind " << data.roundData.bigBlind;
     while (!this->bet(data, data.roundData.bigBlind)) {
-        res = this->playerOut(players, data);
+        res = this->playerOut(data);
         if (res != OutEnum::ROUND_CONTINUE) return res;
-        PLOG_DEBUG << getPlayerInfo(players, data) << " bets big blind " << data.roundData.bigBlind;
+        PLOG_DEBUG << this->getPlayerInfo(data) << " bets big blind " << data.roundData.bigBlind;
     }
     return OutEnum::ROUND_CONTINUE;
 }
@@ -114,37 +119,37 @@ OutEnum Game::setBlinds(Player* players[], Data& data) const noexcept {
 void Game::setupBetRound(Data& data) const noexcept {
     data.betRoundData.playerPos = data.roundData.dealerPos;
     data.nextPlayer();
-    data.betRoundData.playerBets = std::vector<u_int64_t>(m_config.numPlayers, 0);
+    data.betRoundData.playerBets = std::vector<u_int64_t>(this->m_config.numPlayers, 0);
     data.betRoundData.currentBet = 0;
 }
 
-OutEnum Game::startRound(Player* players[], Data& data, Deck& deck, const bool firstRound) const noexcept {
+OutEnum Game::startRound(Data& data, Deck& deck, const bool firstRound) const noexcept {
     deck.shuffle();
     u_int8_t dealerPos;
     if (!firstRound) dealerPos = data.roundData.dealerPos;
     data.selectDealer(firstRound);
 
-    data.roundData.addBlind = m_config.addBlindPerDealer0;
+    data.roundData.addBlind = this->m_config.addBlindPerDealer0;
     if (firstRound)
-        data.roundData.smallBlind = m_config.smallBlind;
+        data.roundData.smallBlind = this->m_config.smallBlind;
     else if (data.roundData.dealerPos < dealerPos)  // if the dealer is at position 0 again (or skipped 0), add the addBlind amount
-        data.roundData.smallBlind += m_config.addBlindPerDealer0;
+        data.roundData.smallBlind += this->m_config.addBlindPerDealer0;
     data.roundData.bigBlind = data.roundData.smallBlind * 2;
     data.roundData.pot = 0;
-    data.roundData.playerFolded = std::vector<bool>(m_config.numPlayers, false);
+    data.roundData.playerFolded = std::vector<bool>(this->m_config.numPlayers, false);
     data.roundData.communityCards = std::vector<Card>();
     this->setupBetRound(data);
 
     // deal cards
-    for (u_int8_t i = 0; i < m_config.numPlayers; i++) {
+    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) {
         if (data.gameData.playerOut[i]) continue;
-        players[i]->setHand(deck.draw(), deck.draw());
+        this->players[i]->setHand(deck.draw(), deck.draw());
     }
 
-    return this->setBlinds(players, data);
+    return this->setBlinds(data);
 }
 
-OutEnum Game::betRound(Player* players[], Data& data) const {
+OutEnum Game::betRound(Data& data) const {
     short firstChecker = -1;  // position of the first player that checked
     // this loop will run until all players have either folded, checked or called
     // we can only exit if it is a players turn and he is in the game, has the same bet as the current bet and all players have checked if the bet is 0
@@ -156,7 +161,7 @@ OutEnum Game::betRound(Player* players[], Data& data) const {
             data.nextPlayer();
             continue;
         }
-        OutEnum turnRes = this->playerTurn(players, data, &firstChecker);
+        OutEnum turnRes = this->playerTurn(data, &firstChecker);
         if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
     }
 
@@ -166,21 +171,21 @@ OutEnum Game::betRound(Player* players[], Data& data) const {
     return OutEnum::ROUND_CONTINUE;
 }
 
-OutEnum Game::playerTurn(Player* players[], Data& data, short* firstChecker) const {
-    Action action = players[data.betRoundData.playerPos]->turn(data);
+OutEnum Game::playerTurn(Data& data, short* firstChecker) const {
+    Action action = this->players[data.betRoundData.playerPos]->turn(data);
     OutEnum res = OutEnum::ROUND_CONTINUE;
     switch (action.action) {
         case Actions::FOLD:
-            PLOG_DEBUG << getPlayerInfo(players, data) << " folded";
+            PLOG_DEBUG << this->getPlayerInfo(data) << " folded";
             res = playerFolded(data);
             if (res != OutEnum::ROUND_CONTINUE) return res;
             break;
 
         case Actions::CHECK:
-            PLOG_DEBUG << getPlayerInfo(players, data) << " checked";
+            PLOG_DEBUG << this->getPlayerInfo(data) << " checked";
             if (data.betRoundData.currentBet != 0) {
                 // illegal move leads to loss of the game
-                res = playerOut(players, data);
+                res = playerOut(data);
                 if (res != OutEnum::ROUND_CONTINUE) return res;
             } else {
                 if (*firstChecker == -1) *firstChecker = data.betRoundData.playerPos;
@@ -189,28 +194,28 @@ OutEnum Game::playerTurn(Player* players[], Data& data, short* firstChecker) con
             break;
 
         case Actions::CALL:
-            PLOG_DEBUG << getPlayerInfo(players, data) << " called";
+            PLOG_DEBUG << this->getPlayerInfo(data) << " called";
             if (!this->bet(data, data.betRoundData.currentBet)) {
                 // illegal move leads to loss of the game
-                res = playerOut(players, data);
+                res = playerOut(data);
                 if (res != OutEnum::ROUND_CONTINUE) return res;
             }
             break;
 
         case Actions::RAISE:
-            PLOG_DEBUG << getPlayerInfo(players, data) << " raised to " << action.bet;
+            PLOG_DEBUG << this->getPlayerInfo(data) << " raised to " << action.bet;
             if (!this->bet(data, action.bet)) {
                 // illegal move leads to loss of the game
-                res = playerOut(players, data);
+                res = playerOut(data);
                 if (res != OutEnum::ROUND_CONTINUE) return res;
             }
             break;
 
         case Actions::BET:
-            PLOG_DEBUG << getPlayerInfo(players, data) << " bet " << action.bet;
+            PLOG_DEBUG << this->getPlayerInfo(data) << " bet " << action.bet;
             if (data.betRoundData.currentBet != 0 || !this->bet(data, action.bet)) {
                 // illegal move leads to loss of the game
-                res = playerOut(players, data);
+                res = playerOut(data);
                 if (res != OutEnum::ROUND_CONTINUE) return res;
             }
             break;
@@ -239,8 +244,8 @@ bool Game::bet(Data& data, const u_int64_t amount) const noexcept {
     return true;
 }
 
-OutEnum Game::playerOut(Player* players[], Data& data) const noexcept {
-    PLOG_WARNING << getPlayerInfo(players, data) << " is out";
+OutEnum Game::playerOut(Data& data) const noexcept {
+    PLOG_WARNING << this->getPlayerInfo(data) << " is out";
     data.gameData.playerOut[data.betRoundData.playerPos] = true;
     data.nextPlayer();
 
@@ -274,34 +279,34 @@ OutEnum Game::getOutEnum(const Data& data) const noexcept {
     }
 }
 
-OutEnum Game::preflop(Player* players[], Data& data, OutEnum lastRes) const noexcept {
-    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+OutEnum Game::preflop(Data& data, OutEnum lastRes) const noexcept {
+    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
     PLOG_DEBUG << "Starting PREFLOP bet round";
-    return this->betRound(players, data);
+    return this->betRound(data);
 }
 
-OutEnum Game::flop(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept {
-    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+OutEnum Game::flop(Data& data, Deck& deck, OutEnum lastRes) const noexcept {
+    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
     this->setupBetRound(data);
     PLOG_DEBUG << "Starting FLOP bet round";
     for (u_int8_t i = 0; i < 3; i++) {
         data.roundData.communityCards.push_back(deck.draw());  // draw flop cards
     }
-    return this->betRound(players, data);
+    return this->betRound(data);
 }
 
-OutEnum Game::turn(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept {
-    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+OutEnum Game::turn(Data& data, Deck& deck, OutEnum lastRes) const noexcept {
+    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
     this->setupBetRound(data);
     PLOG_DEBUG << "Starting TURN bet round";
     data.roundData.communityCards.push_back(deck.draw());  // draw turn card
-    return this->betRound(players, data);
+    return this->betRound(data);
 }
 
-OutEnum Game::river(Player* players[], Data& data, Deck& deck, OutEnum lastRes) const noexcept {
-    if(lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+OutEnum Game::river(Data& data, Deck& deck, OutEnum lastRes) const noexcept {
+    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
     this->setupBetRound(data);
     PLOG_DEBUG << "Starting RIVER bet round";
     data.roundData.communityCards.push_back(deck.draw());  // draw river card
-    return this->betRound(players, data);
+    return this->betRound(data);
 }
