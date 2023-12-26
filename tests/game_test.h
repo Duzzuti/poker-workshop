@@ -12,7 +12,7 @@ class GameTest : public Game {
 
     void initPlayerOrder() noexcept { Game::initPlayerOrder(); }
 
-    OutEnum startRound(Deck& deck, const bool firstRound) noexcept { return Game::startRound(deck, firstRound); }
+    OutEnum startRound(const bool firstRound) { return Game::startRound(firstRound); }
 
     OutEnum setBlinds() noexcept { return Game::setBlinds(); }
 
@@ -30,13 +30,13 @@ class GameTest : public Game {
 
     OutEnum getOutEnum() const noexcept { return Game::getOutEnum(); }
 
-    OutEnum preflop(OutEnum lastRes) { return Game::preflop(lastRes); }
+    void preflop() { Game::preflop(); }
 
-    OutEnum flop(Deck& deck, OutEnum lastRes) { return Game::flop(deck, lastRes); }
+    void flop() { Game::flop(); }
 
-    OutEnum turn(Deck& deck, OutEnum lastRes) { return Game::turn(deck, lastRes); }
+    void turn() { Game::turn(); }
 
-    OutEnum river(Deck& deck, OutEnum lastRes) { return Game::river(deck, lastRes); }
+    void river() { Game::river(); }
 
     std::string getPlayerInfo() const noexcept { return Game::getPlayerInfo(); }
 };

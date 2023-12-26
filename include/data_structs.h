@@ -38,6 +38,12 @@ struct Action {
     u_int64_t bet = 0;
 };
 
+enum class OutEnum {
+    ROUND_CONTINUE,
+    GAME_WON,
+    ROUND_WON,
+};
+
 // contains the data for a single bet round (preflop, flop, turn, river)
 struct BetRoundData {
     u_int8_t playerPos;                 // position of the player that is currently playing
@@ -54,6 +60,7 @@ struct RoundData {
     u_int64_t pot;                     // current pot
     std::vector<bool> playerFolded;    // true if player folded
     std::vector<Card> communityCards;  // community cards
+    OutEnum result;                    // whats the state of the round (continue, round won, game won)
 };
 
 // contains the data for a single game (until only one player is left)
@@ -103,10 +110,4 @@ struct Data {
     u_int64_t getCallAdd() const noexcept { return this->betRoundData.currentBet - this->betRoundData.playerBets[this->betRoundData.playerPos]; }
 
     u_int64_t getRaiseAdd(const u_int64_t bet) const noexcept { return bet - this->betRoundData.playerBets[this->betRoundData.playerPos]; }
-};
-
-enum class OutEnum {
-    ROUND_CONTINUE,
-    GAME_WON,
-    ROUND_WON,
 };

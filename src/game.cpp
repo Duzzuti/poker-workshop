@@ -23,7 +23,7 @@ void Game::run() {
         // ONE GAME
         // shuffle players
         PLOG_DEBUG << "Starting game " << game;
-        initPlayerOrder();
+        this->initPlayerOrder();
         this->data.gameData.playerOut = std::vector<bool>(this->m_config.numPlayers, false);
         this->data.gameData.playerChips = std::vector<u_int64_t>(this->m_config.numPlayers, this->m_config.startingChips);
         int32_t round = -1;
@@ -31,24 +31,24 @@ void Game::run() {
         while (std::count(this->data.gameData.playerOut.begin(), this->data.gameData.playerOut.end(), false) > 1) {
             // ONE ROUND
             round++;
-            Deck deck;
-            OutEnum result = OutEnum::ROUND_CONTINUE;
+            this->deck = Deck();
+            this->data.roundData.result = OutEnum::ROUND_CONTINUE;
 
             PLOG_DEBUG << "Starting round " << round;
-            result = this->startRound(deck, round == 0);
+            this->startRound(round == 0);
             // PREFLOP
-            result = this->preflop(result);
+            this->preflop();
             // FLOP
-            result = this->flop(deck, result);
+            this->flop();
             // TURN
-            result = this->turn(deck, result);
+            this->turn();
             // RIVER
-            result = this->river(deck, result);
+            this->river();
 
-            if (result == OutEnum::GAME_WON) {
+            if (this->data.roundData.result == OutEnum::GAME_WON) {
                 PLOG_INFO << "Game " << game << " ended in round " << round;
                 break;
-            } else if (result == OutEnum::ROUND_WON) {
+            } else if (this->data.roundData.result == OutEnum::ROUND_WON) {
                 PLOG_DEBUG << "Pot won, starting new round";
                 continue;
             }
@@ -122,8 +122,8 @@ void Game::setupBetRound() noexcept {
     this->data.betRoundData.currentBet = 0;
 }
 
-OutEnum Game::startRound(Deck& deck, const bool firstRound) noexcept {
-    deck.shuffle();
+OutEnum Game::startRound(const bool firstRound) {
+    this->deck.shuffle();
     u_int8_t dealerPos;
     if (!firstRound) dealerPos = this->data.roundData.dealerPos;
     this->data.selectDealer(firstRound);
@@ -142,7 +142,7 @@ OutEnum Game::startRound(Deck& deck, const bool firstRound) noexcept {
     // deal cards
     for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) {
         if (this->data.gameData.playerOut[i]) continue;
-        this->players[i]->setHand(deck.draw(), deck.draw());
+        this->players[i]->setHand(this->deck.draw(), this->deck.draw());
     }
 
     return this->setBlinds();
@@ -279,34 +279,34 @@ OutEnum Game::getOutEnum() const noexcept {
     }
 }
 
-OutEnum Game::preflop(OutEnum lastRes) {
-    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+void Game::preflop() {
+    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
     PLOG_DEBUG << "Starting PREFLOP bet round";
-    return this->betRound();
+    this->data.roundData.result = this->betRound();
 }
 
-OutEnum Game::flop(Deck& deck, OutEnum lastRes) {
-    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+void Game::flop() {
+    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
     this->setupBetRound();
     PLOG_DEBUG << "Starting FLOP bet round";
     for (u_int8_t i = 0; i < 3; i++) {
-        this->data.roundData.communityCards.push_back(deck.draw());  // draw flop cards
+        this->data.roundData.communityCards.push_back(this->deck.draw());  // draw flop cards
     }
-    return this->betRound();
+    this->data.roundData.result = this->betRound();
 }
 
-OutEnum Game::turn(Deck& deck, OutEnum lastRes) {
-    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+void Game::turn() {
+    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
     this->setupBetRound();
     PLOG_DEBUG << "Starting TURN bet round";
-    this->data.roundData.communityCards.push_back(deck.draw());  // draw turn card
-    return this->betRound();
+    this->data.roundData.communityCards.push_back(this->deck.draw());  // draw turn card
+    this->data.roundData.result = this->betRound();
 }
 
-OutEnum Game::river(Deck& deck, OutEnum lastRes) {
-    if (lastRes != OutEnum::ROUND_CONTINUE) return lastRes;
+void Game::river() {
+    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
     this->setupBetRound();
     PLOG_DEBUG << "Starting RIVER bet round";
-    this->data.roundData.communityCards.push_back(deck.draw());  // draw river card
-    return this->betRound();
+    this->data.roundData.communityCards.push_back(this->deck.draw());  // draw river card
+    this->data.roundData.result = this->betRound();
 }

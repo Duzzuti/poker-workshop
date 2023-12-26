@@ -23,7 +23,7 @@ class Game {
     void initPlayerOrder() noexcept;
 
     // starts a round by shuffling the deck, setting the dealer and the blinds
-    OutEnum startRound(Deck& deck, const bool firstRound) noexcept;
+    OutEnum startRound(const bool firstRound);
 
     // sets the blinds for the round by betting the small and big blind automatically
     OutEnum setBlinds() noexcept;
@@ -49,15 +49,16 @@ class Game {
 
     OutEnum getOutEnum() const noexcept;
 
-    OutEnum preflop(OutEnum lastRes);
+    void preflop();
 
-    OutEnum flop(Deck& deck, OutEnum lastRes);
+    void flop();
 
-    OutEnum turn(Deck& deck, OutEnum lastRes);
+    void turn();
 
-    OutEnum river(Deck& deck, OutEnum lastRes);
+    void river();
 
     Config m_config;
     Player** players;
     Data data;
+    Deck deck;
 };
