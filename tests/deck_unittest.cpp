@@ -2,10 +2,10 @@
 
 #include <gtest/gtest.h>
 
-#include <cmath>
 #include <algorithm>
-#include <unordered_map>
+#include <cmath>
 #include <list>
+#include <unordered_map>
 
 TEST(Deck, Constructor) {
     Deck deck;
@@ -37,8 +37,8 @@ TEST(Deck, getRandomCardExcept) {
     EXPECT_EQ(cards.size(), 52);
 }
 
-TEST(Deck, shuffle){
-    for(u_int64_t i = 0; i < 1; i++){
+TEST(Deck, shuffle) {
+    for (u_int64_t i = 0; i < 1; i++) {
         Deck deck{};
         Deck deck2{};
         EXPECT_EQ(deck, deck2);
@@ -53,38 +53,37 @@ TEST(Deck, shuffle){
                 cards.push_back(Card{rank, suit});
             }
         }
-        for (u_int8_t ind = 0; ind < 52; ind++)
-            cards.remove(deck.draw());
+        for (u_int8_t ind = 0; ind < 52; ind++) cards.remove(deck.draw());
 
         EXPECT_EQ(cards.size(), 0);
     }
     // check if the deck gets actually shuffled with entropy
     // count how often each card is at each position
     std::unordered_map<u_int8_t, u_int64_t[52]> bytesPerPos;
-    for(u_int8_t ind = 0; ind < 52; ind++){
-        for(u_int8_t ind2 = 0; ind2 < 52; ind2++){
+    for (u_int8_t ind = 0; ind < 52; ind++) {
+        for (u_int8_t ind2 = 0; ind2 < 52; ind2++) {
             bytesPerPos[ind][ind2] = 0;
         }
     }
     double distiters = 100000;
-    for(u_int64_t ind = 0; ind < distiters; ind++){
+    for (u_int64_t ind = 0; ind < distiters; ind++) {
         Deck deck3{};
         deck3.shuffle();
-        for(u_int8_t ind2 = 0; ind2 < 52; ind2++){
+        for (u_int8_t ind2 = 0; ind2 < 52; ind2++) {
             Card card = deck3.draw();
-            bytesPerPos[ind2][card.suit*13 + card.rank - 2]++;
+            bytesPerPos[ind2][card.suit * 13 + card.rank - 2]++;
         }
     }
     // check if some values are missing
-    for(u_int8_t ind = 0; ind < 52; ind++){
-        for(u_int8_t ind2 = 0; ind2 < 52; ind2++){
+    for (u_int8_t ind = 0; ind < 52; ind++) {
+        for (u_int8_t ind2 = 0; ind2 < 52; ind2++) {
             EXPECT_NE(bytesPerPos[ind][ind2], 0);
         }
     }
     std::cout << "EntropyTarget: " << log2(52) << std::endl;
-    for(u_int8_t ind = 0; ind < 52; ind++){
+    for (u_int8_t ind = 0; ind < 52; ind++) {
         double entropy = 0;
-        for(u_int8_t ind2 = 0; ind2 < 52; ind2++){
+        for (u_int8_t ind2 = 0; ind2 < 52; ind2++) {
             double cardProb = bytesPerPos[ind][ind2] / distiters;
             entropy += cardProb * log2(cardProb);
         }
@@ -103,8 +102,7 @@ TEST(Deck, Perfshuffle) {
 TEST(Deck, Perfdraw) {
     for (u_int64_t ind = 0; ind < 1000000 / 52; ind++) {
         Deck deck;
-        for(u_int8_t ind2 = 0; ind2 < 52; ind2++)
-            deck.draw();
+        for (u_int8_t ind2 = 0; ind2 < 52; ind2++) deck.draw();
     }
 }
 

@@ -8,9 +8,10 @@ int main(int argc, char** argv) {
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     // add file logger
     static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("log.txt", 1024 * 1024 * 10, 5);
-    plog::init(plog::verbose, &fileAppender);   
-    for(int i = 0; i < argc; i++) {
-        if(strcmp(argv[i], "-v") == 0) {
+    // plog::init(plog::verbose, &fileAppender);
+    plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "-v") == 0) {
             plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
             break;
         }
