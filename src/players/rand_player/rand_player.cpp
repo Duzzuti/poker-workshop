@@ -4,7 +4,7 @@ Action RandPlayer::turn(const Data& data) const noexcept {
     Action action;
     bool done = false;
     while (!done) {
-        switch (this->dist(this->rng) % 10) {
+        switch (std::rand() % 10) {
             case 0 ... 1:  // Fold
                 action.action = Actions::FOLD;
                 done = true;
@@ -21,13 +21,13 @@ Action RandPlayer::turn(const Data& data) const noexcept {
 
             case 7:  // Raise
                 action.action = Actions::RAISE;
-                action.bet = (u_int64_t)(data.betRoundData.currentBet * (2 + (this->dist(this->rng) % 20) / 10.0f));
+                action.bet = (u_int64_t)(data.betRoundData.currentBet * (2 + (std::rand() % 20) / 10.0f));
                 if (data.getChips() >= data.getRaiseAdd(action.bet) && data.betRoundData.currentBet != 0) done = true;
                 break;
 
             case 8 ... 9:  // Bet
                 action.action = Actions::BET;
-                action.bet = (u_int64_t)(data.roundData.smallBlind * (1 + (this->dist(this->rng) % 30) / 10.0f));
+                action.bet = (u_int64_t)(data.roundData.smallBlind * (1 + (std::rand() % 30) / 10.0f));
                 if (data.getChips() >= action.bet && data.betRoundData.currentBet == 0) done = true;
                 break;
         }

@@ -1,3 +1,4 @@
+#pragma once
 #include "player.h"
 
 class CheckPlayer : public Player {

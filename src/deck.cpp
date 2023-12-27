@@ -56,11 +56,9 @@ std::string Card::toString() const {
 
 Deck::Deck() noexcept {
     // generate poker deck
-    this->len = 52;
-    this->cards = new Card[this->len];
-    unsigned char i = 0;
-    for (unsigned char suit = 0; suit < 4; suit++) {
-        for (unsigned char rank = 2; rank < 15; rank++) {
+    u_int8_t i = 0;
+    for (u_int8_t suit = 0; suit < 4; suit++) {
+        for (u_int8_t rank = 2; rank < 15; rank++) {
             this->cards[i].rank = rank;
             this->cards[i].suit = suit;
             i++;
@@ -70,14 +68,7 @@ Deck::Deck() noexcept {
 
 void Deck::shuffle() noexcept {
     // shuffle deck
-    for (unsigned char i = this->len - 1; i > 0; --i) {
-        unsigned char j = this->dist(this->rng) % (i + 1);  // Generate a random index within the unshuffled part of the array
-
-        // Swap characters at indices i and j
-        Card temp = this->cards[i];
-        this->cards[i] = this->cards[j];
-        this->cards[j] = temp;
-    }
+    std::random_shuffle(&this->cards[0], &this->cards[52]);
 }
 
 Card Deck::draw() {
@@ -93,45 +84,37 @@ Card Deck::draw() {
 std::string Deck::toString(const std::string sep) const {
     // print deck
     std::string str = "";
-    for (unsigned char i = 0; i < this->len; i++) {
+    for (u_int8_t i = 0; i < this->len; i++) {
         str += this->cards[i].toString() + sep;
     }
     return str;
 }
 
-Card Deck::getRandomCardExcept(const std::vector<Card>& cards, const int8_t suit, const std::vector<u_int8_t> ranks) noexcept {
-    // get random card from deck except cards in vector
+Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, const int8_t suit, const u_int8_t ranks[], const u_int8_t rankLen) noexcept {
+    // get random card from deck except cards in array
     // or with suit if suit != -1
     // or with ranks if ranks.size() > 0
-
-    std::random_device dev;
-    std::mt19937 rng{dev()};
-    std::uniform_int_distribution<std::mt19937::result_type> dist{0, INT32_MAX};  // distribution in max u_int32 range
-
     while (true) {
-        Card card{.rank = (u_int8_t)((dist(rng) % 13) + 2), .suit = (u_int8_t)(dist(rng) % 4)};
-        if (std::find(cards.begin(), cards.end(), card) == cards.end() && (suit == -1 || card.suit != suit) && (ranks.size() == 0 || std::find(ranks.begin(), ranks.end(), card.rank) == ranks.end())) {
+        Card card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)};
+        if (std::find(cards, &cards[cardsLen], card) == &cards[cardsLen] && (suit == -1 || card.suit != suit) && (!rankLen || std::find(ranks, &ranks[rankLen], card.rank) == &ranks[rankLen])) {
             return card;
         }
     }
 }
 
-Card Deck::getRandomCardExceptCardsWith(const std::vector<Card>& exceptionCards, const int8_t suit, const int8_t rank) noexcept {
+Card Deck::getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int8_t cardsLen, const int8_t suit, const int8_t rank) noexcept {
     // get random card from deck with suit if suit != -1 and rank if rank != -1
 
-    std::random_device dev;
-    std::mt19937 rng{dev()};
-    std::uniform_int_distribution<std::mt19937::result_type> dist{0, INT32_MAX};  // distribution in max u_int32 range
     Card card;
     do {
         if (suit == -1 && rank == -1)  // get random card
-            card = Card{.rank = (u_int8_t)((dist(rng) % 13) + 2), .suit = (u_int8_t)(dist(rng) % 4)};
+            card = Card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)};
         else if (suit == -1)  // get random card with rank
-            card = Card{.rank = (u_int8_t)rank, .suit = (u_int8_t)(dist(rng) % 4)};
+            card = Card{.rank = (u_int8_t)rank, .suit = (u_int8_t)(std::rand() % 4)};
         else if (rank == -1)  // get random card with suit
-            card = Card{.rank = (u_int8_t)((dist(rng) % 13) + 2), .suit = (u_int8_t)suit};
+            card = Card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)suit};
         else  // get card with suit and rank
             card = Card{.rank = (u_int8_t)rank, .suit = (u_int8_t)suit};
-    } while (std::find(exceptionCards.begin(), exceptionCards.end(), card) != exceptionCards.end());
+    } while (std::find(exceptionCards, &exceptionCards[cardsLen], card) != &exceptionCards[cardsLen]);
     return card;
 }

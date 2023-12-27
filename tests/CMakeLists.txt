@@ -19,5 +19,15 @@ add_executable(poker_test_deck main_test.cpp deck_unittest.cpp ${COMMON_SRC})
 target_link_libraries(poker_test_deck gtest_main)
 target_include_directories(poker_test_deck PUBLIC ${INCLUDE_DIR})
 
+add_executable(poker_test_utils main_test.cpp utils_unittest.cpp ${SRC_DIR}/game.cpp ${COMMON_SRC} ${CHECK_PLAYER} ${RAND_PLAYER})
+target_link_libraries(poker_test_utils gtest_main)
+target_include_directories(poker_test_utils PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR} ${TEST_DIR})
+
+add_executable(test main_test.cpp test_test.cpp)
+target_link_libraries(test gtest_main)
+target_include_directories(test PUBLIC ${INCLUDE_DIR})
+
 add_test(HAND_TEST poker_test_hands)
 add_test(DECK_TEST poker_test_deck)
+add_test(UTILS_TEST poker_test_utils)
+add_test(TEST_TEST test)
