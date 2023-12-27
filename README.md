@@ -1,4 +1,14 @@
 # poker-workshop
+This is a playground for poker.
+The goal is to create a poker game that can be played by multiple computer players.
+
+There are multiple objectives for this project:
+- simulate a poker game
+- create a poker file format to save games and states
+- create poker AIs with different strategies and play them against each other
+- create an environment to train poker AIs
+- create an API to allow anybody to create their own poker AIs
+
 ## Development environment
 In order to ensure that all developers use the same environment, we use docker. This will avoid many problems with different versions of libraries and compilers. We will carry out the development using VSCode's Remote Development extension. This will allow us to do all our coding, compiling and testing inside a docker container.
 
@@ -23,3 +33,4 @@ If you are not using VSCode, you need to skip step 2 and instead of steps 5-8, y
 1. Right click on the `poker-workshop` container and click `Attach to container`
 1. Install the required extensions in the container (C/C++, CMake)
 
+## Docs
