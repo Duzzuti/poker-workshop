@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-void HandStrengths::getHandStrengths(Player* const players[], const Data& data, HandStrengths result[]) noexcept {
+void HandStrengths::getHandStrengths(const std::unique_ptr<Player> players[], const Data& data, HandStrengths result[]) noexcept {
     for (u_int8_t i = 0; i < data.numPlayers; i++) {
         if (!(data.gameData.playerOut[i] || data.roundData.playerFolded[i])) {
             result[i] = getHandStrength(players[i]->getHand(), data.roundData.communityCards);

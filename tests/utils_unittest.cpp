@@ -7,11 +7,11 @@
 TEST(Utils, PerfinitPlayerOrder) {
     GameTest game{Config(100, 10, 100, 100, 100)};
     u_int8_t numPlayer = 10;
-    Player** players = new Player*[numPlayer];
+    std::unique_ptr<Player>* players = new std::unique_ptr<Player>[numPlayer];
     for (u_int8_t i = 0; i < numPlayer; i += 2) {
-        players[i] = new RandPlayer("Player " + std::to_string(i));
-        players[i + 1] = new CheckPlayer("Player " + std::to_string(i + 1));
+        players[i] = std::move(std::make_unique<RandPlayer>("Player " + std::to_string(i)));
+        players[i + 1] = std::move(std::make_unique<CheckPlayer>("Player " + std::to_string(i + 1)));
     }
-    game.setPlayers(players);
+    game.setPlayers(std::move(players));
     for (u_int64_t iter = 0; iter < 100; iter++) game.initPlayerOrder();
 }

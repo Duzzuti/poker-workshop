@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "config.h"
 #include "player.h"
 
@@ -6,16 +8,11 @@ class Game {
     friend class GameTest;
 
    public:
-    Game(const Config& config) noexcept : m_config(config), players(new Player*[config.numPlayers]) {}
+    Game(const Config& config) noexcept : m_config(config), players(new std::unique_ptr<Player>[config.numPlayers]) {}
 
     void run();
 
-    ~Game() {
-        for (int i = 0; i < this->m_config.numPlayers; i++) {
-            delete this->players[i];
-        }
-        delete[] this->players;
-    }
+    ~Game() { delete[] this->players; }
 
    private:
     std::string getPlayerInfo() const noexcept;
@@ -58,7 +55,7 @@ class Game {
     void river();
 
     Config m_config;
-    Player** players;
+    std::unique_ptr<Player>* players;
     Data data;
     Deck deck;
 };

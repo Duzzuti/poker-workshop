@@ -11,10 +11,10 @@
 void Game::run() {
     // config players
     // init players
-    this->players[0] = new CheckPlayer(1);
-    this->players[1] = new RandPlayer(2);
-    this->players[2] = new CheckPlayer(3);
-    this->players[3] = new RandPlayer(4);
+    this->players[0] = std::move(std::make_unique<CheckPlayer>(1));
+    this->players[1] = std::move(std::make_unique<RandPlayer>(2));
+    this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
+    this->players[3] = std::move(std::make_unique<RandPlayer>(4));
 
     this->data.numPlayers = this->m_config.numPlayers;
 

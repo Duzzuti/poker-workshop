@@ -5,9 +5,10 @@ class GameTest : public Game {
    public:
     GameTest(const Config& config) noexcept : Game(config) {}
 
-    void setPlayers(Player* players[]) noexcept {
-        delete[] this->players;
-        this->players = players;
+    void setPlayers(std::unique_ptr<Player> players[]) noexcept {
+        for (int i = 0; i < this->m_config.numPlayers; i++) {
+            this->players[i] = std::move(players[i]);
+        }
     }
 
     void initPlayerOrder() noexcept { Game::initPlayerOrder(); }
