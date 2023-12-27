@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install clang-format -y
 RUN apt-get update && apt-get install cmake -y
 RUN apt-get update && apt-get install gdb -y
 RUN apt-get update && apt-get install locales -y
+RUN apt-get update && apt-get install valgrind -y
 
 
 # Change locale here to your preferred locale:
