@@ -34,3 +34,6 @@ If you are not using VSCode, you need to skip step 2 and instead of steps 5-8, y
 1. Install the required extensions in the container (C/C++, CMake)
 
 ## Docs
+We are using a [Game class](docs/game.md) to simulate one set of poker games. The game class is responsible for the game loop and the game logic. Every time a [Player](docs/player.md) has to make a turn, it calls the player´s `turn` method with the [Data](docs/data.md) struct, which holds all information about the game. The game class simulates a [Deck](docs/deck.md) of cards. Who wins the showdown is determined by the [Handstrength](docs/handstrengths.md) of the players.
+
+There are several implemented [Players](docs/players.md) with different strategies.
