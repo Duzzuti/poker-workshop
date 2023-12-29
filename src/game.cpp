@@ -29,7 +29,7 @@ void Game::run() {
         for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) this->data.gameData.playerChips[i] = this->m_config.startingChips;
         int32_t round = -1;
 
-        while (std::count(this->data.gameData.playerOut, &this->data.gameData.playerOut[MAX_PLAYERS], true) + 1 < this->data.numPlayers) {
+        while (this->data.gameData.numNonOutPlayers > 1) {
             // ONE ROUND
             round++;
             this->deck = Deck();
@@ -305,6 +305,7 @@ bool Game::bet(const u_int64_t amount) noexcept {
 OutEnum Game::playerOut() noexcept {
     PLOG_WARNING << this->getPlayerInfo() << " is out";
     this->data.gameData.numNonOutPlayers--;
+    this->data.roundData.numNonFoldedPlayers--;
     this->data.gameData.playerOut[this->data.betRoundData.playerPos] = true;
     this->data.nextPlayer();
 
