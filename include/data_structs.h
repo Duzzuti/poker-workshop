@@ -33,6 +33,13 @@ enum HandKinds {
     ROYAL_FLUSH,
 };
 
+enum BetRoundState {
+    PREFLOP = 0,
+    FLOP,
+    TURN,
+    RIVER,
+};
+
 struct Action {
     Actions action;
     u_int64_t bet = 0;
@@ -57,10 +64,13 @@ struct RoundData {
     u_int64_t bigBlind;              // big blind
     u_int64_t addBlind;              // add blind amount every time the dealer is again at position 0
     u_int8_t dealerPos;              // position of the dealer
+    u_int8_t smallBlindPos;          // position of the small blind
+    u_int8_t bigBlindPos;            // position of the big blind
     u_int64_t pot;                   // current pot
     bool playerFolded[MAX_PLAYERS];  // true if player folded
     Card communityCards[5];          // community cards
     OutEnum result;                  // whats the state of the round (continue, round won, game won)
+    BetRoundState betRoundState;     // current bet round state
 };
 
 // contains the data for a single game (until only one player is left)

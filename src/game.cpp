@@ -103,16 +103,20 @@ OutEnum Game::setBlinds() noexcept {
     // blinds
     OutEnum res = OutEnum::ROUND_CONTINUE;
     PLOG_DEBUG << this->getPlayerInfo() << " bets small blind " << this->data.roundData.smallBlind;
+    this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
     while (!this->bet(this->data.roundData.smallBlind)) {
         res = this->playerOut();
         if (res != OutEnum::ROUND_CONTINUE) return res;
         PLOG_DEBUG << this->getPlayerInfo() << " bets small blind " << this->data.roundData.smallBlind;
+        this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
     }
     PLOG_DEBUG << this->getPlayerInfo() << " bets big blind " << this->data.roundData.bigBlind;
+    this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
     while (!this->bet(this->data.roundData.bigBlind)) {
         res = this->playerOut();
         if (res != OutEnum::ROUND_CONTINUE) return res;
         PLOG_DEBUG << this->getPlayerInfo() << " bets big blind " << this->data.roundData.bigBlind;
+        this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
     }
     return OutEnum::ROUND_CONTINUE;
 }
@@ -154,22 +158,40 @@ OutEnum Game::betRound() {
     // this loop will run until all players have either folded, checked or called
     // we can only exit if it is a players turn and he is in the game, has the same bet as the current bet and all players have checked if the bet is 0
     // we need to consider the case where every player folds except one, then the last player wins the pot
-    while (this->data.roundData.playerFolded[this->data.betRoundData.playerPos] || this->data.gameData.playerOut[this->data.betRoundData.playerPos] ||
-           this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] ||
-           (this->data.betRoundData.currentBet == 0 && firstChecker != this->data.betRoundData.playerPos)) {
-        if (this->data.roundData.playerFolded[this->data.betRoundData.playerPos] || this->data.gameData.playerOut[this->data.betRoundData.playerPos]) {
+    while (this->betRoundContinue(firstChecker)) {
+        if (!this->currentPlayerActive()) {
             // player is out of the game or folded, skip turn
             this->data.nextPlayer();
             continue;
+        } else if (this->currentPlayerCanOnlyRaiseOrCall()) {
+            // player can only raise or call
+            OutEnum turnRes = this->playerTurnOnlyRaise();
+            if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
+        } else {
+            OutEnum turnRes = this->playerTurn(firstChecker);
+            if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
         }
-        OutEnum turnRes = this->playerTurn(firstChecker);
-        if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
     }
 
     PLOG_DEBUG << "Bet round finished with bet " << this->data.betRoundData.currentBet << " and pot " << this->data.roundData.pot;
 
     // TODO bet round result
     return OutEnum::ROUND_CONTINUE;
+}
+
+bool Game::betRoundContinue(short firstChecker) const noexcept {
+    return !this->currentPlayerActive() ||                                                                                 // player is out of the game or folded, should be skipped
+           this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] ||  // current bet is not called by the player
+           (this->data.betRoundData.currentBet == 0 && firstChecker != this->data.betRoundData.playerPos) ||               // current bet is 0 and the current player is not the first checker
+           this->currentPlayerCanOnlyRaiseOrCall();
+}
+
+bool Game::currentPlayerActive() const noexcept { return !this->data.gameData.playerOut[this->data.betRoundData.playerPos] && !this->data.roundData.playerFolded[this->data.betRoundData.playerPos]; }
+
+bool Game::currentPlayerCanOnlyRaiseOrCall() const noexcept {
+    // current bet is the big blind and the current player is the big blind and it is the preflop round (in the preflop round the big blind can raise)
+    return this->data.roundData.betRoundState == BetRoundState::PREFLOP && this->data.betRoundData.currentBet == this->data.roundData.bigBlind &&
+           this->data.betRoundData.playerPos == this->data.roundData.bigBlindPos;
 }
 
 OutEnum Game::playerTurn(short& firstChecker) {
@@ -228,6 +250,35 @@ OutEnum Game::playerTurn(short& firstChecker) {
     return OutEnum::ROUND_CONTINUE;
 }
 
+OutEnum Game::playerTurnOnlyRaise() {
+    Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data, true);
+    OutEnum res = OutEnum::ROUND_CONTINUE;
+    switch (action.action) {
+        case Actions::CALL:
+            PLOG_DEBUG << this->getPlayerInfo() << " called";
+            if (!this->bet(this->data.betRoundData.currentBet)) {
+                // this move is not adding chips to the pot, so it can not be illegal
+                PLOG_FATAL << "Player " << this->data.betRoundData.playerPos << " called but could not bet";
+            }
+            break;
+
+        case Actions::RAISE:
+            PLOG_DEBUG << this->getPlayerInfo() << " raised to " << action.bet;
+            if (!this->bet(action.bet)) {
+                // illegal move leads to loss of the game
+                res = playerOut();
+                if (res != OutEnum::ROUND_CONTINUE) return res;
+            }
+            break;
+
+        default:
+            // illegal move leads to loss of the game
+            res = playerOut();
+            if (res != OutEnum::ROUND_CONTINUE) return res;
+    }
+    return OutEnum::ROUND_CONTINUE;
+}
+
 bool Game::bet(const u_int64_t amount) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
     if ((amount < this->data.betRoundData.currentBet) ||                                                         // call condition
@@ -282,12 +333,14 @@ OutEnum Game::getOutEnum() const noexcept {
 
 void Game::preflop() {
     if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
+    this->data.roundData.betRoundState = BetRoundState::PREFLOP;
     PLOG_DEBUG << "Starting PREFLOP bet round";
     this->data.roundData.result = this->betRound();
 }
 
 void Game::flop() {
     if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
+    this->data.roundData.betRoundState = BetRoundState::FLOP;
     this->setupBetRound();
     PLOG_DEBUG << "Starting FLOP bet round";
     for (u_int8_t i = 0; i < 3; i++) {
@@ -298,6 +351,7 @@ void Game::flop() {
 
 void Game::turn() {
     if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
+    this->data.roundData.betRoundState = BetRoundState::TURN;
     this->setupBetRound();
     PLOG_DEBUG << "Starting TURN bet round";
     this->data.roundData.communityCards[3] = this->deck.draw();  // draw turn card
@@ -306,6 +360,7 @@ void Game::turn() {
 
 void Game::river() {
     if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
+    this->data.roundData.betRoundState = BetRoundState::RIVER;
     this->setupBetRound();
     PLOG_DEBUG << "Starting RIVER bet round";
     this->data.roundData.communityCards[4] = this->deck.draw();  // draw river card
