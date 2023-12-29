@@ -67,6 +67,7 @@ struct RoundData {
     u_int8_t smallBlindPos;          // position of the small blind
     u_int8_t bigBlindPos;            // position of the big blind
     u_int64_t pot;                   // current pot
+    u_int8_t numNonFoldedPlayers;    // number of players that are still in the round
     bool playerFolded[MAX_PLAYERS];  // true if player folded
     Card communityCards[5];          // community cards
     OutEnum result;                  // whats the state of the round (continue, round won, game won)
@@ -75,6 +76,7 @@ struct RoundData {
 
 // contains the data for a single game (until only one player is left)
 struct GameData {
+    u_int8_t numNonOutPlayers;           // number of players that are still in the game
     bool playerOut[MAX_PLAYERS];         // true if player is out of the game
     u_int64_t playerChips[MAX_PLAYERS];  // chips of the players
 };
@@ -97,7 +99,7 @@ struct Data {
         do {
             this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
         } while (this->gameData.playerOut[this->betRoundData.playerPos]);
-    };
+    }
 
     void selectDealer(const bool firstRound) noexcept {
         if (firstRound) {

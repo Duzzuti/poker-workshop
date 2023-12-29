@@ -24,6 +24,7 @@ void Game::run() {
         // shuffle players
         PLOG_DEBUG << "Starting game " << game;
         this->initPlayerOrder();
+        this->data.gameData.numNonOutPlayers = this->m_config.numPlayers;
         std::memset(this->data.gameData.playerOut, 0, sizeof(this->data.gameData.playerOut));  // reset player out
         for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) this->data.gameData.playerChips[i] = this->m_config.startingChips;
         int32_t round = -1;
@@ -33,6 +34,7 @@ void Game::run() {
             round++;
             this->deck = Deck();
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
+            this->data.roundData.numNonFoldedPlayers = this->data.gameData.numNonOutPlayers;
 
             PLOG_DEBUG << "Starting round " << round;
             this->startRound(round == 0);
@@ -101,6 +103,10 @@ void Game::initPlayerOrder() noexcept {
 
 OutEnum Game::setBlinds() noexcept {
     // blinds
+    if (this->data.gameData.numNonOutPlayers == 2) {
+        // heads up rule
+        this->data.betRoundData.playerPos = this->data.roundData.dealerPos;
+    }
     OutEnum res = OutEnum::ROUND_CONTINUE;
     PLOG_DEBUG << this->getPlayerInfo() << " bets small blind " << this->data.roundData.smallBlind;
     this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
@@ -298,6 +304,7 @@ bool Game::bet(const u_int64_t amount) noexcept {
 
 OutEnum Game::playerOut() noexcept {
     PLOG_WARNING << this->getPlayerInfo() << " is out";
+    this->data.gameData.numNonOutPlayers--;
     this->data.gameData.playerOut[this->data.betRoundData.playerPos] = true;
     this->data.nextPlayer();
 
@@ -305,6 +312,7 @@ OutEnum Game::playerOut() noexcept {
 }
 
 OutEnum Game::playerFolded() noexcept {
+    this->data.roundData.numNonFoldedPlayers--;
     this->data.roundData.playerFolded[this->data.betRoundData.playerPos] = true;
     this->data.nextPlayer();
     // if only one player is left, he wins the pot
@@ -312,18 +320,10 @@ OutEnum Game::playerFolded() noexcept {
 }
 
 OutEnum Game::getOutEnum() const noexcept {
-    u_int8_t numActivePlayers = 0;  // number of players that are not out and not folded
-    u_int8_t numNonOutPlayers = 0;  // number of players that are not out
-    for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
-        if (!this->data.gameData.playerOut[i]) {
-            numNonOutPlayers++;
-            if (!this->data.roundData.playerFolded[i]) numActivePlayers++;
-        }
-    }
-    if (numNonOutPlayers == 1) {
+    if (this->data.gameData.numNonOutPlayers == 1) {
         // only one player is left in the game, he wins the game
         return OutEnum::GAME_WON;
-    } else if (numActivePlayers == 1) {
+    } else if (this->data.roundData.numNonFoldedPlayers == 1) {
         // only one player is left in the round, he wins the pot
         return OutEnum::ROUND_WON;
     } else {

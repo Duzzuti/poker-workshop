@@ -17,6 +17,7 @@ The simulation data is available to all players and contains all information abo
 ### Game Data
 The game data contains information about one poker game (until only one player is not out yet). It is stored in the `GameData` struct and has the following form:
 - number of chips per player (int[])
+- number of non out players (int)
 - bool array of players who are out (bool[])
 
 ### Round Data
@@ -28,6 +29,7 @@ The round data contains information about one round (until the pot is won). It i
 - small blind position (int)
 - big blind position (int)
 - pot (int)
+- number of players that are still in the round (int)
 - bool array of players who folded (bool[])
 - community cards (Card[])
 - OutEnum which represents the state of the round (OutEnum)
