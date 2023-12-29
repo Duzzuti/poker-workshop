@@ -1,0 +1,2 @@
+# Game class
+The `Game` class is the main class of the game. It contains the game loop and the game logic. It is responsible for the communication between the players and the game logic. It also contains the [`Data`](data.md) struct which is passed to the players in the `turn` function.
