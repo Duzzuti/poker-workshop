@@ -14,7 +14,7 @@ class Player {
     virtual void setHand(const Card card1, const Card card2) noexcept final;
     virtual const std::pair<Card, Card> getHand() const noexcept final;
 
-    virtual Action turn(const Data& data) const noexcept = 0;
+    virtual Action turn(const Data& data, const bool onlyRaise = false) const noexcept = 0;
 
     virtual ~Player() noexcept = default;
 

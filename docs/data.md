@@ -25,10 +25,13 @@ The round data contains information about one round (until the pot is won). It i
 - big blind (int)
 - add blind (int, which is added to the small blind after the button has moved one time around the table)
 - dealer position (int)
+- small blind position (int)
+- big blind position (int)
 - pot (int)
 - bool array of players who folded (bool[])
 - community cards (Card[])
 - OutEnum which represents the state of the round (OutEnum)
+- BetRoundState which represents which bet round is currently active (BetRoundState)
 
 ### Bet Round Data
 The bet round data contains information about one bet round (until all players have bet the same amount). It is stored in the `BetRoundData` struct and has the following form:

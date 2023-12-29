@@ -31,8 +31,20 @@ class Game {
     // runs a single bet round (preflop, flop, turn, river)
     OutEnum betRound();
 
+    // returns true if the bet round should continue
+    bool betRoundContinue(short firstChecker) const noexcept;
+
+    // true if the current player is active (not out or folded)
+    bool currentPlayerActive() const noexcept;
+
+    // true if special condition is met that the current player can only raise or call
+    bool currentPlayerCanOnlyRaiseOrCall() const noexcept;
+
     // runs a single non out player turn
     OutEnum playerTurn(short& firstChecker);
+
+    // runs a single non out player turn where the player can only raise or call
+    OutEnum playerTurnOnlyRaise();
 
     // the current player bets amount and the next player is selected
     // note that amount is the total amount that the player bets (e.g. if the player has to call 200 but he already bet 100 => amount is still 200)
