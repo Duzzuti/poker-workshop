@@ -16,7 +16,7 @@ void Game::run() {
     this->players[1] = std::move(std::make_unique<RandPlayer>(2));
     this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
     this->players[3] = std::move(std::make_unique<RandPlayer>(4));
-    this->players[4] = std::move(std::make_unique<HumanPlayer>(5));
+    this->players[4] = std::move(std::make_unique<RandPlayer>(5));
 
     this->data.numPlayers = this->m_config.numPlayers;
 
@@ -107,6 +107,8 @@ OutEnum Game::setBlinds() noexcept {
     // blinds
     if (this->data.gameData.numNonOutPlayers == 2) {
         // heads up rule
+        // adjust button if the big blind would be the same player again
+        if (this->data.roundData.bigBlindPos != this->data.roundData.dealerPos) this->data.roundData.dealerPos = this->data.roundData.bigBlindPos;
         this->data.betRoundData.playerPos = this->data.roundData.dealerPos;
     }
     OutEnum res = OutEnum::ROUND_CONTINUE;
