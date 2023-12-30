@@ -5,9 +5,9 @@
 #include "check_player/check_player.h"
 #include "deck.h"
 #include "hand_strengths.h"
+#include "human_player/human_player.h"
 #include "logger.h"
 #include "rand_player/rand_player.h"
-#include "human_player/human_player.h"
 
 void Game::run() {
     // config players
