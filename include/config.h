@@ -25,5 +25,5 @@ class Config {
 
 class BaseConfig : public Config {
    public:
-    BaseConfig() : Config(10, 4, 1000, 10, 1) {}  // Default values
+    BaseConfig() : Config(10, 5, 1000, 10, 1) {}  // Default values
 };
