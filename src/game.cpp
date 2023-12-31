@@ -112,22 +112,26 @@ OutEnum Game::setBlinds() noexcept {
         this->data.betRoundData.playerPos = this->data.roundData.dealerPos;
     }
     OutEnum res = OutEnum::ROUND_CONTINUE;
-    PLOG_DEBUG << this->getPlayerInfo() << " bets small blind " << this->data.roundData.smallBlind;
+
+    std::string playerInfo = this->getPlayerInfo();
     this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
     while (!this->bet(this->data.roundData.smallBlind, true)) {
-        res = this->playerOut();
+        res = this->playerOut("cannot fulfill small blind of " + std::to_string(this->data.roundData.smallBlind));
         if (res != OutEnum::ROUND_CONTINUE) return res;
-        PLOG_DEBUG << this->getPlayerInfo() << " bets small blind " << this->data.roundData.smallBlind;
+        playerInfo = this->getPlayerInfo();
         this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
     }
-    PLOG_DEBUG << this->getPlayerInfo() << " bets big blind " << this->data.roundData.bigBlind;
+    PLOG_DEBUG << playerInfo << " bets small blind " << this->data.roundData.smallBlind;
+
+    playerInfo = this->getPlayerInfo();
     this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
     while (!this->bet(this->data.roundData.bigBlind, true)) {
-        res = this->playerOut();
+        res = this->playerOut("cannot fulfill big blind of " + std::to_string(this->data.roundData.bigBlind));
         if (res != OutEnum::ROUND_CONTINUE) return res;
-        PLOG_DEBUG << this->getPlayerInfo() << " bets big blind " << this->data.roundData.bigBlind;
+        playerInfo = this->getPlayerInfo();
         this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
     }
+    PLOG_DEBUG << playerInfo << " bets big blind " << this->data.roundData.bigBlind;
     return OutEnum::ROUND_CONTINUE;
 }
 
@@ -208,50 +212,54 @@ bool Game::currentPlayerCanOnlyRaiseOrCall() const noexcept {
 OutEnum Game::playerTurn(short& firstChecker) {
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data);
     OutEnum res = OutEnum::ROUND_CONTINUE;
+    const std::string playerInfo = this->getPlayerInfo();
     switch (action.action) {
         case Actions::FOLD:
-            PLOG_DEBUG << this->getPlayerInfo() << " folded";
+            PLOG_DEBUG << playerInfo << " folded";
             res = playerFolded();
             if (res != OutEnum::ROUND_CONTINUE) return res;
             break;
 
         case Actions::CHECK:
-            PLOG_DEBUG << this->getPlayerInfo() << " checked";
             if (this->data.betRoundData.currentBet != 0) {
                 // illegal move leads to loss of the game
-                res = playerOut();
+                res = playerOut("illegally checked current bet of " + std::to_string(this->data.betRoundData.currentBet));
                 if (res != OutEnum::ROUND_CONTINUE) return res;
             } else {
+                PLOG_DEBUG << playerInfo << " checked";
                 if (firstChecker == -1) firstChecker = this->data.betRoundData.playerPos;
                 this->data.nextPlayer();
             }
             break;
 
         case Actions::CALL:
-            PLOG_DEBUG << this->getPlayerInfo() << " called";
             if (!this->bet(this->data.betRoundData.currentBet)) {
                 // illegal move leads to loss of the game
-                res = playerOut();
+                res = playerOut("illegally tried to call current bet of " + std::to_string(this->data.betRoundData.currentBet));
                 if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
             }
+            PLOG_DEBUG << playerInfo << " called";
             break;
 
         case Actions::RAISE:
-            PLOG_DEBUG << this->getPlayerInfo() << " raised to " << action.bet;
             if (this->data.betRoundData.currentBet == 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
-                res = playerOut();
+                res = playerOut("illegally tried to raise to " + std::to_string(action.bet));
                 if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
             }
+            PLOG_DEBUG << playerInfo << " raised to " << action.bet;
             break;
 
         case Actions::BET:
-            PLOG_DEBUG << this->getPlayerInfo() << " bet " << action.bet;
             if (this->data.betRoundData.currentBet != 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
-                res = playerOut();
+                res = playerOut("illegally tried to bet " + std::to_string(action.bet));
                 if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
             }
+            PLOG_DEBUG << playerInfo << " bet " << action.bet;
             break;
 
         default:
@@ -264,27 +272,30 @@ OutEnum Game::playerTurn(short& firstChecker) {
 OutEnum Game::playerTurnOnlyRaise() {
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data, true);
     OutEnum res = OutEnum::ROUND_CONTINUE;
+    const std::string playerInfo = this->getPlayerInfo();
     switch (action.action) {
         case Actions::CALL:
-            PLOG_DEBUG << this->getPlayerInfo() << " called";
+            PLOG_DEBUG << playerInfo << " called";
             if (!this->bet(this->data.betRoundData.currentBet)) {
                 // this move is not adding chips to the pot, so it can not be illegal
                 PLOG_FATAL << "Player " << this->data.betRoundData.playerPos << " called but could not bet";
+                break;
             }
             break;
 
         case Actions::RAISE:
-            PLOG_DEBUG << this->getPlayerInfo() << " raised to " << action.bet;
             if (this->data.betRoundData.currentBet == 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
-                res = playerOut();
+                res = playerOut("illegally tried to raise to " + std::to_string(action.bet));
                 if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
             }
+            PLOG_DEBUG << playerInfo << " raised to " << action.bet;
             break;
 
         default:
             // illegal move leads to loss of the game
-            res = playerOut();
+            res = playerOut("illegally tried to do action: " + std::to_string(static_cast<int>(action.action)));
             if (res != OutEnum::ROUND_CONTINUE) return res;
     }
     return OutEnum::ROUND_CONTINUE;
@@ -310,8 +321,8 @@ bool Game::bet(const u_int64_t amount, const bool isBlind) noexcept {
     return true;
 }
 
-OutEnum Game::playerOut() noexcept {
-    PLOG_WARNING << this->getPlayerInfo() << " is out";
+OutEnum Game::playerOut(const std::string& reason) noexcept {
+    PLOG_WARNING << this->getPlayerInfo() << " " << reason << " and is out";
     this->data.gameData.numNonOutPlayers--;
     this->data.roundData.numNonFoldedPlayers--;
     this->data.gameData.playerOut[this->data.betRoundData.playerPos] = true;
