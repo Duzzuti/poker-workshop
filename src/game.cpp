@@ -292,18 +292,17 @@ OutEnum Game::playerTurnOnlyRaise() {
 
 bool Game::bet(const u_int64_t amount, const bool isBlind) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
-    if (!isBlind && ((amount < this->data.betRoundData.currentBet) ||                                             // call condition
-        ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
-        (amount < this->data.roundData.smallBlind))                                                               // bet condition
+    if (!isBlind && ((amount < this->data.betRoundData.currentBet) ||                                                                                            // call condition
+                     ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
+                     (amount < this->data.roundData.smallBlind))                                                                                                 // bet condition
     )
         return false;
     u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
     bool success = this->data.removeChips(addAmount);
     if (!success) return false;
     // minimum raise is the difference between the current bet and the new bet but at least the big blind
-    if(amount > this->data.betRoundData.currentBet)
-        this->data.betRoundData.minimumRaise = amount - this->data.betRoundData.currentBet;
-    if(this->data.betRoundData.minimumRaise < this->data.roundData.bigBlind) this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
+    if (amount > this->data.betRoundData.currentBet) this->data.betRoundData.minimumRaise = amount - this->data.betRoundData.currentBet;
+    if (this->data.betRoundData.minimumRaise < this->data.roundData.bigBlind) this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
     this->data.betRoundData.currentBet = amount;
     this->data.roundData.pot += addAmount;
     this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = amount;

@@ -30,7 +30,7 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
         else if (input == "chk" && !onlyRaise)
             return {Actions::CHECK};
         else if (input[0] == 'r') {
-            try{
+            try {
                 u_int64_t bet = std::stoull(input.substr(2));
                 return {Actions::RAISE, bet};
             } catch (std::invalid_argument& e) {
@@ -38,7 +38,7 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
                 continue;
             }
         } else if (input[0] == 'b' && !onlyRaise) {
-            try{
+            try {
                 u_int64_t bet = std::stoull(input.substr(2));
                 return {Actions::BET, bet};
             } catch (std::invalid_argument& e) {
