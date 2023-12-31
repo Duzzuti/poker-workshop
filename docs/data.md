@@ -39,4 +39,5 @@ The round data contains information about one round (until the pot is won). It i
 The bet round data contains information about one bet round (until all players have bet the same amount). It is stored in the `BetRoundData` struct and has the following form:
 - position of the player who has to act (int)
 - current bet (int)
+- minimum possible raise = last bet or raise (int)
 - player bets (int[])
