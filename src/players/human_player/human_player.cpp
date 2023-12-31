@@ -14,7 +14,7 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
         std::cout << data.roundData.communityCards[i].toString() << " ";
     }
     std::cout << "| Pot: " << data.roundData.pot << " | Current bet: " << data.betRoundData.currentBet;
-    std::cout << " | Your chips: " << data.getChips() << std::endl;
+    std::cout << " | Your chips: " << data.getChips() << " | Minimum raise/bet: " << data.betRoundData.minimumRaise + data.betRoundData.currentBet << std::endl;
     while (true) {
         if (onlyRaise)
             std::cout << "Please enter an action ('c' for call, 'r <bet>' for raise): ";
@@ -30,11 +30,21 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
         else if (input == "chk" && !onlyRaise)
             return {Actions::CHECK};
         else if (input[0] == 'r') {
-            u_int64_t bet = std::stoull(input.substr(2));
-            return {Actions::RAISE, bet};
+            try{
+                u_int64_t bet = std::stoull(input.substr(2));
+                return {Actions::RAISE, bet};
+            } catch (std::invalid_argument& e) {
+                std::cout << "Invalid input! Try again" << std::endl;
+                continue;
+            }
         } else if (input[0] == 'b' && !onlyRaise) {
-            u_int64_t bet = std::stoull(input.substr(2));
-            return {Actions::BET, bet};
+            try{
+                u_int64_t bet = std::stoull(input.substr(2));
+                return {Actions::BET, bet};
+            } catch (std::invalid_argument& e) {
+                std::cout << "Invalid input! Try again" << std::endl;
+                continue;
+            }
         } else {
             std::cout << "Invalid input! Try again" << std::endl;
         }

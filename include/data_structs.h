@@ -55,6 +55,7 @@ enum class OutEnum {
 struct BetRoundData {
     u_int8_t playerPos;                 // position of the player that is currently playing
     u_int64_t currentBet;               // current bet
+    u_int64_t minimumRaise;             // minimum raise
     u_int64_t playerBets[MAX_PLAYERS];  // bets of the players in the current round
 };
 

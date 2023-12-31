@@ -48,7 +48,7 @@ class Game {
 
     // the current player bets amount and the next player is selected
     // note that amount is the total amount that the player bets (e.g. if the player has to call 200 but he already bet 100 => amount is still 200)
-    bool bet(const u_int64_t amount) noexcept;
+    bool bet(const u_int64_t amount, const bool isBlind = false) noexcept;
 
     // selects the current player as out and returns true if only one player is left in this game, selects the next player
     OutEnum playerOut() noexcept;

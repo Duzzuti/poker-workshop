@@ -114,7 +114,7 @@ OutEnum Game::setBlinds() noexcept {
     OutEnum res = OutEnum::ROUND_CONTINUE;
     PLOG_DEBUG << this->getPlayerInfo() << " bets small blind " << this->data.roundData.smallBlind;
     this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
-    while (!this->bet(this->data.roundData.smallBlind)) {
+    while (!this->bet(this->data.roundData.smallBlind, true)) {
         res = this->playerOut();
         if (res != OutEnum::ROUND_CONTINUE) return res;
         PLOG_DEBUG << this->getPlayerInfo() << " bets small blind " << this->data.roundData.smallBlind;
@@ -122,7 +122,7 @@ OutEnum Game::setBlinds() noexcept {
     }
     PLOG_DEBUG << this->getPlayerInfo() << " bets big blind " << this->data.roundData.bigBlind;
     this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
-    while (!this->bet(this->data.roundData.bigBlind)) {
+    while (!this->bet(this->data.roundData.bigBlind, true)) {
         res = this->playerOut();
         if (res != OutEnum::ROUND_CONTINUE) return res;
         PLOG_DEBUG << this->getPlayerInfo() << " bets big blind " << this->data.roundData.bigBlind;
@@ -165,6 +165,7 @@ OutEnum Game::startRound(const bool firstRound) {
 
 OutEnum Game::betRound() {
     short firstChecker = -1;  // position of the first player that checked
+    this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
     // this loop will run until all players have either folded, checked or called
     // we can only exit if it is a players turn and he is in the game, has the same bet as the current bet and all players have checked if the bet is 0
     // we need to consider the case where every player folds except one, then the last player wins the pot
@@ -237,7 +238,7 @@ OutEnum Game::playerTurn(short& firstChecker) {
 
         case Actions::RAISE:
             PLOG_DEBUG << this->getPlayerInfo() << " raised to " << action.bet;
-            if (!this->bet(action.bet)) {
+            if (this->data.betRoundData.currentBet == 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
                 res = playerOut();
                 if (res != OutEnum::ROUND_CONTINUE) return res;
@@ -274,7 +275,7 @@ OutEnum Game::playerTurnOnlyRaise() {
 
         case Actions::RAISE:
             PLOG_DEBUG << this->getPlayerInfo() << " raised to " << action.bet;
-            if (!this->bet(action.bet)) {
+            if (this->data.betRoundData.currentBet == 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
                 res = playerOut();
                 if (res != OutEnum::ROUND_CONTINUE) return res;
@@ -289,16 +290,20 @@ OutEnum Game::playerTurnOnlyRaise() {
     return OutEnum::ROUND_CONTINUE;
 }
 
-bool Game::bet(const u_int64_t amount) noexcept {
+bool Game::bet(const u_int64_t amount, const bool isBlind) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
-    if ((amount < this->data.betRoundData.currentBet) ||                                                         // call condition
-        ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet * 2)) ||  // raise condition
-        (amount < this->data.roundData.smallBlind)                                                               // bet condition
+    if (!isBlind && ((amount < this->data.betRoundData.currentBet) ||                                             // call condition
+        ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
+        (amount < this->data.roundData.smallBlind))                                                               // bet condition
     )
         return false;
     u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
     bool success = this->data.removeChips(addAmount);
-    if (!success) return success;
+    if (!success) return false;
+    // minimum raise is the difference between the current bet and the new bet but at least the big blind
+    if(amount > this->data.betRoundData.currentBet)
+        this->data.betRoundData.minimumRaise = amount - this->data.betRoundData.currentBet;
+    if(this->data.betRoundData.minimumRaise < this->data.roundData.bigBlind) this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
     this->data.betRoundData.currentBet = amount;
     this->data.roundData.pot += addAmount;
     this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = amount;
