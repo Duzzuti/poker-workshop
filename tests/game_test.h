@@ -25,7 +25,7 @@ class GameTest : public Game {
 
     bool bet(const u_int64_t amount) noexcept { return Game::bet(amount); }
 
-    OutEnum playerOut() noexcept { return Game::playerOut(); }
+    OutEnum playerOut(const std::string& reason) noexcept { return Game::playerOut(reason); }
 
     OutEnum playerFolded() noexcept { return Game::playerFolded(); }
 
