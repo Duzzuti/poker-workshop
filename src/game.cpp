@@ -144,7 +144,7 @@ void Game::setupBetRound() noexcept {
     this->data.betRoundData.currentBet = 0;
 }
 
-OutEnum Game::startRound(const bool firstRound) {
+void Game::startRound(const bool firstRound) {
     this->deck.shuffle();
     u_int8_t dealerPos;
     if (!firstRound) dealerPos = this->data.roundData.dealerPos;
@@ -166,7 +166,7 @@ OutEnum Game::startRound(const bool firstRound) {
         this->players[i]->setHand(this->deck.draw(), this->deck.draw());
     }
 
-    return this->setBlinds();
+    this->data.roundData.result = this->setBlinds();
 }
 
 OutEnum Game::betRound() {

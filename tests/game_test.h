@@ -13,7 +13,7 @@ class GameTest : public Game {
 
     void initPlayerOrder() noexcept { Game::initPlayerOrder(); }
 
-    OutEnum startRound(const bool firstRound) { return Game::startRound(firstRound); }
+    void startRound(const bool firstRound) { Game::startRound(firstRound); }
 
     OutEnum setBlinds() noexcept { return Game::setBlinds(); }
 
