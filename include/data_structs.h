@@ -102,6 +102,12 @@ struct Data {
         } while (this->gameData.playerOut[this->betRoundData.playerPos]);
     }
 
+    void nextActivePlayer() noexcept {
+        do {
+            this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
+        } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos]);
+    }
+
     void selectDealer(const bool firstRound) noexcept {
         if (firstRound) {
             this->roundData.dealerPos = 0;
