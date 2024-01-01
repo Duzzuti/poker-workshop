@@ -53,7 +53,9 @@ void Game::run() {
                 PLOG_INFO << "Game " << game << " ended in round " << round;
                 break;
             } else if (this->data.roundData.result == OutEnum::ROUND_WON) {
-                PLOG_DEBUG << "Pot won, starting new round";
+                this->data.nextActivePlayer();
+                PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->getPlayerInfo() << ". Starting new round";
+                this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 continue;
             }
 
