@@ -21,7 +21,9 @@ class Player {
     virtual ~Player() noexcept = default;
 
    protected:
-    Player(const std::string& name) : name(name){if(name.length() > MAX_PLAYER_NAME_LENGTH) throw std::invalid_argument("Player name too long");};
+    Player(const std::string& name) : name(name) {
+        if (name.length() > MAX_PLAYER_NAME_LENGTH) throw std::invalid_argument("Player name too long");
+    };
     const std::string name;
 
    private:

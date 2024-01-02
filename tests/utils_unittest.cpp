@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "check_player/check_player.h"
 #include "game_test.h"
-#include "rand_player/rand_player.h"
 
 TEST(Utils, PerfinitPlayerOrder) {
     GameTest game{Config(100, 10, 100, 100, 100)};

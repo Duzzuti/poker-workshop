@@ -1,5 +1,7 @@
 #pragma once
+#include "check_player/check_player.h"
 #include "game.h"
+#include "rand_player/rand_player.h"
 
 class GameTest : public Game {
    public:
@@ -9,6 +11,17 @@ class GameTest : public Game {
         for (int i = 0; i < this->m_config.numPlayers; i++) {
             this->players[i] = std::move(players[i]);
         }
+    }
+
+    void initPlayer() noexcept {
+        // init players
+        this->players[0] = std::move(std::make_unique<CheckPlayer>(std::string("a", MAX_PLAYER_NAME_LENGTH)));
+        this->players[1] = std::move(std::make_unique<RandPlayer>(2));
+        this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
+        this->players[3] = std::move(std::make_unique<RandPlayer>(4));
+        this->players[4] = std::move(std::make_unique<RandPlayer>(5));
+
+        this->data.numPlayers = this->m_config.numPlayers;
     }
 
     void initPlayerOrder() noexcept { Game::initPlayerOrder(); }
@@ -39,5 +52,5 @@ class GameTest : public Game {
 
     void river() { Game::river(); }
 
-    std::string getPlayerInfo() const noexcept { return Game::getPlayerInfo(); }
+    std::string getPlayerInfo(int16_t playerPos = -1, int64_t chipsDiff = 0) const noexcept { return Game::getPlayerInfo(playerPos, chipsDiff); }
 };
