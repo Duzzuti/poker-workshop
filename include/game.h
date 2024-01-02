@@ -15,7 +15,7 @@ class Game {
     ~Game() { delete[] this->players; }
 
    private:
-    std::string getPlayerInfo() const noexcept;
+    std::string getPlayerInfo(int16_t playerPos = -1, int64_t chipsDiff = 0) const noexcept;
 
     void initPlayerOrder() noexcept;
 
