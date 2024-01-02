@@ -1,6 +1,10 @@
 #include "player.h"
 
-const std::string Player::getName() const noexcept { return std::to_string(this->playerPosNum) + ":" + this->name; }
+const char* Player::getName() const noexcept {
+    static char s[MAX_PLAYER_GET_NAME_LENGTH];
+    std::snprintf(s, sizeof(s), "%d:%s", this->playerPosNum, this->name);
+    return s;
+}
 
 void Player::setPlayerPosNum(u_int8_t num) noexcept { this->playerPosNum = num; }
 
