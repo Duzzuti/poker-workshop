@@ -20,20 +20,20 @@ TEST(CONST, PlayerNameLength) {
     EXPECT_NO_THROW(CheckPlayer{"Player"});
 
     for (u_int8_t i = 0; i <= MAX_PLAYER_NAME_LENGTH; i++) {
-        EXPECT_NO_THROW(CheckPlayer{std::string(i, 'a')});
+        EXPECT_NO_THROW(CheckPlayer{std::string(i, 'a').c_str()});
     }
     for (u_int8_t i = MAX_PLAYER_NAME_LENGTH + 1; i < MAX_PLAYER_NAME_LENGTH + 10; i++) {
-        EXPECT_THROW(CheckPlayer{std::string(i, 'a')}, std::invalid_argument);
+        EXPECT_THROW(CheckPlayer{std::string(i, 'a').c_str()}, std::invalid_argument);
     }
 }
 
 TEST(CONST, PlayerGetNameLength) {
     CheckPlayer p{"Player"};
-    EXPECT_GE(MAX_PLAYER_GET_NAME_LENGTH, p.getName().length());
+    EXPECT_GE(MAX_PLAYER_GET_NAME_LENGTH, std::strlen(p.getName()));
     for (u_int8_t i = 0; i <= MAX_PLAYER_NAME_LENGTH; i++) {
-        CheckPlayer p{std::string(i, 'a')};
+        CheckPlayer p{std::string(i, 'a').c_str()};
         p.setPlayerPosNum(-1);
-        EXPECT_GE(MAX_PLAYER_GET_NAME_LENGTH, p.getName().length());
+        EXPECT_GE(MAX_PLAYER_GET_NAME_LENGTH, std::strlen(p.getName()));
     }
 }
 
@@ -41,7 +41,7 @@ TEST(CONST, PlayerInfoLength) {
     GameTest game{Config{1, 5, INT64_MAX, 10, 1}};
     game.initPlayer();
     for (u_int8_t i = 0; i < 5; i++) {
-        EXPECT_GE(MAX_GET_PLAYER_INFO_LENGTH, game.getPlayerInfo(i, INT64_MAX).length());
-        EXPECT_GE(MAX_GET_PLAYER_INFO_LENGTH, game.getPlayerInfo(i, INT64_MIN).length());
+        EXPECT_GE(MAX_GET_PLAYER_INFO_LENGTH, std::strlen(game.getPlayerInfo(i, INT64_MAX)));
+        EXPECT_GE(MAX_GET_PLAYER_INFO_LENGTH, std::strlen(game.getPlayerInfo(i, INT64_MIN)));
     }
 }

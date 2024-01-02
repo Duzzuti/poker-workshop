@@ -78,7 +78,7 @@ void Game::run() {
 
             for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
                 if (this->data.gameData.playerOut[i] || this->data.roundData.playerFolded[i]) continue;
-                PLOG_DEBUG << "Player " << +i << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
+                PLOG_DEBUG << this->getPlayerInfo(i) << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
                            << handStrengths[i].handkind << " " << handStrengths[i].rankStrength;
                 if (handStrengths[i] > strongestHand) {
                     strongestHand = handStrengths[i];
@@ -94,7 +94,7 @@ void Game::run() {
             winnerString[0] = '\0';
             for (u_int8_t i = 0; i < numWinners; i++) {
                 // depending MAX_POT_DIST_STRING_LENGTH
-                std::strcat(winnerString, this->getPlayerInfo(winners[i], potPerWinner).c_str());
+                std::strcat(winnerString, this->getPlayerInfo(winners[i], potPerWinner));
                 this->data.gameData.playerChips[winners[i]] += potPerWinner;
                 if (i != numWinners - 1) std::strcat(winnerString, ", ");
             }
@@ -106,14 +106,19 @@ void Game::run() {
     std::pair<u_int8_t, u_int32_t> winners[this->data.numPlayers];
     for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) winners[i] = std::make_pair(i, this->players[i]->getWins());
     std::sort(&winners[0], &winners[this->m_config.numPlayers], [](const std::pair<u_int8_t, u_int32_t>& a, const std::pair<u_int8_t, u_int32_t>& b) { return a.second > b.second; });
-    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) PLOG_INFO << "Player " + this->players[winners[i].first]->getName() << " won " << winners[i].second << " games";
+    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) PLOG_INFO << STR_PLAYER << this->players[winners[i].first]->getName() << " won " << winners[i].second << " games";
     PLOG_INFO << "\n";
 }
 
-std::string Game::getPlayerInfo(int16_t playerPos, int64_t chipsDiff) const noexcept {
+const char* Game::getPlayerInfo(int16_t playerPos, int64_t chipsDiff) const noexcept {
+    static char playerInfo[MAX_GET_PLAYER_INFO_LENGTH];
     if (playerPos == -1) playerPos = this->data.betRoundData.playerPos;
-    return STR_PLAYER + this->players[playerPos]->getName() + "[" + std::to_string(this->data.gameData.playerChips[playerPos]) +
-           (chipsDiff != 0 ? (chipsDiff > 0 ? " + " : " - ") + std::to_string(std::abs(chipsDiff)) : "") + "]";
+    if (chipsDiff == 0)
+        std::snprintf(playerInfo, sizeof(playerInfo), "%s%s[%lu]", STR_PLAYER, this->players[playerPos]->getName(), this->data.gameData.playerChips[playerPos]);
+    else
+        std::snprintf(playerInfo, sizeof(playerInfo), "%s%s[%lu%s%lu]", STR_PLAYER, this->players[playerPos]->getName(), this->data.gameData.playerChips[playerPos], chipsDiff > 0 ? " + " : " - ",
+                      std::abs(chipsDiff));
+    return playerInfo;
 }
 
 void Game::initPlayerOrder() noexcept {
@@ -137,7 +142,7 @@ OutEnum Game::setBlinds() noexcept {
     }
     OutEnum res = OutEnum::ROUND_CONTINUE;
 
-    std::string playerInfo = this->getPlayerInfo(-1, -this->data.roundData.smallBlind);
+    const char* playerInfo = this->getPlayerInfo(-1, -this->data.roundData.smallBlind);
     this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
     while (!this->bet(this->data.roundData.smallBlind, true)) {
         res = this->playerOut("cannot fulfill small blind of " + std::to_string(this->data.roundData.smallBlind));
@@ -236,11 +241,10 @@ bool Game::currentPlayerCanOnlyRaiseOrCall() const noexcept {
 OutEnum Game::playerTurn(short& firstChecker) {
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data);
     OutEnum res = OutEnum::ROUND_CONTINUE;
-    const std::string playerInfoN = this->getPlayerInfo();
-    std::string playerInfo;
+    const char* playerInfo = this->getPlayerInfo();
     switch (action.action) {
         case Actions::FOLD:
-            PLOG_DEBUG << playerInfoN << " folded";
+            PLOG_DEBUG << playerInfo << " folded";
             res = playerFolded();
             if (res != OutEnum::ROUND_CONTINUE) return res;
             break;
@@ -251,7 +255,7 @@ OutEnum Game::playerTurn(short& firstChecker) {
                 res = playerOut("illegally checked current bet of " + std::to_string(this->data.betRoundData.currentBet));
                 if (res != OutEnum::ROUND_CONTINUE) return res;
             } else {
-                PLOG_DEBUG << playerInfoN << " checked";
+                PLOG_DEBUG << playerInfo << " checked";
                 if (firstChecker == -1) firstChecker = this->data.betRoundData.playerPos;
                 this->data.nextPlayer();
             }
@@ -300,7 +304,7 @@ OutEnum Game::playerTurn(short& firstChecker) {
 OutEnum Game::playerTurnOnlyRaise() {
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data, true);
     OutEnum res = OutEnum::ROUND_CONTINUE;
-    std::string playerInfo = this->getPlayerInfo();
+    const char* playerInfo = this->getPlayerInfo();
     switch (action.action) {
         case Actions::CALL:
             PLOG_DEBUG << playerInfo << " called";

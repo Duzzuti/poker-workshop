@@ -8,7 +8,7 @@ class Player {
    public:
     Player() noexcept = default;
 
-    virtual const std::string getName() const noexcept final;
+    virtual const char* getName() const noexcept final;
     virtual void setPlayerPosNum(u_int8_t num) noexcept final;
     virtual void gameWon() noexcept final { wins++; };
     virtual u_int32_t getWins() const noexcept final { return wins; };
@@ -21,13 +21,17 @@ class Player {
     virtual ~Player() noexcept = default;
 
    protected:
-    Player(const std::string& name) : name(name) {
-        if (name.length() > MAX_PLAYER_NAME_LENGTH) throw std::invalid_argument("Player name too long");
+    Player(const char* name) {
+        if (std::strlen(name) > MAX_PLAYER_NAME_LENGTH) {
+            PLOG_FATAL << "Player name too long";
+            throw std::invalid_argument("Player name too long");
+        }
+        std::strncpy(this->name, name, MAX_PLAYER_NAME_LENGTH);
     };
-    const std::string name;
+    char name[MAX_PLAYER_NAME_LENGTH];
 
    private:
     std::pair<Card, Card> hand;
-    u_int8_t playerPosNum;
+    u_int8_t playerPosNum = 0;
     u_int32_t wins = 0;
 };

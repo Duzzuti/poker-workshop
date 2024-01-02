@@ -15,7 +15,7 @@ class GameTest : public Game {
 
     void initPlayer() noexcept {
         // init players
-        this->players[0] = std::move(std::make_unique<CheckPlayer>(std::string("a", MAX_PLAYER_NAME_LENGTH)));
+        this->players[0] = std::move(std::make_unique<CheckPlayer>(std::string("a", MAX_PLAYER_NAME_LENGTH).c_str()));
         this->players[1] = std::move(std::make_unique<RandPlayer>(2));
         this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
         this->players[3] = std::move(std::make_unique<RandPlayer>(4));
@@ -52,5 +52,5 @@ class GameTest : public Game {
 
     void river() { Game::river(); }
 
-    std::string getPlayerInfo(int16_t playerPos = -1, int64_t chipsDiff = 0) const noexcept { return Game::getPlayerInfo(playerPos, chipsDiff); }
+    const char* getPlayerInfo(int16_t playerPos = -1, int64_t chipsDiff = 0) const noexcept { return Game::getPlayerInfo(playerPos, chipsDiff); }
 };
