@@ -5,13 +5,36 @@
 
 const constexpr u_int8_t LEN_UINT64 = 20;
 
+const constexpr u_int8_t CARD_NUM = 52;
+const constexpr u_int8_t CARD_STR_LEN = 5;
+const constexpr char CARD_RANKS[] = "23456789TJQKA";
+const constexpr char* SUIT_SYMBOLS[] = {
+    u8"\xE2\x99\xA2",  // Diamonds
+    u8"\xE2\x99\xA3",  // Hearts
+    u8"\xE2\x99\xA0",  // Spades
+    u8"\xE2\x99\xA1"   // Clubs
+};
+
 const constexpr u_int8_t MAX_PLAYERS = 10;
 const constexpr u_int64_t MAX_CHIPS = INT64_MAX - 1;  // max chips on the whole table
 const constexpr u_int8_t MAX_PLAYER_NAME_LENGTH = 20;
 const constexpr u_int8_t MAX_PLAYER_GET_NAME_LENGTH = MAX_PLAYER_NAME_LENGTH + 4;  // +4 for the player number (u_int8_t) and the colon (:)
-const constexpr char* STR_PLAYER = "Player ";
+const constexpr char STR_PLAYER[] = "Player ";
 const constexpr u_int16_t MAX_GET_PLAYER_INFO_LENGTH = std::strlen(STR_PLAYER) + MAX_PLAYER_GET_NAME_LENGTH + 5 + 2 * LEN_UINT64;  // 5 for "[ + ]"
 const constexpr u_int16_t MAX_POT_DIST_STRING_LENGTH = (MAX_GET_PLAYER_INFO_LENGTH + 2) * MAX_PLAYERS;
+
+const constexpr char STR_SMALL_BLIND_ERROR[] = "cannot fulfill small blind of ";
+const constexpr char STR_BIG_BLIND_ERROR[] = "cannot fulfill big blind of ";
+const constexpr u_int8_t MAX_BLIND_ERROR_LENGTH = std::max<size_t>(std::strlen(STR_SMALL_BLIND_ERROR), std::strlen(STR_BIG_BLIND_ERROR)) + LEN_UINT64 + 1;
+
+const constexpr char STR_CHECK_ERROR[] = "illegally tried to check current bet of ";
+const constexpr char STR_CALL_ERROR[] = "illegally tried to call current bet of ";
+const constexpr char STR_RAISE_ERROR[] = "illegally tried to raise to ";
+const constexpr char STR_BET_ERROR[] = "illegally tried to bet ";
+const constexpr char STR_ACTION_ERROR[] = "illegally tried to do action: ";
+const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH =
+    std::max<size_t>(std::max<size_t>(std::strlen(STR_CHECK_ERROR), std::strlen(STR_CALL_ERROR)), std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_BET_ERROR))) + LEN_UINT64 + 1;
+const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_ACTION_ERROR)) + LEN_UINT64 + 1;
 
 class Config {
    public:

@@ -2,55 +2,25 @@
 
 #include "logger.h"
 
-std::string Card::toString() const {
-    std::string str = "";
-    switch (+this->suit) {
-        case 0:
-            // Diamonds
-            str += "♢";
-            break;
-        case 1:
-            // Hearts
-            str += "♡";
-            break;
-        case 2:
-            // Spades
-            str += "♠";
-            break;
-        case 3:
-            // Clubs
-            str += "♣";
-            break;
+const char* Card::toString() const {
+    static char str[CARD_STR_LEN];  // Increased size to accommodate null terminator and Unicode symbol
 
-        default:
-            PLOG_FATAL << "Invalid suit: " << +this->suit;
-            throw std::logic_error("Invalid suit");
-            break;
+    if (this->suit > 3) {
+        PLOG_FATAL << "Invalid suit: " << this->suit;
+        throw std::logic_error("Invalid suit");
     }
-    switch (+this->rank) {
-        case 2 ... 9:
-            str += this->rank + '0';
-            break;
-        case 10:
-            str += "T";
-            break;
-        case 11:
-            str += "J";
-            break;
-        case 12:
-            str += "Q";
-            break;
-        case 13:
-            str += "K";
-            break;
-        case 14:
-            str += "A";
-            break;
-        default:
-            PLOG_FATAL << "Invalid rank: " << +this->rank;
-            throw std::logic_error("Invalid rank");
-            break;
+
+    std::strcpy(str, SUIT_SYMBOLS[this->suit]);
+
+    if (this->rank < 2 || this->rank > 14) {
+        PLOG_FATAL << "Invalid rank: " << this->rank;
+        throw std::logic_error("Invalid rank");
     }
+
+    str[3] = CARD_RANKS[this->rank - 2];
+
+    str[4] = '\0';  // Null-terminate the string
+
     return str;
 }
 
@@ -68,7 +38,7 @@ Deck::Deck() noexcept {
 
 void Deck::shuffle() noexcept {
     // shuffle deck
-    std::random_shuffle(&this->cards[0], &this->cards[52]);
+    std::random_shuffle(&this->cards[0], &this->cards[CARD_NUM]);
 }
 
 Card Deck::draw() {
@@ -81,11 +51,12 @@ Card Deck::draw() {
     return this->cards[this->len];
 }
 
-std::string Deck::toString(const std::string sep) const {
+const char* Deck::toString(const char sep) const {
     // print deck
-    std::string str = "";
+    static char str[CARD_NUM * (CARD_STR_LEN + 1)];
     for (u_int8_t i = 0; i < this->len; i++) {
-        str += this->cards[i].toString() + sep;
+        std::strncat(str, this->cards[i].toString(), CARD_STR_LEN);
+        std::strncat(str, &sep, 1);
     }
     return str;
 }

@@ -51,7 +51,7 @@ class Game {
     bool bet(const u_int64_t amount, const bool isBlind = false) noexcept;
 
     // selects the current player as out and returns true if only one player is left in this game, selects the next player
-    OutEnum playerOut(const std::string& reason) noexcept;
+    OutEnum playerOut(const char* reason) noexcept;
 
     // selects the current player as folded and returns true if only one player is left in this round, selects the next player
     OutEnum playerFolded() noexcept;
