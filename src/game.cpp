@@ -21,6 +21,8 @@ void Game::run() {
     this->data.numPlayers = this->m_config.numPlayers;
     std::memset(this->data.gameData.winners, 0, sizeof(this->data.gameData.winners));  // reset winners
 
+    char winnerString[MAX_POT_DIST_STRING_LENGTH];
+
     // run for the number of games specified in the config
     for (u_int64_t game = 0; game < this->m_config.numRounds; game++) {
         // ONE GAME
@@ -89,11 +91,12 @@ void Game::run() {
 
             // distribute pot
             u_int64_t potPerWinner = this->data.roundData.pot / numWinners;
-            std::string winnerString = "";
+            winnerString[0] = '\0';
             for (u_int8_t i = 0; i < numWinners; i++) {
-                winnerString += this->getPlayerInfo(winners[i], potPerWinner);
+                // depending MAX_POT_DIST_STRING_LENGTH
+                std::strcat(winnerString, this->getPlayerInfo(winners[i], potPerWinner).c_str());
                 this->data.gameData.playerChips[winners[i]] += potPerWinner;
-                if (i != numWinners - 1) winnerString += ", ";
+                if (i != numWinners - 1) std::strcat(winnerString, ", ");
             }
             PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << winnerString << ". Starting new round";
         }
@@ -109,7 +112,7 @@ void Game::run() {
 
 std::string Game::getPlayerInfo(int16_t playerPos, int64_t chipsDiff) const noexcept {
     if (playerPos == -1) playerPos = this->data.betRoundData.playerPos;
-    return "Player " + this->players[playerPos]->getName() + "[" + std::to_string(this->data.gameData.playerChips[playerPos]) +
+    return STR_PLAYER + this->players[playerPos]->getName() + "[" + std::to_string(this->data.gameData.playerChips[playerPos]) +
            (chipsDiff != 0 ? (chipsDiff > 0 ? " + " : " - ") + std::to_string(std::abs(chipsDiff)) : "") + "]";
 }
 
