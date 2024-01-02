@@ -79,6 +79,7 @@ struct RoundData {
 struct GameData {
     u_int8_t numNonOutPlayers;           // number of players that are still in the game
     bool playerOut[MAX_PLAYERS];         // true if player is out of the game
+    u_int32_t winners[MAX_PLAYERS];      // number of game wins for each player so far
     u_int64_t playerChips[MAX_PLAYERS];  // chips of the players
 };
 

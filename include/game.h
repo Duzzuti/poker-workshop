@@ -15,12 +15,12 @@ class Game {
     ~Game() { delete[] this->players; }
 
    private:
-    std::string getPlayerInfo() const noexcept;
+    std::string getPlayerInfo(int16_t playerPos = -1, int64_t chipsDiff = 0) const noexcept;
 
     void initPlayerOrder() noexcept;
 
     // starts a round by shuffling the deck, setting the dealer and the blinds
-    OutEnum startRound(const bool firstRound);
+    void startRound(const bool firstRound);
 
     // sets the blinds for the round by betting the small and big blind automatically
     OutEnum setBlinds() noexcept;
