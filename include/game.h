@@ -15,7 +15,8 @@ class Game {
     ~Game() { delete[] this->players; }
 
    private:
-    const char* getPlayerInfo(int16_t playerPos = -1, int64_t chipsDiff = 0) const noexcept;
+    // returns a string with the current player info (pos, name, chips, bet), if playerPos is MAX_PLAYERS => returns info for current player
+    const char* getPlayerInfo(u_int8_t playerPos = MAX_PLAYERS, const int64_t chipsDiff = 0) const noexcept;
 
     void initPlayerOrder() noexcept;
 
@@ -32,7 +33,7 @@ class Game {
     OutEnum betRound();
 
     // returns true if the bet round should continue
-    bool betRoundContinue(short firstChecker) const noexcept;
+    bool betRoundContinue(const u_int8_t firstChecker) const noexcept;
 
     // true if the current player is active (not out or folded)
     bool currentPlayerActive() const noexcept;
@@ -41,7 +42,7 @@ class Game {
     bool currentPlayerCanOnlyRaiseOrCall() const noexcept;
 
     // runs a single non out player turn
-    OutEnum playerTurn(short& firstChecker);
+    OutEnum playerTurn(u_int8_t& firstChecker);
 
     // runs a single non out player turn where the player can only raise or call
     OutEnum playerTurnOnlyRaise();
