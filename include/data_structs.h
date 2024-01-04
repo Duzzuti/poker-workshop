@@ -10,6 +10,7 @@ enum class Actions {
     RAISE,
     CHECK,
     BET,
+    ALL_IN,
 };
 
 enum CardSuits {

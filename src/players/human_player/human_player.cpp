@@ -17,9 +17,9 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
     std::cout << " | Your chips: " << data.getChips() << " | Minimum raise/bet: " << data.betRoundData.minimumRaise + data.betRoundData.currentBet << std::endl;
     while (true) {
         if (onlyRaise)
-            std::cout << "Please enter an action ('c' for call, 'r <bet>' for raise): ";
+            std::cout << "Please enter an action ('c' for call, 'r <bet>' for raise, 'a' for all-in): ";
         else
-            std::cout << "Please enter an action ('f' for fold, 'c' for call, 'chk' for check, 'r <bet>' for raise, 'b <bet>' for bet): ";
+            std::cout << "Please enter an action ('f' for fold, 'c' for call, 'chk' for check, 'r <bet>' for raise, 'b <bet>' for bet, 'a' for all-in): ";
         std::string input;
         std::getline(std::cin, input);
 
@@ -45,8 +45,9 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
                 std::cout << "Invalid input! Try again" << std::endl;
                 continue;
             }
-        } else {
+        } else if (input == "a")
+            return {Actions::ALL_IN};
+        else
             std::cout << "Invalid input! Try again" << std::endl;
-        }
     }
 }

@@ -32,9 +32,12 @@ const constexpr char STR_CALL_ERROR[] = "illegally tried to call current bet of 
 const constexpr char STR_RAISE_ERROR[] = "illegally tried to raise to ";
 const constexpr char STR_BET_ERROR[] = "illegally tried to bet ";
 const constexpr char STR_ACTION_ERROR[] = "illegally tried to do action: ";
-const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH =
-    std::max<size_t>(std::max<size_t>(std::strlen(STR_CHECK_ERROR), std::strlen(STR_CALL_ERROR)), std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_BET_ERROR))) + LEN_UINT64 + 1;
-const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_ACTION_ERROR)) + LEN_UINT64 + 1;
+const constexpr char STR_ALL_IN_ERROR[] = "illegally tried to go all in with ";
+const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH = std::max<size_t>(std::strlen(STR_ALL_IN_ERROR), std::max<size_t>(std::max<size_t>(std::strlen(STR_CHECK_ERROR), std::strlen(STR_CALL_ERROR)),
+                                                                                                                    std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_BET_ERROR)))) +
+                                                   LEN_UINT64 + 1;
+const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE =
+    std::max<size_t>(std::strlen(STR_ALL_IN_ERROR), std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_ACTION_ERROR))) + LEN_UINT64 + 1;
 
 class Config {
    public:

@@ -302,6 +302,18 @@ OutEnum Game::playerTurn(short& firstChecker) {
             PLOG_DEBUG << playerInfo << " bet " << action.bet;
             break;
 
+        case Actions::ALL_IN:
+            playerInfo = this->getPlayerInfo(-1, -this->data.getChips());
+            if (!this->playerAllIn()) {
+                // illegal move leads to loss of the game
+                std::snprintf(str, sizeof(str), "%s%lu", STR_ALL_IN_ERROR, this->data.getChips());
+                res = playerOut(str);
+                if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
+            }
+            PLOG_DEBUG << playerInfo << " went all in";
+            break;
+
         default:
             throw std::logic_error("Invalid action");
             PLOG_FATAL << "Invalid action: " << static_cast<int>(action.action);
@@ -336,6 +348,18 @@ OutEnum Game::playerTurnOnlyRaise() {
             PLOG_DEBUG << playerInfo << " raised to " << action.bet;
             break;
 
+        case Actions::ALL_IN:
+            playerInfo = this->getPlayerInfo(-1, -this->data.getChips());
+            if (!this->bet(this->data.getChips())) {
+                // illegal move leads to loss of the game
+                std::snprintf(str, sizeof(str), "%s%lu", STR_ALL_IN_ERROR, this->data.getChips());
+                res = playerOut(str);
+                if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
+            }
+            PLOG_DEBUG << playerInfo << " went all in";
+            break;
+
         default:
             // illegal move leads to loss of the game
             std::snprintf(str, sizeof(str), "%s%i", STR_ACTION_ERROR, static_cast<int>(action.action));
@@ -361,6 +385,17 @@ bool Game::bet(const u_int64_t amount, const bool isBlind) noexcept {
     this->data.betRoundData.currentBet = amount;
     this->data.roundData.pot += addAmount;
     this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = amount;
+    this->data.nextPlayer();
+    return true;
+}
+
+bool Game::playerAllIn() noexcept {
+    // remove all chips from the player and add them to the pot
+    u_int64_t addAmount = this->data.getChips();
+    bool success = this->data.removeChips(addAmount);
+    if (!success) return false;
+    this->data.roundData.pot += addAmount;
+    this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] += addAmount;
     this->data.nextPlayer();
     return true;
 }
