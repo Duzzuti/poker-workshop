@@ -30,9 +30,9 @@ class Player {
     };
 
     static const char* createPlayerName(const char* name, u_int8_t playerNum) {
-        static char playerName[20];
-
         if (playerNum == 0) return name;
+
+        static char playerName[20];
         std::snprintf(playerName, sizeof(playerName), "%s%d", name, playerNum);
         return playerName;
     }

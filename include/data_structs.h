@@ -118,12 +118,14 @@ struct Data {
             } while (this->gameData.playerOut[this->roundData.dealerPos]);
         }
     }
-
-    bool removeChips(u_int64_t chips) noexcept {
-        if (this->gameData.playerChips[this->betRoundData.playerPos] < chips) return false;
+    // removes chips from the current player but only if he has at least 1 chip left after the removal (for all in use removeChipsAllIn)
+    bool removeChips(const u_int64_t chips) noexcept {
+        if (this->gameData.playerChips[this->betRoundData.playerPos] < chips + 1) return false;
         this->gameData.playerChips[this->betRoundData.playerPos] -= chips;
         return true;
     }
+
+    void removeChipsAllIn() noexcept { this->gameData.playerChips[this->betRoundData.playerPos] = 0; }
 
     u_int64_t getChips() const noexcept { return this->gameData.playerChips[this->betRoundData.playerPos]; }
 

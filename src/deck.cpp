@@ -67,7 +67,7 @@ Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, cons
     // or with ranks if ranks.size() > 0
     while (true) {
         Card card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)};
-        if (std::find(cards, &cards[cardsLen], card) == &cards[cardsLen] && (suit == -1 || card.suit != suit) && (!rankLen || std::find(ranks, &ranks[rankLen], card.rank) == &ranks[rankLen])) {
+        if ((suit == -1 || card.suit != suit) && (!rankLen || std::find(ranks, &ranks[rankLen], card.rank) == &ranks[rankLen]) && std::find(cards, &cards[cardsLen], card) == &cards[cardsLen]) {
             return card;
         }
     }
