@@ -59,7 +59,7 @@ void Game::run() {
                 break;
             } else if (this->data.roundData.result == OutEnum::ROUND_WON) {
                 this->data.nextActivePlayer();  // switch to the winner
-                PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->getPlayerInfo(-1, this->data.roundData.pot) << ". Starting new round";
+                PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->getPlayerInfo(MAX_PLAYERS, this->data.roundData.pot) << ". Starting new round";
                 this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 continue;
             }
@@ -110,9 +110,9 @@ void Game::run() {
     PLOG_INFO << "\n";
 }
 
-const char* Game::getPlayerInfo(int16_t playerPos, int64_t chipsDiff) const noexcept {
+const char* Game::getPlayerInfo(u_int8_t playerPos, const int64_t chipsDiff) const noexcept {
     static char playerInfo[MAX_GET_PLAYER_INFO_LENGTH];
-    if (playerPos == -1) playerPos = this->data.betRoundData.playerPos;
+    if (playerPos == MAX_PLAYERS) playerPos = this->data.betRoundData.playerPos;
     if (chipsDiff == 0)
         std::snprintf(playerInfo, sizeof(playerInfo), "%s%s[%lu]", STR_PLAYER, this->players[playerPos]->getName(), this->data.gameData.playerChips[playerPos]);
     else
@@ -142,25 +142,25 @@ OutEnum Game::setBlinds() noexcept {
     }
     OutEnum res = OutEnum::ROUND_CONTINUE;
 
-    const char* playerInfo = this->getPlayerInfo(-1, -this->data.roundData.smallBlind);
+    const char* playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.smallBlind);
     this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
     char str[MAX_BLIND_ERROR_LENGTH];
     while (!this->bet(this->data.roundData.smallBlind, true)) {
         std::snprintf(str, sizeof(str), "%s%lu", STR_SMALL_BLIND_ERROR, this->data.roundData.smallBlind);
         res = this->playerOut(str);
         if (res != OutEnum::ROUND_CONTINUE) return res;
-        playerInfo = this->getPlayerInfo(-1, -this->data.roundData.smallBlind);
+        playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.smallBlind);
         this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
     }
     PLOG_DEBUG << playerInfo << " bets small blind " << this->data.roundData.smallBlind;
 
-    playerInfo = this->getPlayerInfo(-1, -this->data.roundData.bigBlind);
+    playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.bigBlind);
     this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
     while (!this->bet(this->data.roundData.bigBlind, true)) {
         std::snprintf(str, sizeof(str), "%s%lu", STR_BIG_BLIND_ERROR, this->data.roundData.bigBlind);
         res = this->playerOut(str);
         if (res != OutEnum::ROUND_CONTINUE) return res;
-        playerInfo = this->getPlayerInfo(-1, -this->data.roundData.bigBlind);
+        playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.bigBlind);
         this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
     }
     PLOG_DEBUG << playerInfo << " bets big blind " << this->data.roundData.bigBlind;
@@ -176,14 +176,13 @@ void Game::setupBetRound() noexcept {
 
 void Game::startRound(const bool firstRound) {
     this->deck.shuffle();
-    u_int8_t dealerPos;
-    if (!firstRound) dealerPos = this->data.roundData.dealerPos;
+    u_int8_t lastDealerPos = this->data.roundData.dealerPos;
     this->data.selectDealer(firstRound);
 
     this->data.roundData.addBlind = this->m_config.addBlindPerDealer0;
     if (firstRound)
         this->data.roundData.smallBlind = this->m_config.smallBlind;
-    else if (this->data.roundData.dealerPos < dealerPos)  // if the dealer is at position 0 again (or skipped 0), add the addBlind amount
+    else if (this->data.roundData.dealerPos < lastDealerPos)  // if the dealer is at position 0 again (or skipped 0), add the addBlind amount
         this->data.roundData.smallBlind += this->m_config.addBlindPerDealer0;
     this->data.roundData.bigBlind = this->data.roundData.smallBlind * 2;
     this->data.roundData.pot = 0;
@@ -200,7 +199,7 @@ void Game::startRound(const bool firstRound) {
 }
 
 OutEnum Game::betRound() {
-    short firstChecker = -1;  // position of the first player that checked
+    u_int8_t firstChecker = MAX_PLAYERS;  // position of the first player that checked or MAX_PLAYERS if no player checked yet
     this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
     // this loop will run until all players have either folded, checked or called
     // we can only exit if it is a players turn and he is in the game, has the same bet as the current bet and all players have checked if the bet is 0
@@ -226,7 +225,7 @@ OutEnum Game::betRound() {
     return OutEnum::ROUND_CONTINUE;
 }
 
-bool Game::betRoundContinue(short firstChecker) const noexcept {
+bool Game::betRoundContinue(const u_int8_t firstChecker) const noexcept {
     return !this->currentPlayerActive() ||                                                                                 // player is out of the game or folded, should be skipped
            this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] ||  // current bet is not called by the player
            (this->data.betRoundData.currentBet == 0 && firstChecker != this->data.betRoundData.playerPos) ||               // current bet is 0 and the current player is not the first checker
@@ -241,9 +240,9 @@ bool Game::currentPlayerCanOnlyRaiseOrCall() const noexcept {
            this->data.betRoundData.playerPos == this->data.roundData.bigBlindPos;
 }
 
-OutEnum Game::playerTurn(short& firstChecker) {
+OutEnum Game::playerTurn(u_int8_t& firstChecker) {
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data);
-    OutEnum res = OutEnum::ROUND_CONTINUE;
+    OutEnum res;
     const char* playerInfo = this->getPlayerInfo();
     char str[MAX_ACTION_ERROR_LENGTH];
     switch (action.action) {
@@ -261,13 +260,13 @@ OutEnum Game::playerTurn(short& firstChecker) {
                 if (res != OutEnum::ROUND_CONTINUE) return res;
             } else {
                 PLOG_DEBUG << playerInfo << " checked";
-                if (firstChecker == -1) firstChecker = this->data.betRoundData.playerPos;
+                if (firstChecker == MAX_PLAYERS) firstChecker = this->data.betRoundData.playerPos;
                 this->data.nextPlayer();
             }
             break;
 
         case Actions::CALL:
-            playerInfo = this->getPlayerInfo(-1, -this->data.getCallAdd());
+            playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.getCallAdd());
             if (!this->bet(this->data.betRoundData.currentBet)) {
                 // illegal move leads to loss of the game
                 std::snprintf(str, sizeof(str), "%s%lu", STR_CALL_ERROR, this->data.betRoundData.currentBet);
@@ -279,7 +278,7 @@ OutEnum Game::playerTurn(short& firstChecker) {
             break;
 
         case Actions::RAISE:
-            playerInfo = this->getPlayerInfo(-1, -this->data.getRaiseAdd(action.bet));
+            playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.getRaiseAdd(action.bet));
             if (this->data.betRoundData.currentBet == 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
                 std::snprintf(str, sizeof(str), "%s%lu", STR_RAISE_ERROR, action.bet);
@@ -291,7 +290,7 @@ OutEnum Game::playerTurn(short& firstChecker) {
             break;
 
         case Actions::BET:
-            playerInfo = this->getPlayerInfo(-1, -action.bet);
+            playerInfo = this->getPlayerInfo(MAX_PLAYERS, -action.bet);
             if (this->data.betRoundData.currentBet != 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
                 std::snprintf(str, sizeof(str), "%s%lu", STR_BET_ERROR, action.bet);
@@ -311,7 +310,7 @@ OutEnum Game::playerTurn(short& firstChecker) {
 
 OutEnum Game::playerTurnOnlyRaise() {
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data, true);
-    OutEnum res = OutEnum::ROUND_CONTINUE;
+    OutEnum res;
     const char* playerInfo = this->getPlayerInfo();
     char str[MAX_ACTION_ERROR_LENGTH_ONLY_RAISE];
     switch (action.action) {
@@ -325,7 +324,7 @@ OutEnum Game::playerTurnOnlyRaise() {
             break;
 
         case Actions::RAISE:
-            playerInfo = this->getPlayerInfo(-1, -this->data.getRaiseAdd(action.bet));
+            playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.getRaiseAdd(action.bet));
             if (this->data.betRoundData.currentBet == 0 || !this->bet(action.bet)) {
                 // illegal move leads to loss of the game
                 std::snprintf(str, sizeof(str), "%s%lu", STR_RAISE_ERROR, action.bet);

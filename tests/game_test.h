@@ -34,7 +34,7 @@ class GameTest : public Game {
 
     OutEnum betRound() { return Game::betRound(); }
 
-    OutEnum playerTurn(short& firstChecker) { return Game::playerTurn(firstChecker); }
+    bool betRoundContinue(const u_int8_t firstChecker) const noexcept { return Game::betRoundContinue(firstChecker); }
 
     bool bet(const u_int64_t amount) noexcept { return Game::bet(amount); }
 
@@ -52,5 +52,5 @@ class GameTest : public Game {
 
     void river() { Game::river(); }
 
-    const char* getPlayerInfo(int16_t playerPos = -1, int64_t chipsDiff = 0) const noexcept { return Game::getPlayerInfo(playerPos, chipsDiff); }
+    const char* getPlayerInfo(u_int8_t playerPos = MAX_PLAYERS, const int64_t chipsDiff = 0) const noexcept { return Game::getPlayerInfo(playerPos, chipsDiff); }
 };
