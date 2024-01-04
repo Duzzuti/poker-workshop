@@ -52,16 +52,16 @@ void Game::run() {
             // RIVER
             this->river();
 
-            if (this->data.roundData.result == OutEnum::GAME_WON) {
-                this->data.nextActivePlayer();  // switch to the winner
-                this->players[this->data.betRoundData.playerPos]->gameWon();
-                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo() << "\n\n";
-                break;
-            } else if (this->data.roundData.result == OutEnum::ROUND_WON) {
+            if (this->data.roundData.result == OutEnum::ROUND_WON) {
                 this->data.nextActivePlayer();  // switch to the winner
                 PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->getPlayerInfo(MAX_PLAYERS, this->data.roundData.pot) << ". Starting new round";
                 this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 continue;
+            } else if (this->data.roundData.result == OutEnum::GAME_WON) {
+                this->data.nextActivePlayer();  // switch to the winner
+                this->players[this->data.betRoundData.playerPos]->gameWon();
+                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo() << "\n\n";
+                break;
             }
 
             // SHOWDOWN
@@ -77,7 +77,7 @@ void Game::run() {
             u_int8_t numWinners = 0;
 
             for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
-                if (this->data.gameData.playerOut[i] || this->data.roundData.playerFolded[i]) continue;
+                if (this->data.roundData.playerFolded[i] || this->data.gameData.playerOut[i]) continue;
                 PLOG_DEBUG << this->getPlayerInfo(i) << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
                            << handStrengths[i].handkind << " " << handStrengths[i].rankStrength;
                 if (handStrengths[i] > strongestHand) {

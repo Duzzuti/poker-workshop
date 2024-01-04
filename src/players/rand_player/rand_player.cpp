@@ -9,13 +9,13 @@ Action RandPlayer::turn(const Data& data, const bool onlyRaise) const noexcept {
         switch (std::rand() % randMod) {
             case 0 ... 2:  // Call
                 action.action = Actions::CALL;
-                if (data.getChips() >= data.getCallAdd() && data.betRoundData.currentBet != 0) done = true;
+                if (data.getChips() > data.getCallAdd() && data.betRoundData.currentBet != 0) done = true;
                 break;
 
             case 3:  // Raise
                 action.action = Actions::RAISE;
                 action.bet = (u_int64_t)(data.betRoundData.currentBet + data.betRoundData.minimumRaise * (1 + (std::rand() % 30) / 10.0f));
-                if (data.getChips() >= data.getRaiseAdd(action.bet) && data.betRoundData.currentBet != 0) done = true;
+                if (data.getChips() > data.getRaiseAdd(action.bet) && data.betRoundData.currentBet != 0) done = true;
                 break;
 
             case 4 ... 5:  // Fold
@@ -31,7 +31,7 @@ Action RandPlayer::turn(const Data& data, const bool onlyRaise) const noexcept {
             case 8 ... 9:  // Bet
                 action.action = Actions::BET;
                 action.bet = (u_int64_t)(data.roundData.bigBlind * (1 + (std::rand() % 30) / 10.0f));
-                if (data.getChips() >= action.bet && data.betRoundData.currentBet == 0) done = true;
+                if (data.getChips() > action.bet && data.betRoundData.currentBet == 0) done = true;
                 break;
         }
     }
