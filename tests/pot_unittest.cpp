@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
-
 #include "pot.h"
+
+#include <gtest/gtest.h>
 
 TEST(PotTest, isCapped) {
     Pot pot;
@@ -57,25 +57,23 @@ TEST(PotTest, addChips) {
 
 TEST(PotTest, addNonContender) {
     Pot pot;
-    for(u_int8_t i = 0; i < MAX_PLAYERS - 1; i++) {
-        for(u_int8_t j = 0; j < MAX_PLAYERS; j++) {
-            if(j >= i)
+    for (u_int8_t i = 0; i < MAX_PLAYERS - 1; i++) {
+        for (u_int8_t j = 0; j < MAX_PLAYERS; j++) {
+            if (j >= i)
                 EXPECT_TRUE(pot.isContender(j));
             else
                 EXPECT_FALSE(pot.isContender(j));
         }
-        if(i < MAX_PLAYERS - 2)
-            pot.addNonContender(i);
+        if (i < MAX_PLAYERS - 2) pot.addNonContender(i);
     }
     pot.reset();
-    for(int16_t i = MAX_PLAYERS-1; i >= 1; i--) {
-        for(int16_t j = 0; j < MAX_PLAYERS; j++) {
-            if(j > i)
+    for (int16_t i = MAX_PLAYERS - 1; i >= 1; i--) {
+        for (int16_t j = 0; j < MAX_PLAYERS; j++) {
+            if (j > i)
                 EXPECT_FALSE(pot.isContender(j));
             else
                 EXPECT_TRUE(pot.isContender(j));
         }
-        if(i >= 2)
-            pot.addNonContender(i);
+        if (i >= 2) pot.addNonContender(i);
     }
 }
