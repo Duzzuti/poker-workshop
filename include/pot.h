@@ -21,8 +21,8 @@ class Pot {
 
     // adds chips to the pot up to the cap if there is one
     // previousBet is the bet that was made before the current one, wholeBet is the bet that is being made (with the previousBet)
-    // if the pot is capped, wholeBet is reduced by the amount of chips that were added to the pot
-    void addChips(u_int64_t& wholeBet, const u_int64_t previousBet = 0) noexcept;
+    // the chips that could not be added to the pot are returned
+    u_int64_t addChips(const u_int64_t wholeBet, const u_int64_t previousBet = 0) noexcept;
 
     // returns the pot value
     u_int64_t getPotValue() const noexcept { return this->potValue; };
