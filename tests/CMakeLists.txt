@@ -8,7 +8,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-set(COMMON_SRC ${SRC_DIR}/deck.cpp ${SRC_DIR}/hand_strengths.cpp ${SRC_DIR}/player.cpp)
+set(COMMON_SRC ${SRC_DIR}/deck.cpp ${SRC_DIR}/hand_strengths.cpp ${SRC_DIR}/player.cpp ${SRC_DIR}/pot.cpp)
 
 #tests
 add_executable(poker_test_hands main_test.cpp hands_unittest.cpp ${COMMON_SRC})
@@ -18,6 +18,10 @@ target_include_directories(poker_test_hands PUBLIC ${INCLUDE_DIR})
 add_executable(poker_test_deck main_test.cpp deck_unittest.cpp ${COMMON_SRC})
 target_link_libraries(poker_test_deck gtest_main)
 target_include_directories(poker_test_deck PUBLIC ${INCLUDE_DIR})
+
+add_executable(poker_test_pot main_test.cpp pot_unittest.cpp ${COMMON_SRC})
+target_link_libraries(poker_test_pot gtest_main)
+target_include_directories(poker_test_pot PUBLIC ${INCLUDE_DIR})
 
 add_executable(poker_test_utils main_test.cpp utils_unittest.cpp ${SRC_DIR}/game.cpp ${COMMON_SRC} ${CHECK_PLAYER} ${RAND_PLAYER} ${HUMAN_PLAYER})
 target_link_libraries(poker_test_utils gtest_main)
@@ -33,6 +37,7 @@ target_include_directories(test PUBLIC ${INCLUDE_DIR})
 
 add_test(HAND_TEST poker_test_hands)
 add_test(DECK_TEST poker_test_deck)
+add_test(POT_TEST poker_test_pot)
 add_test(UTILS_TEST poker_test_utils)
 add_test(CONST_TEST poker_test_const)
 add_test(TEST_TEST test)
