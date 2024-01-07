@@ -6,6 +6,7 @@
 /// @brief constexpr strlen implementation
 /// @param str string to get length of
 /// @return length of string
+/// @exception No-throw
 constexpr std::size_t constexpr_strlen(const char* str) {
     std::size_t len = 0;
     while (str[len] != '\0') {

@@ -69,6 +69,7 @@ enum class BetRoundState {
 };
 
 /// @brief Represents a full action that a player can take in their turn
+/// @see Actions
 struct Action {
     /// @brief The type of action that the player wants to take
     Actions action;
@@ -139,6 +140,9 @@ struct GameData {
 };
 
 /// @brief Contains all Data for a game set (multiple games)
+/// @see GameData
+/// @see RoundData
+/// @see BetRoundData
 struct Data {
     /// @brief The number of players competing in the games
     u_int8_t numPlayers;
