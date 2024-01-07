@@ -29,7 +29,7 @@ class Player {
         std::strncpy(this->name, name, MAX_PLAYER_NAME_LENGTH);
     };
 
-    static const char* createPlayerName(const char* name, u_int8_t playerNum) {
+    static const char* createPlayerName(const char* name, u_int8_t playerNum) noexcept {
         if (playerNum == 0) return name;
 
         static char playerName[20];

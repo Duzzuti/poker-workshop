@@ -6,7 +6,7 @@
 /// @brief constexpr strlen implementation
 /// @param str string to get length of
 /// @return length of string
-/// @exception No-throw
+/// @exception Guarantee No-throw
 constexpr std::size_t constexpr_strlen(const char* str) {
     std::size_t len = 0;
     while (str[len] != '\0') {
@@ -95,10 +95,12 @@ class Config {
     /// @param chips Starting chips for each player
     /// @param small Small blind amount
     /// @param addBlind Increase blind for amount every time the dealer is again at position 0
-    /// @exception Strong
+    /// @exception Guarantee Strong
     /// @throws std::invalid_argument if the parameters are invalid
     /// @note Big blind is always twice the small blind
     /// @note AddBlind is used to avoid infinite games
+    /// @see MAX_PLAYERS for the maximum number of players
+    /// @see MAX_CHIPS for the maximum amount of chips
     Config(u_int16_t rounds, u_int8_t players, u_int64_t chips, u_int64_t small, u_int64_t addBlind)
         : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numRounds(rounds), numPlayers(players) {
         if (this->numPlayers < 2 || this->numPlayers > MAX_PLAYERS) {

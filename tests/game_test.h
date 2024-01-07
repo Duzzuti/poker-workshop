@@ -8,7 +8,7 @@ class GameTest : public Game {
     GameTest(const Config& config) noexcept : Game(config) {}
 
     void setPlayers(std::unique_ptr<Player> players[]) noexcept {
-        for (int i = 0; i < this->m_config.numPlayers; i++) {
+        for (int i = 0; i < this->config.numPlayers; i++) {
             this->players[i] = std::move(players[i]);
         }
     }
@@ -21,7 +21,7 @@ class GameTest : public Game {
         this->players[3] = std::move(std::make_unique<RandPlayer>(4));
         this->players[4] = std::move(std::make_unique<RandPlayer>(5));
 
-        this->data.numPlayers = this->m_config.numPlayers;
+        this->data.numPlayers = this->config.numPlayers;
     }
 
     void initPlayerOrder() noexcept { Game::initPlayerOrder(); }

@@ -18,20 +18,20 @@ void Game::run() {
     this->players[3] = std::move(std::make_unique<RandPlayer>(4));
     this->players[4] = std::move(std::make_unique<RandPlayer>(5));
 
-    this->data.numPlayers = this->m_config.numPlayers;
+    this->data.numPlayers = this->config.numPlayers;
     std::memset(this->data.gameData.winners, 0, sizeof(this->data.gameData.winners));  // reset winners
 
     char winnerString[MAX_POT_DIST_STRING_LENGTH];
 
     // run for the number of games specified in the config
-    for (u_int64_t game = 0; game < this->m_config.numRounds; game++) {
+    for (u_int64_t game = 0; game < this->config.numRounds; game++) {
         // ONE GAME
         // shuffle players
         PLOG_DEBUG << "Starting game " << game;
         this->initPlayerOrder();
-        this->data.gameData.numNonOutPlayers = this->m_config.numPlayers;
+        this->data.gameData.numNonOutPlayers = this->config.numPlayers;
         std::memset(this->data.gameData.playerOut, 0, sizeof(this->data.gameData.playerOut));  // reset player out
-        for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) this->data.gameData.playerChips[i] = this->m_config.startingChips;
+        for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips;
         int32_t round = -1;
 
         while (this->data.gameData.numNonOutPlayers > 1) {
@@ -104,9 +104,9 @@ void Game::run() {
     PLOG_INFO << "Statistics: \n";
     // sort players by wins
     std::pair<u_int8_t, u_int32_t> winners[this->data.numPlayers];
-    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) winners[i] = std::make_pair(i, this->players[i]->getWins());
-    std::sort(&winners[0], &winners[this->m_config.numPlayers], [](const std::pair<u_int8_t, u_int32_t>& a, const std::pair<u_int8_t, u_int32_t>& b) { return a.second > b.second; });
-    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) PLOG_INFO << STR_PLAYER << this->players[winners[i].first]->getName() << " won " << winners[i].second << " games";
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) winners[i] = std::make_pair(i, this->players[i]->getWins());
+    std::sort(&winners[0], &winners[this->config.numPlayers], [](const std::pair<u_int8_t, u_int32_t>& a, const std::pair<u_int8_t, u_int32_t>& b) { return a.second > b.second; });
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) PLOG_INFO << STR_PLAYER << this->players[winners[i].first]->getName() << " won " << winners[i].second << " games";
     PLOG_INFO << "\n";
 }
 
@@ -123,9 +123,9 @@ const char* Game::getPlayerInfo(u_int8_t playerPos, const int64_t chipsDiff) con
 
 void Game::initPlayerOrder() noexcept {
     // shuffle deck
-    std::random_shuffle(&this->players[0], &this->players[this->m_config.numPlayers]);
+    std::random_shuffle(&this->players[0], &this->players[this->config.numPlayers]);
     PLOG_INFO << "Shuffled players, new order:";
-    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) {
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) {
         this->players[i]->setPlayerPosNum(i);
         this->data.gameData.winners[i] = this->players[i]->getWins();
         PLOG_INFO << this->players[i]->getName();
@@ -179,18 +179,18 @@ void Game::startRound(const bool firstRound) {
     u_int8_t lastDealerPos = this->data.roundData.dealerPos;
     this->data.selectDealer(firstRound);
 
-    this->data.roundData.addBlind = this->m_config.addBlindPerDealer0;
+    this->data.roundData.addBlind = this->config.addBlindPerDealer0;
     if (firstRound)
-        this->data.roundData.smallBlind = this->m_config.smallBlind;
+        this->data.roundData.smallBlind = this->config.smallBlind;
     else if (this->data.roundData.dealerPos < lastDealerPos)  // if the dealer is at position 0 again (or skipped 0), add the addBlind amount
-        this->data.roundData.smallBlind += this->m_config.addBlindPerDealer0;
+        this->data.roundData.smallBlind += this->config.addBlindPerDealer0;
     this->data.roundData.bigBlind = this->data.roundData.smallBlind * 2;
     this->data.roundData.pot = 0;
     std::memset(this->data.roundData.playerFolded, 0, sizeof(this->data.roundData.playerFolded));  // reset player folded
     this->setupBetRound();
 
     // deal cards
-    for (u_int8_t i = 0; i < this->m_config.numPlayers; i++) {
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) {
         if (this->data.gameData.playerOut[i]) continue;
         this->players[i]->setHand(this->deck.draw(), this->deck.draw());
     }
@@ -319,6 +319,7 @@ OutEnum Game::playerTurnOnlyRaise() {
             if (!this->bet(this->data.betRoundData.currentBet)) {
                 // this move is not adding chips to the pot, so it can not be illegal
                 PLOG_FATAL << "Player " << this->data.betRoundData.playerPos << " called but could not bet";
+                throw std::logic_error("Player called but could not bet");
                 break;
             }
             break;
