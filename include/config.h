@@ -3,6 +3,17 @@
 
 #include "logger.h"
 
+/// @brief constexpr strlen implementation
+/// @param str string to get length of
+/// @return length of string
+constexpr std::size_t constexpr_strlen(const char* str) {
+    std::size_t len = 0;
+    while (str[len] != '\0') {
+        len++;
+    }
+    return len;
+};
+
 /// @brief The maximum character length of a string that represents an u_int64_t
 const constexpr u_int8_t LEN_UINT64 = 20;
 /// @brief The number of cards in a deck
@@ -29,7 +40,7 @@ const constexpr u_int8_t MAX_PLAYER_GET_NAME_LENGTH = MAX_PLAYER_NAME_LENGTH + 4
 /// @brief Player string constant
 const constexpr char STR_PLAYER[] = "Player ";
 /// @brief The maximum character length returned from the getPlayerInfo() function of a game
-const constexpr u_int16_t MAX_GET_PLAYER_INFO_LENGTH = std::strlen(STR_PLAYER) + MAX_PLAYER_GET_NAME_LENGTH + 5 + 2 * LEN_UINT64;
+const constexpr u_int16_t MAX_GET_PLAYER_INFO_LENGTH = constexpr_strlen(STR_PLAYER) + MAX_PLAYER_GET_NAME_LENGTH + 5 + 2 * LEN_UINT64;
 /// @brief The maximum character length for the string that represents the winning players
 const constexpr u_int16_t MAX_POT_DIST_STRING_LENGTH = (MAX_GET_PLAYER_INFO_LENGTH + 2) * MAX_PLAYERS;
 
@@ -38,7 +49,7 @@ const constexpr char STR_SMALL_BLIND_ERROR[] = "cannot fulfill small blind of ";
 /// @brief Big blind error string constant
 const constexpr char STR_BIG_BLIND_ERROR[] = "cannot fulfill big blind of ";
 /// @brief The maximum character length for the string that represents a blind error
-const constexpr u_int8_t MAX_BLIND_ERROR_LENGTH = std::max<size_t>(std::strlen(STR_SMALL_BLIND_ERROR), std::strlen(STR_BIG_BLIND_ERROR)) + LEN_UINT64 + 1;
+const constexpr u_int8_t MAX_BLIND_ERROR_LENGTH = std::max<size_t>(constexpr_strlen(STR_SMALL_BLIND_ERROR), constexpr_strlen(STR_BIG_BLIND_ERROR)) + LEN_UINT64 + 1;
 
 /// @brief Check error string constant
 const constexpr char STR_CHECK_ERROR[] = "illegally tried to check current bet of ";
@@ -52,9 +63,10 @@ const constexpr char STR_BET_ERROR[] = "illegally tried to bet ";
 const constexpr char STR_ACTION_ERROR[] = "illegally tried to do action: ";
 /// @brief The maximum character length for the string that represents an error of type check, call, raise or bet
 const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH =
-    std::max<size_t>(std::max<size_t>(std::strlen(STR_CHECK_ERROR), std::strlen(STR_CALL_ERROR)), std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_BET_ERROR))) + LEN_UINT64 + 1;
+    std::max<size_t>(std::max<size_t>(constexpr_strlen(STR_CHECK_ERROR), constexpr_strlen(STR_CALL_ERROR)), std::max<size_t>(constexpr_strlen(STR_RAISE_ERROR), constexpr_strlen(STR_BET_ERROR))) +
+    LEN_UINT64 + 1;
 /// @brief The maximum character length for the string that represents an error of type raise or action
-const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(std::strlen(STR_RAISE_ERROR), std::strlen(STR_ACTION_ERROR)) + LEN_UINT64 + 1;
+const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(constexpr_strlen(STR_RAISE_ERROR), constexpr_strlen(STR_ACTION_ERROR)) + LEN_UINT64 + 1;
 
 /**
  * @brief Sets parameters for the game
@@ -65,10 +77,10 @@ class Config {
    public:
     /// @brief Starting chips for each player
     u_int64_t startingChips;
-    /// @brief Small blind amount 
+    /// @brief Small blind amount
     /// @note Big blind is always twice the small blind
     u_int64_t smallBlind;
-    /// @brief Increase blind for amount every time the dealer is again at position 0 
+    /// @brief Increase blind for amount every time the dealer is again at position 0
     /// @note Used to avoid infinite games
     u_int64_t addBlindPerDealer0;
     /// @brief Number of rounds to play

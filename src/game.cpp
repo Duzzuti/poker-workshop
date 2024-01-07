@@ -39,7 +39,7 @@ void Game::run() {
             round++;
             this->deck = Deck();
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
-            this->data.roundData.numNonFoldedPlayers = this->data.gameData.numNonOutPlayers;
+            this->data.roundData.numActivePlayers = this->data.gameData.numNonOutPlayers;
 
             PLOG_DEBUG << "Starting round " << round;
             this->startRound(round == 0);
@@ -94,7 +94,7 @@ void Game::run() {
             winnerString[0] = '\0';
             for (u_int8_t i = 0; i < numWinners; i++) {
                 // depending MAX_POT_DIST_STRING_LENGTH
-                std::strcat(winnerString, this->getPlayerInfo(winners[i], potPerWinner));
+                std::strncat(winnerString, this->getPlayerInfo(winners[i], potPerWinner), MAX_GET_PLAYER_INFO_LENGTH);
                 this->data.gameData.playerChips[winners[i]] += potPerWinner;
                 if (i != numWinners - 1) std::strcat(winnerString, ", ");
             }
@@ -367,7 +367,7 @@ bool Game::bet(const u_int64_t amount, const bool isBlind) noexcept {
 OutEnum Game::playerOut(const char* reason) noexcept {
     PLOG_WARNING << this->getPlayerInfo() << " " << reason << " and is out";
     this->data.gameData.numNonOutPlayers--;
-    this->data.roundData.numNonFoldedPlayers--;
+    this->data.roundData.numActivePlayers--;
     this->data.gameData.playerOut[this->data.betRoundData.playerPos] = true;
     this->data.nextPlayer();
 
@@ -375,7 +375,7 @@ OutEnum Game::playerOut(const char* reason) noexcept {
 }
 
 OutEnum Game::playerFolded() noexcept {
-    this->data.roundData.numNonFoldedPlayers--;
+    this->data.roundData.numActivePlayers--;
     this->data.roundData.playerFolded[this->data.betRoundData.playerPos] = true;
     this->data.nextPlayer();
     // if only one player is left, he wins the pot
@@ -386,7 +386,7 @@ OutEnum Game::getOutEnum() const noexcept {
     if (this->data.gameData.numNonOutPlayers == 1) {
         // only one player is left in the game, he wins the game
         return OutEnum::GAME_WON;
-    } else if (this->data.roundData.numNonFoldedPlayers == 1) {
+    } else if (this->data.roundData.numActivePlayers == 1) {
         // only one player is left in the round, he wins the pot
         return OutEnum::ROUND_WON;
     } else {

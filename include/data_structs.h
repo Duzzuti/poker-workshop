@@ -154,7 +154,7 @@ struct Data {
      * @param considerFolded Should folded players also be skipped?
      * @return The next active player position
      * @exception No-throw
-    */
+     */
     u_int8_t getNextPlayerPos(u_int8_t playerPos, const bool considerFolded) const noexcept {
         do {
             playerPos = (playerPos + 1) % this->numPlayers;
@@ -162,7 +162,7 @@ struct Data {
         return playerPos;
     }
 
-    /// @brief Skips to the next player who is not out of the game 
+    /// @brief Skips to the next player who is not out of the game
     /// @see If you want to skip folded players use nextActivePlayer()
     /// @exception No-throw
     void nextPlayer() noexcept {
@@ -171,7 +171,7 @@ struct Data {
         } while (this->gameData.playerOut[this->betRoundData.playerPos]);
     }
 
-    /// @brief Skips to the next active player 
+    /// @brief Skips to the next active player
     /// @see If you want to skip only players who are out of the game use nextPlayer()
     /// @exception No-throw
     void nextActivePlayer() noexcept {
@@ -185,7 +185,7 @@ struct Data {
      * @exception No-throw
      * @note For the first round the dealer position is always 0
      * @note For all other rounds the dealer position is the next active player position after the current dealer position
-    */
+     */
     void selectDealer(const bool firstRound) noexcept {
         if (firstRound) {
             this->roundData.dealerPos = 0;
@@ -195,12 +195,12 @@ struct Data {
             } while (this->gameData.playerOut[this->roundData.dealerPos]);
         }
     }
-    /** @brief Removes chips from the current player but only if he has at least 1 chip left after the removal 
+    /** @brief Removes chips from the current player but only if he has at least 1 chip left after the removal
      * @see For all in use removeChipsAllIn()
      * @param chips The number of chips to remove
      * @return True if the chips could be removed
      * @exception No-throw
-    */
+     */
     bool removeChips(const u_int64_t chips) noexcept {
         if (this->gameData.playerChips[this->betRoundData.playerPos] < chips + 1) return false;
         this->gameData.playerChips[this->betRoundData.playerPos] -= chips;
@@ -209,25 +209,25 @@ struct Data {
     /** @brief Removes all chips from the current player
      * @see For normal removal use removeChips()
      * @exception No-throw
-    */
+     */
     void removeChipsAllIn() noexcept { this->gameData.playerChips[this->betRoundData.playerPos] = 0; }
 
     /** @brief Gets the number of chips that the current player has
      * @return Number of chips that the current player has
      * @exception No-throw
-    */
+     */
     u_int64_t getChips() const noexcept { return this->gameData.playerChips[this->betRoundData.playerPos]; }
 
     /** @brief Gets the number of chips that the current player has to add to match the current bet
      * @return Number of chips that the current player has to add to match the current bet
      * @exception No-throw
-    */
+     */
     u_int64_t getCallAdd() const noexcept { return this->betRoundData.currentBet - this->betRoundData.playerBets[this->betRoundData.playerPos]; }
 
     /** @brief Gets the number of chips that the current player has to add to raise to a bet
      * @param bet The bet that the player wants to raise to
      * @return Number of chips that the current player has to add to raise the current bet
      * @exception No-throw
-    */
+     */
     u_int64_t getRaiseAdd(const u_int64_t bet) const noexcept { return bet - this->betRoundData.playerBets[this->betRoundData.playerPos]; }
 };
