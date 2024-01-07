@@ -65,22 +65,25 @@ class Config {
    public:
     /// @brief Starting chips for each player
     u_int64_t startingChips;
-    /// @brief Small blind amount @note Big blind is always twice the small blind
+    /// @brief Small blind amount 
+    /// @note Big blind is always twice the small blind
     u_int64_t smallBlind;
-    /// @brief Increase blind for amount every time the dealer is again at position 0 @note Used to avoid infinite games
+    /// @brief Increase blind for amount every time the dealer is again at position 0 
+    /// @note Used to avoid infinite games
     u_int64_t addBlindPerDealer0;
     /// @brief Number of rounds to play
     u_int64_t numRounds;
     /// @brief Number of players in the game
     u_int8_t numPlayers;
 
-    
     /// @brief Create a Config object with the given parameters
     /// @param rounds Number of rounds to play
     /// @param players Number of players in the game
     /// @param chips Starting chips for each player
     /// @param small Small blind amount
     /// @param addBlind Increase blind for amount every time the dealer is again at position 0
+    /// @exception Strong
+    /// @throws std::invalid_argument if the parameters are invalid
     /// @note Big blind is always twice the small blind
     /// @note AddBlind is used to avoid infinite games
     Config(u_int16_t rounds, u_int8_t players, u_int64_t chips, u_int64_t small, u_int64_t addBlind)
