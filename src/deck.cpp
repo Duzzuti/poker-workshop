@@ -9,8 +9,7 @@ const char* Card::toString() const {
         PLOG_FATAL << "Invalid suit: " << this->suit;
         throw std::logic_error("Invalid suit");
     }
-
-    std::strcpy(str, SUIT_SYMBOLS[this->suit]);
+    std::strncpy(str, SUIT_SYMBOLS[this->suit], 3);
 
     if (this->rank < 2 || this->rank > 14) {
         PLOG_FATAL << "Invalid rank: " << this->rank;

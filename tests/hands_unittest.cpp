@@ -11,7 +11,7 @@ the tests are generating random combination. You can set the ITERATIONS constant
 */
 const constexpr u_int64_t ITERATIONS = 4000;
 
-// get last occurence of an element in an array
+// get last occurrence of an element in an array
 template <typename T>
 T* rfind(T* begin, T* end, const T& value) noexcept {
     for (T* i = end - 1; i >= begin; i--) {
@@ -251,7 +251,7 @@ TEST(HandStrengths, ThreeOfAKind) {
             u_int8_t ranks[7]{rank};
             // should discard STRAIGHTy, FLUSHy, FULL_HOUSEy, FOUR_OF_A_KINDy, STRAIGHT_FLUSHy, ROYAL_FLUSHy
             std::random_shuffle(cards, &cards[4]);
-            Card popedCard = cards[3];
+            Card poppedCard = cards[3];
             // cards[3] gets discarded
             // add three random cards by avoiding quads and pairs
             for (u_int8_t j = 3; j < 6; j++) {
@@ -280,7 +280,7 @@ TEST(HandStrengths, ThreeOfAKind) {
                 ranks[rankSize++] = ranks[0] - 1;
                 ranks[rankSize++] = ranks[3] + 1;
             } else if (ranks[0] == ranks[3] - 4) {
-                // nearly a straight, we need to avoid inbetween ranked cards
+                // nearly a straight, we need to avoid in-between ranked cards
                 if (ranks[0] != ranks[1] - 1)
                     // avoid rank between ranks[0] and ranks[1]
                     ranks[rankSize++] = ranks[0] + 1;
@@ -293,8 +293,8 @@ TEST(HandStrengths, ThreeOfAKind) {
             }
 
             // avoid flush
-            if (cards[3].suit == cards[4].suit && cards[4].suit == cards[5].suit && cards[5].suit != popedCard.suit)
-                // if we have 3 cards of the same suit and the poped card is not of the same suit
+            if (cards[3].suit == cards[4].suit && cards[4].suit == cards[5].suit && cards[5].suit != poppedCard.suit)
+                // if we have 3 cards of the same suit and the popped card is not of the same suit
                 // (that means that one of the triplet also has this suit), we need to avoid the same suit
                 cards[6] = Deck::getRandomCardExcept({}, 0, cards[3].suit, ranks, rankSize);
             else
@@ -330,7 +330,7 @@ TEST(HandStrengths, TwoPair) {
                 Card cards[7];
                 u_int8_t cardSize = 0;
                 u_int8_t suits[4] = {0};
-                u_int32_t rankStrength = 0;
+                u_int32_t rankStrength;
                 // should discard THREE_OF_A_KINDy, STRAIGHTy, FLUSHy,
                 // FULL_HOUSEy (discarded by 3ofAKind), FOUR_OF_A_KINDy (discarded by 3ofAKind), STRAIGHT_FLUSHy (discarded by flush), ROYAL_FLUSHy (discarded by flush)
 
@@ -346,10 +346,8 @@ TEST(HandStrengths, TwoPair) {
 
                 while (true) {
                     // reset to two pairs
-                    while (cardSize > 4) {
-                        rankStrength = 0;
-                        suits[cards[--cardSize].suit]--;
-                    }
+                    while (cardSize > 4) suits[cards[--cardSize].suit]--;
+
                     // add 3 random cards by avoiding three of a kind with rank1 and rank2
                     for (u_int8_t j = 4; j < 7; j++) {
                         cards[j] = Deck::getRandomCardExcept(cards, j, -1, std::array<u_int8_t, 2>{rank1, rank2}.data(), 2);
