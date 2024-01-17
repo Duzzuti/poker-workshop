@@ -6,8 +6,18 @@ const char* Player::getName() const noexcept {
     return s;
 }
 
-void Player::setPlayerPosNum(u_int8_t num) noexcept { this->playerPosNum = num; }
+Player::Player(const char* name) {
+    if (std::strlen(name) > MAX_PLAYER_NAME_LENGTH) {
+        PLOG_FATAL << "Player name too long";
+        throw std::invalid_argument("Player name too long");
+    }
+    std::strncpy(this->name, name, MAX_PLAYER_NAME_LENGTH);
+}
 
-void Player::setHand(const Card card1, const Card card2) noexcept { this->hand = std::pair<Card, Card>(card1, card2); }
+const char* Player::createPlayerName(const char* name, u_int8_t playerNum) noexcept {
+    if (playerNum == 0) return name;
 
-const std::pair<Card, Card> Player::getHand() const noexcept { return this->hand; }
+    static char playerName[20];
+    std::snprintf(playerName, sizeof(playerName), "%s%d", name, playerNum);
+    return playerName;
+};
