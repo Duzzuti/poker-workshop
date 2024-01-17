@@ -7,15 +7,15 @@ There are two parameter that determine the strength of a hand:
 ## Hand kind
 In poker, there are 10 different hands. In order of strength, they are:
 1. Royal flush
-1. Straight flush
-1. Four of a kind
-1. Full house
-1. Flush
-1. Straight
-1. Three of a kind
-1. Two pair
-1. One pair
-1. High card
+2. Straight flush
+3. Four of a kind
+4. Full house
+5. Flush
+6. Straight
+7. Three of a kind
+8. Two pair
+9. One pair
+10. High card
 
 ## Rank strength
 The `rank strength` is a way to determine a winner when two players have the same `hand kind`. The `rank strength` is determined by the ranks of the variable cards (not included to the `hand kind`) in the hand. The higher the `rank strength`, the stronger the hand.
