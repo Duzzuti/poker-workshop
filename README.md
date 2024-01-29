@@ -34,6 +34,26 @@ If you are not using VSCode, you need to skip step 2 and instead of steps 5-8, y
 1. Install the required extensions in the container (C/C++, CMake)
 
 ## Docs
+
+### How to generate the docs
+If you followed the docker setup, you can generate the docs easily:
+1. You have to be in the container shell
+1. You have to be in the poker-workshop folder
+
+```sh
+bash gen_doxy.sh
+```
+
+or generate them manually:
+
+```sh
+doxygen doxygen_config
+```
+
+Now you should have a `html` folder in the working directory. Open the `html/index.html` file in your browser to view the docs.
+
+### Docs structure
+
 We are using a [Game class](docs/game.md) to simulate one set of poker games. The game class is responsible for the game loop and the game logic. Every time a [Player](docs/player.md) has to make a turn, it calls the player´s `turn` method with the [Data](docs/data.md) struct, which holds all information about the game. The game class simulates a [Deck](docs/deck.md) of cards. Who wins the showdown is determined by the [Handstrength](docs/handstrengths.md) of the players.
 
 There are several implemented [Players](docs/players.md) with different strategies.
