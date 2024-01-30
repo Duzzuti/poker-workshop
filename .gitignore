@@ -4,6 +4,10 @@ build
 #vscode
 .vscode
 
+#doxgen
+html
+latex
+
 #data
 data
 issues.txt
