@@ -1,7 +1,9 @@
 #include "human_player.h"
 
 Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept {
+    // prints the current state of the game
     std::cout << "Your hand: " << this->getHand().first.toString() << " " << this->getHand().second.toString();
+    // prints the community cards
     std::cout << " | Community cards: ";
     for (u_int8_t i = 0; i < 5; i++) {
         if (data.roundData.betRoundState == BetRoundState::PREFLOP)
@@ -13,9 +15,12 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
 
         std::cout << data.roundData.communityCards[i].toString() << " ";
     }
+    // prints the pot, current bet, your chips and the minimum raise/bet
     std::cout << "| Pot: " << data.roundData.pot << " | Current bet: " << data.betRoundData.currentBet;
     std::cout << " | Your chips: " << data.getChips() << " | Minimum raise/bet: " << data.betRoundData.minimumRaise + data.betRoundData.currentBet << std::endl;
     while (true) {
+        // asks the user what to do
+        // if onlyRaise is true, the user can only raise or call
         if (onlyRaise)
             std::cout << "Please enter an action ('c' for call, 'r <bet>' for raise): ";
         else
@@ -23,6 +28,7 @@ Action HumanPlayer::turn(const Data& data, const bool onlyRaise) const noexcept 
         std::string input;
         std::getline(std::cin, input);
 
+        // checks the input and returns the corresponding action
         if (input == "f" && !onlyRaise)
             return {Actions::FOLD};
         else if (input == "c")

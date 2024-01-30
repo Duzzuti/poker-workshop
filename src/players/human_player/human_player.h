@@ -1,10 +1,35 @@
 #pragma once
 #include "player.h"
 
+/// @brief A player that will be controlled by a human
+/// @note This player will ask the user every turn what to do
+/// @note Should not be used in a simulation, because it will wait for user input
 class HumanPlayer : public Player {
    public:
+    /// @brief Constructor with custom name
+    /// @param name The name of the player
+    /// @exception Guarantee Strong
+    /// @throw std::invalid_argument If the name is too long
+    /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the name
     HumanPlayer(const char* name) : Player(name){};
-    HumanPlayer(u_int8_t playerNum = 0) : Player(createPlayerName("HumanPlayer", playerNum)){};
 
+    /// @brief Constructor with default name and custom playerNum
+    /// @param playerNum The number of the player which will be appended to the default name
+    /// @exception Guarantee No-throw
+    /// @note Cuts of the name if it is too long, so that the returned string is at most MAX_PLAYER_NAME_LENGTH long
+    /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the saved name
+    HumanPlayer(u_int8_t playerNum = 0) noexcept : Player(createPlayerName("HumanPlayer", playerNum)){};
+
+    /// @brief Ask the user what to do
+    /// @param data The data of the game
+    /// @param onlyRaise If true, the player can only raise or call
+    /// @return The choosen Action of the player
+    /// @exception Guarantee No-throw
+    /// @note The method waits for user input
+    /// @note The method is const because it should not change the state of the player
+    /// @note This method is overridden from the Player class
+    /// @see Player::turn()
+    /// @see Data
+    /// @see Action
     Action turn(const Data& data, const bool onlyRaise = false) const noexcept override;
 };
