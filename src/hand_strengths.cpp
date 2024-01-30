@@ -29,19 +29,19 @@ HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, 
 
     // saves the ranks for the different kinds
     // 0 means not found, else rank (2-14)
-    u_int8_t rank11 = 0;    // rank of highest card
-    u_int8_t rank12 = 0;    // rank of second highest card
-    u_int8_t rank13 = 0;    // rank of third highest card
-    u_int8_t rank14 = 0;    // rank of fourth highest card
-    u_int8_t rank15 = 0;    // rank of fifth highest card
-    u_int8_t rank21 = 0;    // rank of highest pair
-    u_int8_t rank22 = 0;    // rank of second highest pair
-    u_int8_t rank23 = 0;    // rank of third highest pair
-    u_int8_t rank31 = 0;    // rank of highest three of a kind
-    u_int8_t rank32 = 0;    // rank of second highest three of a kind
-    u_int8_t rank4 = 0;     // rank of four of a kind
+    u_int8_t rank11 = 0;  // rank of highest card
+    u_int8_t rank12 = 0;  // rank of second highest card
+    u_int8_t rank13 = 0;  // rank of third highest card
+    u_int8_t rank14 = 0;  // rank of fourth highest card
+    u_int8_t rank15 = 0;  // rank of fifth highest card
+    u_int8_t rank21 = 0;  // rank of highest pair
+    u_int8_t rank22 = 0;  // rank of second highest pair
+    u_int8_t rank23 = 0;  // rank of third highest pair
+    u_int8_t rank31 = 0;  // rank of highest three of a kind
+    u_int8_t rank32 = 0;  // rank of second highest three of a kind
+    u_int8_t rank4 = 0;   // rank of four of a kind
 
-    int8_t flush_suit = -1; // -1 (no flush) or suit of flush (0-3)
+    int8_t flush_suit = -1;  // -1 (no flush) or suit of flush (0-3)
 
     for (u_int8_t j = 0; j < 4; j++) {
         if (suits[j] >= 5) {
@@ -60,31 +60,31 @@ HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, 
                 break;
             case 3:
                 // three of a kind
-                if (rank31 == 0)        // first three of a kind (highest)
+                if (rank31 == 0)  // first three of a kind (highest)
                     rank31 = j + 2;
-                else                    // second three of a kind (second highest)
+                else  // second three of a kind (second highest)
                     rank32 = j + 2;
                 break;
             case 2:
                 // pair
-                if (rank21 == 0)        // first pair (highest)
+                if (rank21 == 0)  // first pair (highest)
                     rank21 = j + 2;
-                else if (rank22 == 0)   // second pair (second highest)
+                else if (rank22 == 0)  // second pair (second highest)
                     rank22 = j + 2;
-                else                    // third pair (third highest)
+                else  // third pair (third highest)
                     rank23 = j + 2;
                 break;
             case 1:
                 // single card
-                if (rank11 == 0)        // first single card (highest)
+                if (rank11 == 0)  // first single card (highest)
                     rank11 = j + 2;
-                else if (rank12 == 0)   // second single card (second highest)
+                else if (rank12 == 0)  // second single card (second highest)
                     rank12 = j + 2;
-                else if (rank13 == 0)   // third single card (third highest)
+                else if (rank13 == 0)  // third single card (third highest)
                     rank13 = j + 2;
-                else if (rank14 == 0)   // fourth single card (fourth highest)
+                else if (rank14 == 0)  // fourth single card (fourth highest)
                     rank14 = j + 2;
-                else if (rank15 == 0)   // fifth single card (fifth highest)
+                else if (rank15 == 0)  // fifth single card (fifth highest)
                     rank15 = j + 2;
                 break;
             default:
@@ -105,7 +105,7 @@ HandStrengths HandStrengths::getHandStrength(const std::pair<Card, Card>& hand, 
             return HandStrengths{HandKinds::FULL_HOUSE, (u_int32_t)(rank31 << 4) | std::max<u_int8_t>(rank32, rank21)};
         }
         // possible hands: flush, straight flush, royal flush
-        
+
         // cards that are part of the flush
         Card flush_cards[7];
         // number of cards that are part of the flush
