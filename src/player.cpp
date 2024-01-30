@@ -2,6 +2,7 @@
 
 const char* Player::getName() const noexcept {
     static char s[MAX_PLAYER_GET_NAME_LENGTH];
+    // format: "playerPosNum:name"
     std::snprintf(s, sizeof(s), "%d:%s", this->playerPosNum, this->name);
     return s;
 }
@@ -11,6 +12,7 @@ Player::Player(const char* name) {
         PLOG_FATAL << "Player name too long";
         throw std::invalid_argument("Player name too long");
     }
+    // copy name to this->name
     std::strncpy(this->name, name, MAX_PLAYER_NAME_LENGTH);
 }
 
@@ -18,6 +20,7 @@ const char* Player::createPlayerName(const char* name, u_int8_t playerNum) noexc
     if (playerNum == 0) return name;
 
     static char playerName[MAX_PLAYER_NAME_LENGTH];
+    // format: "nameNum"
     std::snprintf(playerName, sizeof(playerName), "%s%d", name, playerNum);
     return playerName;
 };
