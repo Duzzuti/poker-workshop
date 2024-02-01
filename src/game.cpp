@@ -129,8 +129,9 @@ const char* Game::getPlayerInfo(u_int8_t playerPos, const int64_t chipsDiff) con
 }
 
 void Game::initPlayerOrder() noexcept {
-    // shuffle deck
-    std::random_shuffle(&this->players[0], &this->players[this->config.numPlayers]);
+    // shuffle player order
+    if (this->config.shufflePlayers)
+        std::random_shuffle(&this->players[0], &this->players[this->config.numPlayers]);
     PLOG_INFO << "Shuffled players, new order:";
     for (u_int8_t i = 0; i < this->config.numPlayers; i++) {
         // set playerPosNum for each player

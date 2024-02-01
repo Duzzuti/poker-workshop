@@ -77,17 +77,19 @@ const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(c
 class Config {
    public:
     /// @brief Starting chips for each player
-    u_int64_t startingChips;
+    const u_int64_t startingChips;
     /// @brief Small blind amount
     /// @note Big blind is always twice the small blind
-    u_int64_t smallBlind;
+    const u_int64_t smallBlind;
     /// @brief Increase blind for amount every time the dealer is again at position 0
     /// @note Used to avoid infinite games
-    u_int64_t addBlindPerDealer0;
+    const u_int64_t addBlindPerDealer0;
     /// @brief Number of rounds to play
-    u_int64_t numRounds;
+    const u_int64_t numRounds;
     /// @brief Number of players in the game
-    u_int8_t numPlayers;
+    const u_int8_t numPlayers;
+    /// @brief Shuffle players at the start of each round
+    const bool shufflePlayers;
 
     /// @brief Create a Config object with the given parameters
     /// @param rounds Number of rounds to play
@@ -101,8 +103,8 @@ class Config {
     /// @note AddBlind is used to avoid infinite games
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
-    Config(u_int16_t rounds, u_int8_t players, u_int64_t chips, u_int64_t small, u_int64_t addBlind)
-        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numRounds(rounds), numPlayers(players) {
+    Config(const u_int16_t rounds, const u_int8_t players, const u_int64_t chips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true)
+        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numRounds(rounds), numPlayers(players), shufflePlayers(shuffle){
         if (this->numPlayers < 2 || this->numPlayers > MAX_PLAYERS) {
             PLOG_FATAL << "Invalid number of players: " << this->numPlayers << " (min: 2, max: " << MAX_PLAYERS << ")";
             throw std::invalid_argument("Invalid number of players");
