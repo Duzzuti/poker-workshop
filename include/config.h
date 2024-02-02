@@ -104,7 +104,7 @@ class Config {
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
     Config(const u_int16_t rounds, const u_int8_t players, const u_int64_t chips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true)
-        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numRounds(rounds), numPlayers(players), shufflePlayers(shuffle){
+        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numRounds(rounds), numPlayers(players), shufflePlayers(shuffle) {
         if (this->numPlayers < 2 || this->numPlayers > MAX_PLAYERS) {
             PLOG_FATAL << "Invalid number of players: " << this->numPlayers << " (min: 2, max: " << MAX_PLAYERS << ")";
             throw std::invalid_argument("Invalid number of players");

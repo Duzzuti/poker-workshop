@@ -35,8 +35,7 @@ class TestPlayer : public Player {
     /// @see Action
     Action turn(const Data& data, const bool onlyRaise = false) const noexcept override;
 
- private:
-
+   private:
     /// @brief Sets the sequence of actions that will be returned by the turn method
     /// @param actions sequence of actions
     /// @param length length of the sequence
@@ -45,7 +44,7 @@ class TestPlayer : public Player {
     /// @see TEST_PLAYER_ACTION_SIZE for the maximum length of the sequence
     /// @see Action
     void setActions(const Action actions[], const u_int16_t length) {
-        if(length > TEST_PLAYER_ACTION_SIZE){
+        if (length > TEST_PLAYER_ACTION_SIZE) {
             throw std::invalid_argument("Too many actions");
         }
         std::memcpy(this->actions, actions, length * sizeof(Action));
