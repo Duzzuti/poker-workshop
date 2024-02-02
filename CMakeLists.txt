@@ -14,6 +14,7 @@ set(PLAYER_DIR ${SRC_DIR}/players)
 set(CHECK_PLAYER ${PLAYER_DIR}/check_player/check_player.cpp)
 set(RAND_PLAYER ${PLAYER_DIR}/rand_player/rand_player.cpp)
 set(HUMAN_PLAYER ${PLAYER_DIR}/human_player/human_player.cpp)
+set(TEST_PLAYER ${PLAYER_DIR}/test_player/test_player.cpp)
 
 include(FetchContent)
 

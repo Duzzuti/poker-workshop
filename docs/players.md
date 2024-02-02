@@ -7,4 +7,5 @@ Here is a list of all currently available player types:
 |----|--------|-----------|
 |RandomPlayer|?|Randomly chooses a legal action|
 |CheckPlayer|?|Always checks/calls|
-|HumanPlayer|?|Asks the user which action to perform|
+|HumanPlayer|-|Asks the user which action to perform|
+|TestPlayer|-|Chooses actions according to a sequence of actions|
