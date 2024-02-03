@@ -2,6 +2,10 @@
 
 #include "config.h"
 
+/// @brief Get an unsigned long from the user
+/// @param askForInput The string to ask the user for input
+/// @return The unsigned long from the user
+/// @exception Guarantee No-throw
 u_int64_t getUL(const std::string askForInput) {
     std::cout << askForInput;
 
@@ -20,6 +24,10 @@ u_int64_t getUL(const std::string askForInput) {
     return inputNum;
 }
 
+/// @brief Get an unsigned char from the user
+/// @param askForInput The string to ask the user for input
+/// @return The unsigned char from the user
+/// @exception Guarantee No-throw
 u_int8_t getUC(const std::string askForInput) {
     std::cout << askForInput;
 
@@ -42,6 +50,10 @@ u_int8_t getUC(const std::string askForInput) {
     return (u_int8_t)inputNum;
 }
 
+/// @brief Ask the user for the amount of chips for each player
+/// @param numPlayers The number of players in the game
+/// @param playerChips The array to store the amount of chips for each player
+/// @exception Guarantee No-throw
 void getPlayersChips(u_int8_t numPlayers, u_int64_t playerChips[]) {
     for (u_int8_t i = 0; i < numPlayers; i++) playerChips[i] = getUL("Enter the amount of chips for player " + std::to_string(i + 1) + ": ");
 }
