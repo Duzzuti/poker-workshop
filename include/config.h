@@ -117,8 +117,8 @@ class Config {
             throw std::invalid_argument("Invalid number of players");
         }
         u_int64_t totalChips = 0;
-        for(u_int16_t i = 0; i < this->numPlayers; i++){
-            if(this->startingChips[i] == 0){
+        for (u_int16_t i = 0; i < this->numPlayers; i++) {
+            if (this->startingChips[i] == 0) {
                 PLOG_FATAL << "All starting chips must be greater than 0. Player " << i << " has 0 chips.";
                 throw std::invalid_argument("All starting chips must be greater than 0. Player " + std::to_string(i) + " has 0 chips.");
             }
@@ -145,8 +145,8 @@ class Config {
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
     Config(const u_int16_t games, const u_int8_t players, const u_int64_t startChips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true, const int16_t maxRounds = -1)
-        : Config(games, players, getPlayerChipsArray(startChips, players), small, addBlind, shuffle, maxRounds) {};
-    
+        : Config(games, players, getPlayerChipsArray(startChips, players), small, addBlind, shuffle, maxRounds){};
+
    private:
     /// @brief Create an array of starting chips for each player
     /// @param startChips Starting chips for each player
