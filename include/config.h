@@ -84,15 +84,19 @@ class Config {
     /// @brief Increase blind for amount every time the dealer is again at position 0
     /// @note Used to avoid infinite games
     const u_int64_t addBlindPerDealer0;
-    /// @brief Number of rounds to play
-    const u_int64_t numRounds;
+    /// @brief Number of games to play
+    const u_int64_t numGames;
     /// @brief Number of players in the game
     const u_int8_t numPlayers;
     /// @brief Shuffle players at the start of each round
     const bool shufflePlayers;
+    /// @brief Maximum number of rounds per game
+    /// @note If the rounds exceed this number, the game will end and the player with the most chips will win
+    /// @note Negative means no limit
+    const int16_t maxRounds;
 
     /// @brief Create a Config object with the given parameters
-    /// @param rounds Number of rounds to play
+    /// @param games Number of games to play
     /// @param players Number of players in the game
     /// @param chips Starting chips for each player
     /// @param small Small blind amount
@@ -103,8 +107,8 @@ class Config {
     /// @note AddBlind is used to avoid infinite games
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
-    Config(const u_int16_t rounds, const u_int8_t players, const u_int64_t chips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true)
-        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numRounds(rounds), numPlayers(players), shufflePlayers(shuffle) {
+    Config(const u_int16_t games, const u_int8_t players, const u_int64_t chips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true, const int16_t maxRounds = -1)
+        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numGames(games), numPlayers(players), shufflePlayers(shuffle), maxRounds(maxRounds) {
         if (this->numPlayers < 2 || this->numPlayers > MAX_PLAYERS) {
             PLOG_FATAL << "Invalid number of players: " << this->numPlayers << " (min: 2, max: " << MAX_PLAYERS << ")";
             throw std::invalid_argument("Invalid number of players");

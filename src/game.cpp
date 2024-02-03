@@ -25,7 +25,7 @@ void Game::run() {
     char winnerString[MAX_POT_DIST_STRING_LENGTH];
 
     // run for the number of games specified in the config
-    for (u_int64_t game = 0; game < this->config.numRounds; game++) {
+    for (u_int64_t game = 0; game < this->config.numGames; game++) {
         // ONE GAME
         // shuffle players
         PLOG_DEBUG << "Starting game " << game;
@@ -34,9 +34,9 @@ void Game::run() {
         // reset player out
         std::memset(this->data.gameData.playerOut, 0, sizeof(this->data.gameData.playerOut));
         for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips;
-        int32_t round = -1;
+        int16_t round = -1;
 
-        while (this->data.gameData.numNonOutPlayers > 1) {
+        while (this->data.gameData.numNonOutPlayers > 1 && (this->config.maxRounds < 0 || round < this->config.maxRounds - 1)) {
             // ONE ROUND
             round++;
             this->deck = Deck();
