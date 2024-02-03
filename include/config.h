@@ -77,7 +77,7 @@ const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(c
 class Config {
    public:
     /// @brief Starting chips for each player
-    const u_int64_t startingChips;
+    const u_int64_t* startingChips;
     /// @brief Small blind amount
     /// @note Big blind is always twice the small blind
     const u_int64_t smallBlind;
@@ -98,29 +98,67 @@ class Config {
     /// @brief Create a Config object with the given parameters
     /// @param games Number of games to play
     /// @param players Number of players in the game
-    /// @param chips Starting chips for each player
+    /// @param playerChips Starting chips for each player. Has to be an array of with at least players elements
     /// @param small Small blind amount
     /// @param addBlind Increase blind for amount every time the dealer is again at position 0
+    /// @param shuffle Shuffle players at the start of each round
+    /// @param maxRounds Maximum number of rounds per game. Negative means no limit
+    /// @exception Guarantee Strong
+    /// @throws std::invalid_argument if the parameters are invalid
+    /// @note Big blind is always twice the small blind
+    /// @note AddBlind is used to avoid infinite games
+    /// @note Undefined behavior if the length of playerChips is less than players
+    /// @see MAX_PLAYERS for the maximum number of players
+    /// @see MAX_CHIPS for the maximum amount of chips
+    Config(const u_int16_t games, const u_int8_t players, const u_int64_t* playerChips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true, const int16_t maxRounds = -1)
+        : startingChips(playerChips), smallBlind(small), addBlindPerDealer0(addBlind), numGames(games), numPlayers(players), shufflePlayers(shuffle), maxRounds(maxRounds) {
+        if (this->numPlayers < 2 || this->numPlayers > MAX_PLAYERS) {
+            PLOG_FATAL << "Invalid number of players: " << this->numPlayers << " (min: 2, max: " << MAX_PLAYERS << ")";
+            throw std::invalid_argument("Invalid number of players");
+        }
+        u_int64_t totalChips = 0;
+        for(u_int16_t i = 0; i < this->numPlayers; i++){
+            if(this->startingChips[i] == 0){
+                PLOG_FATAL << "All starting chips must be greater than 0. Player " << i << " has 0 chips.";
+                throw std::invalid_argument("All starting chips must be greater than 0. Player " + std::to_string(i) + " has 0 chips.");
+            }
+            totalChips += this->startingChips[i];
+        }
+        if (totalChips > MAX_CHIPS) {
+            PLOG_FATAL << "Too many chips: " << totalChips << " (max: " << MAX_CHIPS << ")";
+            throw std::invalid_argument("Too many chips");
+        }
+    }
+
+    /// @brief Create a Config object with the given parameters
+    /// @param games Number of games to play
+    /// @param players Number of players in the game
+    /// @param startChips Same starting chips for each player
+    /// @param small Small blind amount
+    /// @param addBlind Increase blind for amount every time the dealer is again at position 0
+    /// @param shuffle Shuffle players at the start of each round
+    /// @param maxRounds Maximum number of rounds per game. Negative means no limit
     /// @exception Guarantee Strong
     /// @throws std::invalid_argument if the parameters are invalid
     /// @note Big blind is always twice the small blind
     /// @note AddBlind is used to avoid infinite games
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
-    Config(const u_int16_t games, const u_int8_t players, const u_int64_t chips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true, const int16_t maxRounds = -1)
-        : startingChips(chips), smallBlind(small), addBlindPerDealer0(addBlind), numGames(games), numPlayers(players), shufflePlayers(shuffle), maxRounds(maxRounds) {
-        if (this->numPlayers < 2 || this->numPlayers > MAX_PLAYERS) {
-            PLOG_FATAL << "Invalid number of players: " << this->numPlayers << " (min: 2, max: " << MAX_PLAYERS << ")";
-            throw std::invalid_argument("Invalid number of players");
+    Config(const u_int16_t games, const u_int8_t players, const u_int64_t startChips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true, const int16_t maxRounds = -1)
+        : Config(games, players, getPlayerChipsArray(startChips, players), small, addBlind, shuffle, maxRounds) {};
+    
+   private:
+    /// @brief Create an array of starting chips for each player
+    /// @param startChips Starting chips for each player
+    /// @param players Number of players in the game
+    /// @return Array of starting chips for each player
+    /// @exception Guarantee No-throw
+    u_int64_t* getPlayerChipsArray(const u_int64_t startChips, const u_int8_t players) {
+        static u_int64_t playerChips[MAX_PLAYERS];
+        for (u_int8_t i = 0; i < players; i++) {
+            playerChips[i] = startChips;
         }
-        if (this->startingChips * this->numPlayers > MAX_CHIPS) {
-            PLOG_FATAL << "Too many chips: " << this->startingChips * this->numPlayers << " (max: " << MAX_CHIPS << ")";
-            throw std::invalid_argument("Too many chips");
-        }
-        if (this->startingChips == 0) {
-            PLOG_FATAL << "Starting chips must be greater than 0";
-            throw std::invalid_argument("Starting chips must be greater than 0");
-        }
+        return playerChips;
     }
 };
 

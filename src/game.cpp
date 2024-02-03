@@ -33,7 +33,7 @@ void Game::run() {
         this->data.gameData.numNonOutPlayers = this->config.numPlayers;
         // reset player out
         std::memset(this->data.gameData.playerOut, 0, sizeof(this->data.gameData.playerOut));
-        for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips;
+        for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips[i];
         int16_t round = -1;
 
         while (this->data.gameData.numNonOutPlayers > 1 && (this->config.maxRounds < 0 || round < this->config.maxRounds - 1)) {
