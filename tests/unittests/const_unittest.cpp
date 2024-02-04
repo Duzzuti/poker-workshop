@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "config.h"
 #include "game_test.h"
 
 TEST(CONST, IntLens) {

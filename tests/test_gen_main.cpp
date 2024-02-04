@@ -1,7 +1,5 @@
-#include <iostream>
 #include <optional>
 
-#include "config.h"
 #include "game_test.h"
 
 /// @brief Get an unsigned long from the user

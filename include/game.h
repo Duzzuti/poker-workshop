@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 
-#include "config.h"
 #include "player.h"
 
 /// @brief Simulates a set of poker games

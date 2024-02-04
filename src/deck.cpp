@@ -1,7 +1,5 @@
 #include "deck.h"
 
-#include "logger.h"
-
 const char* Card::toString() const {
     // Size should accommodate null terminator and Unicode symbol
     static char str[CARD_STR_LEN];

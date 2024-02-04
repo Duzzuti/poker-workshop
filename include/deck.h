@@ -1,7 +1,4 @@
 #pragma once
-
-#include <iostream>
-
 #include "config.h"
 
 /// @brief Represents one of the 52 cards in a poker deck

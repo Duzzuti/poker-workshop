@@ -1,7 +1,4 @@
 #pragma once
-#include <iostream>
-
-#include "config.h"
 #include "deck.h"
 
 /// @brief Represents a type of action that a player has to take in their turn
