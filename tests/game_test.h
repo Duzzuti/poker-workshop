@@ -2,6 +2,7 @@
 #include "check_player/check_player.h"
 #include "game.h"
 #include "rand_player/rand_player.h"
+#include "test_player/test_player.h"
 
 /// @brief Mocks the Game class for testing
 class GameTest : public Game {
@@ -78,4 +79,10 @@ class GameTest : public Game {
 
     /// @copydoc Game::getPlayerInfo()
     const char* getPlayerInfo(u_int8_t playerPos = MAX_PLAYERS, const int64_t chipsDiff = 0) const noexcept { return Game::getPlayerInfo(playerPos, chipsDiff); }
+
+    /// @copydoc Game::data
+    Data& getData() noexcept { return this->data; }
+
+    /// @copydoc Game::players
+    std::unique_ptr<Player>*& getPlayers() noexcept { return this->players; }
 };

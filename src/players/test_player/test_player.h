@@ -35,7 +35,6 @@ class TestPlayer : public Player {
     /// @see Action
     Action turn(const Data& data, const bool onlyRaise = false) const noexcept override;
 
-   private:
     /// @brief Sets the sequence of actions that will be returned by the turn method
     /// @param actions sequence of actions
     /// @param length length of the sequence
@@ -54,6 +53,7 @@ class TestPlayer : public Player {
         actionIndex = length;
     }
 
+   private:
     /// @brief The sequence of actions that will be returned by the turn method
     Action actions[TEST_PLAYER_ACTION_SIZE];
 
