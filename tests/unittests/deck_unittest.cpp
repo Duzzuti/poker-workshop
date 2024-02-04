@@ -104,6 +104,12 @@ TEST(Deck, Perfdraw) {
     }
 }
 
+TEST(Deck, PerfrandomCard) {
+    for (u_int64_t ind = 0; ind < 1000000; ind++) {
+        Deck::getRandomCard();
+    }
+}
+
 TEST(Deck, PerfrandomCardExcept) {
     for (u_int64_t ind = 0; ind < 1000000; ind++) {
         Deck::getRandomCardExcept({}, 0);

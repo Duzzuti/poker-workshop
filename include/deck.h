@@ -56,6 +56,14 @@ class Deck {
     /// @note The string representation is a concatenation of the string representations of all cards in the deck
     const char* toString(const char sep = '\n') const;
 
+    /// @brief Gets a random card
+    /// @return A random card
+    /// @exception Guarantee No-throw
+    /// @note The method is static, it does not interact with the deck. It is considering every card
+    /// @note The method is used for debug purposes
+    /// @see getRandomCardExcept() if you want to make a more exclusive selection
+    static Card getRandomCard() noexcept;
+
     /// @brief Gets a random card that matches the given criteria
     /// @param cards The cards to EXCLUDE from the selection
     /// @param cardsLen The number of cards in the cards array

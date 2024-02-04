@@ -65,6 +65,8 @@ const char* Deck::toString(const char sep) const {
     return str;
 }
 
+Card Deck::getRandomCard() noexcept { return Card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)}; }
+
 Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, const int8_t suit, const u_int8_t ranks[], const u_int8_t rankLen) noexcept {
     // get random card from deck except cards in array
     // except with suit if suit != -1
