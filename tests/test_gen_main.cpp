@@ -155,14 +155,112 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
     }
 }
 
+/// @brief Gets the moves and community cards for each player in the game from the user 
+/// @param numPlayers The number of players in the game
+/// @param bigBlind The amount of the big blind
+/// @param firstPlayer The index of the first player to make a move (after the big blind)
+/// @exception Guarantee Strong
+/// @throw std::invalid_argument If the gotten action or the bet round state is invalid
+/// @note The input is not verified, because we want to test the game with that input
+/// @note The input is not processed (players who fold are not removed from the game, etc.)
+/// @note The user is informed about all previous actions before asking for the next action
+void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, u_int8_t firstPlayer = 2) {
+    BetRoundState betRoundState = BetRoundState::PREFLOP;
+    bool first = true;
+    // store the information about the moves and community cards
+    std::stringstream turns;
+    Card communityCards[5];
+    while (true) {
+        int16_t playerInd = firstPlayer - 1;
+        while (true) {
+            playerInd++;
+            if (playerInd == numPlayers) {
+                playerInd = 0;
+                turns << std::endl;
+            }
+            // get the move of the player
+            std::optional<Action> move = getMove(playerInd, first, bigBlind);
+            first = false;
+            // bet round is over
+            if (!move.has_value()) {
+                turns << "Bet round is over" << std::endl;
+                break;
+            }
+            switch (move.value().action) {
+                case Actions::FOLD:
+                    turns << "Player " << playerInd << " folded" << std::endl;
+                    break;
+                case Actions::CALL:
+                    turns << "Player " << playerInd << " called" << std::endl;
+                    break;
+                case Actions::CHECK:
+                    turns << "Player " << playerInd << " checked" << std::endl;
+                    break;
+                case Actions::RAISE:
+                    turns << "Player " << playerInd << " raised " << move.value().bet << std::endl;
+                    break;
+                case Actions::BET:
+                    turns << "Player " << playerInd << " bet " << move.value().bet << std::endl;
+                    break;
+                default:
+                    throw std::invalid_argument("Invalid action");
+            }
+            std::cout << turns.str();
+        }
+
+        // get the community cards for the round
+        turns << "Community cards: ";
+        switch (betRoundState) {
+            case BetRoundState::PREFLOP:
+                std::cout << "Flop" << std::endl;
+                betRoundState = BetRoundState::FLOP;
+                communityCards[0] = getCard("Enter the first community card: ");
+                communityCards[1] = getCard("Enter the second community card: ");
+                communityCards[2] = getCard("Enter the third community card: ");
+                turns << communityCards[0].toString() << " " << communityCards[1].toString() << " " << communityCards[2].toString() << " " << std::endl;
+                break;
+            case BetRoundState::FLOP:
+                std::cout << "Turn" << std::endl;
+                betRoundState = BetRoundState::TURN;
+                communityCards[3] = getCard("Enter the fourth community card: ");
+                turns << communityCards[0].toString() << " " << communityCards[1].toString() << " " << communityCards[2].toString() << " " << communityCards[3].toString() << " " << std::endl;
+                break;
+            case BetRoundState::TURN:
+                std::cout << "River" << std::endl;
+                betRoundState = BetRoundState::RIVER;
+                communityCards[4] = getCard("Enter the fifth community card: ");
+                turns << communityCards[0].toString() << " " << communityCards[1].toString() << " " << communityCards[2].toString() << " " << communityCards[3].toString() << " "
+                      << communityCards[4].toString() << " " << std::endl;
+                break;
+            case BetRoundState::RIVER:
+                std::cout << "End of round" << std::endl;
+                return;
+
+            default:
+                throw std::invalid_argument("Invalid bet round state");
+        }
+    }
+}
+
 int main() {
+    // get game parameters
     u_int8_t numPlayers = getUC("Enter the number of players: ");
     u_int64_t smallBlind = getUL("Enter the small blind amount: ");
     u_int64_t playerChips[numPlayers];
+    // get the amount of chips for each player
     getPlayersChips(numPlayers, playerChips);
+
+    // get moves for each player
+    getMoves(numPlayers, smallBlind * 2);
 
     // game should only last one round
     Config config{1, numPlayers, playerChips, smallBlind, 0, false, 1};
+    GameTest game(config);
+
+    // generate players
+    for (int i = 0; i < numPlayers; i++) {
+        game.getPlayers()[i] = std::make_unique<TestPlayer>(i);
+    }
 
     return 0;
 }
