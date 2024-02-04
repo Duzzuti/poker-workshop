@@ -50,16 +50,17 @@ u_int8_t getUC(const std::string askForInput) noexcept {
     return (u_int8_t)inputNum;
 }
 
-/// @brief Get a card from the user
+/// @brief Get a card from the user, letting the user choose between a random card and a specific card
 /// @param askForInput The string to ask the user for input
 /// @return The card from the user
 /// @exception Guarantee No-throw
-/// @note The input should be in the format <H/D/C/S><2-9/T/J/Q/K/A>
+/// @note The input should be in the format <H/D/C/S><2-9/T/J/Q/K/A> or 'r' for a random card
 Card getCard(const std::string askForInput) noexcept {
-    std::cout << askForInput;
+    std::cout << askForInput << " (or 'r' for a random card): ";
     while (true) {
         std::string userInput;
         std::getline(std::cin, userInput);
+        if (userInput == "r") return Deck::getRandomCard();
         try {
             userInput[0] = std::toupper(userInput[0]);
             userInput[1] = std::toupper(userInput[1]);
@@ -102,6 +103,20 @@ Card getCard(const std::string askForInput) noexcept {
 /// @exception Guarantee No-throw
 void getPlayersChips(const u_int8_t numPlayers, u_int64_t playerChips[]) noexcept {
     for (u_int8_t i = 0; i < numPlayers; i++) playerChips[i] = getUL("Enter the amount of chips for player " + std::to_string(i + 1) + ": ");
+}
+
+/// @brief Ask the user for the hand of each player
+/// @param numPlayers The number of players in the game
+/// @param playerHands The array to store the hand for each player
+/// @exception Guarantee No-throw
+/// @note The user can choose to get random cards
+void getPlayersHand(const u_int8_t numPlayers, std::pair<Card, Card> playerHands[]) noexcept {
+    for (u_int8_t i = 0; i < numPlayers; i++) {
+        std::cout << "Enter the hand for player " << i + 1 << std::endl;
+        playerHands[i].first = getCard("Enter the first card");
+        playerHands[i].second = getCard("Enter the second card");
+        std::cout << "Player " << i + 1 << " hand: " << playerHands[i].first.toString() << " " << playerHands[i].second.toString() << std::endl;
+    }
 }
 
 /// @brief Gets one move for a player from the user
@@ -157,17 +172,18 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
 /// @param numPlayers The number of players in the game
 /// @param bigBlind The amount of the big blind
 /// @param firstPlayer The index of the first player to make a move (after the big blind)
+/// @param communityCards The array to store the community cards
+/// @param playerActions The array to store the actions of each player
 /// @exception Guarantee Strong
 /// @throw std::invalid_argument If the gotten action or the bet round state is invalid
 /// @note The input is not verified, because we want to test the game with that input
 /// @note The input is not processed (players who fold are not removed from the game, etc.)
 /// @note The user is informed about all previous actions before asking for the next action
-void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, u_int8_t firstPlayer = 2) {
+void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communityCards[], std::vector<Action> playerActions[], u_int8_t firstPlayer = 2) {
     BetRoundState betRoundState = BetRoundState::PREFLOP;
     bool first = true;
     // store the information about the moves and community cards
     std::stringstream turns;
-    Card communityCards[5];
     while (true) {
         int16_t playerInd = firstPlayer - 1;
         while (true) {
@@ -184,6 +200,7 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, u_int8_t firs
                 turns << "Bet round is over" << std::endl;
                 break;
             }
+            playerActions[playerInd].push_back(move.value());
             switch (move.value().action) {
                 case Actions::FOLD:
                     turns << "Player " << playerInd << " folded" << std::endl;
@@ -212,21 +229,21 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, u_int8_t firs
             case BetRoundState::PREFLOP:
                 std::cout << "Flop" << std::endl;
                 betRoundState = BetRoundState::FLOP;
-                communityCards[0] = getCard("Enter the first community card: ");
-                communityCards[1] = getCard("Enter the second community card: ");
-                communityCards[2] = getCard("Enter the third community card: ");
+                communityCards[0] = getCard("Enter the first community card");
+                communityCards[1] = getCard("Enter the second community card");
+                communityCards[2] = getCard("Enter the third community card");
                 turns << communityCards[0].toString() << " " << communityCards[1].toString() << " " << communityCards[2].toString() << " " << std::endl;
                 break;
             case BetRoundState::FLOP:
                 std::cout << "Turn" << std::endl;
                 betRoundState = BetRoundState::TURN;
-                communityCards[3] = getCard("Enter the fourth community card: ");
+                communityCards[3] = getCard("Enter the fourth community card");
                 turns << communityCards[0].toString() << " " << communityCards[1].toString() << " " << communityCards[2].toString() << " " << communityCards[3].toString() << " " << std::endl;
                 break;
             case BetRoundState::TURN:
                 std::cout << "River" << std::endl;
                 betRoundState = BetRoundState::RIVER;
-                communityCards[4] = getCard("Enter the fifth community card: ");
+                communityCards[4] = getCard("Enter the fifth community card");
                 turns << communityCards[0].toString() << " " << communityCards[1].toString() << " " << communityCards[2].toString() << " " << communityCards[3].toString() << " "
                       << communityCards[4].toString() << " " << std::endl;
                 break;
@@ -243,13 +260,26 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, u_int8_t firs
 int main() {
     // get game parameters
     u_int8_t numPlayers = getUC("Enter the number of players: ");
+    std::cout << std::endl;
     u_int64_t smallBlind = getUL("Enter the small blind amount: ");
+    std::cout << std::endl;
     u_int64_t playerChips[numPlayers];
     // get the amount of chips for each player
     getPlayersChips(numPlayers, playerChips);
+    std::cout << std::endl;
+
+    std::pair<Card, Card> playerHands[numPlayers];
+    // get the hand for each player
+    getPlayersHand(numPlayers, playerHands);
+    std::cout << std::endl;
+
+    // store the community cards
+    std::vector<Action> playerActions[numPlayers];
+    Card communityCards[5];
 
     // get moves for each player
-    getMoves(numPlayers, smallBlind * 2);
+    getMoves(numPlayers, smallBlind * 2, communityCards, playerActions);
+    std::cout << std::endl;
 
     // game should only last one round
     Config config{1, numPlayers, playerChips, smallBlind, 0, false, 1};
