@@ -155,7 +155,7 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
     }
 }
 
-/// @brief Gets the moves and community cards for each player in the game from the user 
+/// @brief Gets the moves and community cards for each player in the game from the user
 /// @param numPlayers The number of players in the game
 /// @param bigBlind The amount of the big blind
 /// @param firstPlayer The index of the first player to make a move (after the big blind)
