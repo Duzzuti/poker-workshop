@@ -78,8 +78,7 @@ Card getCard(const std::string askForInput) noexcept {
             else if (userInput[1] == 'A')
                 rank = 14;
             // check if the rank is valid
-            if (rank < 2 || rank > 14)
-                throw std::invalid_argument("Invalid rank");
+            if (rank < 2 || rank > 14) throw std::invalid_argument("Invalid rank");
             switch (userInput[0]) {
                 case 'H':
                     return Card{.rank = rank, .suit = 1};
@@ -103,8 +102,57 @@ Card getCard(const std::string askForInput) noexcept {
 /// @param numPlayers The number of players in the game
 /// @param playerChips The array to store the amount of chips for each player
 /// @exception Guarantee No-throw
-void getPlayersChips(u_int8_t numPlayers, u_int64_t playerChips[]) {
+void getPlayersChips(const u_int8_t numPlayers, u_int64_t playerChips[]) noexcept {
     for (u_int8_t i = 0; i < numPlayers; i++) playerChips[i] = getUL("Enter the amount of chips for player " + std::to_string(i + 1) + ": ");
+}
+
+/// @brief Gets one move for a player from the user
+/// @param playerInd The index of the player making the move
+/// @param first If it is the first move of the round
+/// @param bigBlind The amount of the big blind
+/// @return The action of the player or an empty optional if the bet round is over
+/// @exception Guarantee No-throw
+/// @note The input should be in the format <action> [<bet>]
+std::optional<Action> getMove(const int16_t playerInd, const bool first, const u_int64_t bigBlind) noexcept {
+    while (true) {
+        if (first)
+            std::cout << "Player " << playerInd << " turn after big blind (" << bigBlind << ") was set" << std::endl;
+        else
+            std::cout << "Player " << playerInd << " turn" << std::endl;
+        std::cout << "Please enter an action ('f' for fold, 'c' for call, 'chk' for check, 'r <bet>' for raise, 'b <bet>' for bet) or 'next' if the bet round is over: ";
+        std::string input;
+        std::getline(std::cin, input);
+
+        // bet round is over
+        if (input == "next") return {};
+
+        // checks the input and returns the corresponding action
+        if (input == "f")
+            return Action{Actions::FOLD};
+        else if (input == "c")
+            return Action{Actions::CALL};
+        else if (input == "chk")
+            return Action{Actions::CHECK};
+        else if (input[0] == 'r') {
+            try {
+                u_int64_t bet = std::stoull(input.substr(2));
+                return Action{Actions::RAISE, bet};
+            } catch (std::invalid_argument& e) {
+                std::cout << "Invalid input! Try again" << std::endl;
+                continue;
+            }
+        } else if (input[0] == 'b') {
+            try {
+                u_int64_t bet = std::stoull(input.substr(2));
+                return Action{Actions::BET, bet};
+            } catch (std::invalid_argument& e) {
+                std::cout << "Invalid input! Try again" << std::endl;
+                continue;
+            }
+        } else {
+            std::cout << "Invalid input! Try again" << std::endl;
+        }
+    }
 }
 
 int main() {
