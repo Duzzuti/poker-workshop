@@ -34,6 +34,7 @@ struct Card {
 /// @see Card
 class Deck {
     friend class GameTest;
+
    public:
     /// @brief Generates a new deck of 52 cards
     /// @exception Guarantee No-throw

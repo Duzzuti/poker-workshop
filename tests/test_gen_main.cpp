@@ -1,6 +1,7 @@
 #include <optional>
 
 #include "game_test.h"
+#include "test_player/test_player.h"
 
 /// @brief Get an unsigned long from the user
 /// @param askForInput The string to ask the user for input

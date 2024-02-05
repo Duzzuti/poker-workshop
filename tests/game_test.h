@@ -2,7 +2,6 @@
 #include "check_player/check_player.h"
 #include "game.h"
 #include "rand_player/rand_player.h"
-#include "test_player/test_player.h"
 
 /// @brief Mocks the Game class for testing
 class GameTest : public Game {
@@ -33,6 +32,28 @@ class GameTest : public Game {
         this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
         this->players[3] = std::move(std::make_unique<RandPlayer>(4));
         this->players[4] = std::move(std::make_unique<RandPlayer>(5));
+    }
+
+    /// @brief Sets up the deck for the game, so that the whished cards will be drawn
+    /// @param playerHands The desired hands of the players
+    /// @param numPlayers The number of players (length of playerHands)
+    /// @param communityCards The desired community cards
+    /// @exception Guarantee Basic
+    /// @throw std::invalid_argument if there are more than 52 cards in the desired deck
+    /// @note Undefined behavior if the length of playerHands is not equal to numPlayers
+    /// @note The order will be: player 1 hand, player 2 hand, ..., player numPlayers hand, community cards
+    /// @note REQUIRES: shufflePlayers and shuffleDeck to be false in Config
+    /// @see Deck::putCard()
+    void buildDeck(const std::pair<Card, Card> playerHands[], const u_int8_t numPlayers, const Card communityCards[5]) {
+        this->deck = Deck{};
+        u_int8_t deckInd = 0;
+        for (u_int8_t i = 0; i < numPlayers; i++) {
+            this->deck.putCard(playerHands[i].first, deckInd++);
+            this->deck.putCard(playerHands[i].second, deckInd++);
+        }
+        for (u_int8_t i = 0; i < 5; i++) {
+            this->deck.putCard(communityCards[i], deckInd++);
+        }
     }
 
     /// @copydoc Game::initPlayerOrder()
@@ -85,4 +106,7 @@ class GameTest : public Game {
 
     /// @copydoc Game::players
     std::unique_ptr<Player>*& getPlayers() noexcept { return this->players; }
+
+    /// @copydoc Game::deck
+    Deck& getDeck() noexcept { return this->deck; }
 };

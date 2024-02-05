@@ -102,7 +102,7 @@ Card Deck::getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int
 void Deck::putCard(const Card card, const u_int8_t cardPos) {
     // find card in deck and swap it with the card at cardPos
     int8_t pos = this->len - cardPos - 1;
-    if(pos < 0){
+    if (pos < 0) {
         PLOG_FATAL << "Invalid card position: there are only " << this->len << " cards in the deck; trying to put a card at position " << cardPos;
         throw std::invalid_argument("Invalid card position: there are only " + std::to_string(this->len) + " cards in the deck; trying to put a card at position " + std::to_string(cardPos));
     }
