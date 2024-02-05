@@ -88,8 +88,10 @@ class Config {
     const u_int64_t numGames;
     /// @brief Number of players in the game
     const u_int8_t numPlayers;
-    /// @brief Shuffle players at the start of each round
+    /// @brief Shuffle players at the start of each game
     const bool shufflePlayers;
+    /// @brief Shuffle deck at the start of each round
+    const bool shuffleDeck;
     /// @brief Maximum number of rounds per game
     /// @note If the rounds exceed this number, the game will end and the player with the most chips will win
     /// @note Negative means no limit
@@ -101,7 +103,8 @@ class Config {
     /// @param playerChips Starting chips for each player. Has to be an array of with at least players elements
     /// @param small Small blind amount
     /// @param addBlind Increase blind for amount every time the dealer is again at position 0
-    /// @param shuffle Shuffle players at the start of each round
+    /// @param shufflePlayers Shuffle players at the start of each game
+    /// @param shuffleDeck Shuffle deck at the start of each round
     /// @param maxRounds Maximum number of rounds per game. Negative means no limit
     /// @exception Guarantee Strong
     /// @throws std::invalid_argument if the parameters are invalid
@@ -110,8 +113,16 @@ class Config {
     /// @note Undefined behavior if the length of playerChips is less than players
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
-    Config(const u_int16_t games, const u_int8_t players, const u_int64_t* playerChips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true, const int16_t maxRounds = -1)
-        : startingChips(playerChips), smallBlind(small), addBlindPerDealer0(addBlind), numGames(games), numPlayers(players), shufflePlayers(shuffle), maxRounds(maxRounds) {
+    Config(const u_int16_t games, const u_int8_t players, const u_int64_t* playerChips, const u_int64_t small, const u_int64_t addBlind, const bool shufflePlayers = true,
+           const bool shuffleDeck = true, const int16_t maxRounds = -1)
+        : startingChips(playerChips),
+          smallBlind(small),
+          addBlindPerDealer0(addBlind),
+          numGames(games),
+          numPlayers(players),
+          shufflePlayers(shufflePlayers),
+          shuffleDeck(shuffleDeck),
+          maxRounds(maxRounds) {
         if (this->numPlayers < 2 || this->numPlayers > MAX_PLAYERS) {
             PLOG_FATAL << "Invalid number of players: " << this->numPlayers << " (min: 2, max: " << MAX_PLAYERS << ")";
             throw std::invalid_argument("Invalid number of players");
@@ -136,7 +147,8 @@ class Config {
     /// @param startChips Same starting chips for each player
     /// @param small Small blind amount
     /// @param addBlind Increase blind for amount every time the dealer is again at position 0
-    /// @param shuffle Shuffle players at the start of each round
+    /// @param shufflePlayers Shuffle players at the start of each game
+    /// @param shuffleDeck Shuffle deck at the start of each round
     /// @param maxRounds Maximum number of rounds per game. Negative means no limit
     /// @exception Guarantee Strong
     /// @throws std::invalid_argument if the parameters are invalid
@@ -144,8 +156,9 @@ class Config {
     /// @note AddBlind is used to avoid infinite games
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
-    Config(const u_int16_t games, const u_int8_t players, const u_int64_t startChips, const u_int64_t small, const u_int64_t addBlind, const bool shuffle = true, const int16_t maxRounds = -1)
-        : Config(games, players, getPlayerChipsArray(startChips, players), small, addBlind, shuffle, maxRounds){};
+    Config(const u_int16_t games, const u_int8_t players, const u_int64_t startChips, const u_int64_t small, const u_int64_t addBlind, const bool shufflePlayers = true, const bool shuffleDeck = true,
+           const int16_t maxRounds = -1)
+        : Config(games, players, getPlayerChipsArray(startChips, players), small, addBlind, shufflePlayers, shuffleDeck, maxRounds){};
 
    private:
     /// @brief Create an array of starting chips for each player

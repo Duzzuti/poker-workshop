@@ -281,8 +281,8 @@ int main() {
     getMoves(numPlayers, smallBlind * 2, communityCards, playerActions);
     std::cout << std::endl;
 
-    // game should only last one round
-    Config config{1, numPlayers, playerChips, smallBlind, 0, false, 1};
+    // game should only last one round and not shuffle players or deck
+    Config config{1, numPlayers, playerChips, smallBlind, 0, false, false, 1};
     GameTest game(config);
 
     // generate players

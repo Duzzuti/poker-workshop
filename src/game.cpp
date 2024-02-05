@@ -189,7 +189,7 @@ void Game::setupBetRound() noexcept {
 
 void Game::startRound(const bool firstRound) {
     // reset deck and round data
-    this->deck.shuffle();
+    if (this->config.shuffleDeck) this->deck.shuffle();
     // select new dealer
     u_int8_t lastDealerPos = this->data.roundData.dealerPos;
     this->data.selectDealer(firstRound);
