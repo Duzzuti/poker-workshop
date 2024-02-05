@@ -98,3 +98,20 @@ Card Deck::getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int
     } while (std::find(exceptionCards, &exceptionCards[cardsLen], card) != &exceptionCards[cardsLen]);
     return card;
 }
+
+void Deck::putCard(const Card card, const u_int8_t cardPos) {
+    // find card in deck and swap it with the card at cardPos
+    int8_t pos = this->len - cardPos - 1;
+    if(pos < 0){
+        PLOG_FATAL << "Invalid card position: there are only " << this->len << " cards in the deck; trying to put a card at position " << cardPos;
+        throw std::invalid_argument("Invalid card position: there are only " + std::to_string(this->len) + " cards in the deck; trying to put a card at position " + std::to_string(cardPos));
+    }
+    for (u_int8_t i = 0; i < this->len; i++) {
+        if (this->cards[i] == card) {
+            std::swap(this->cards[i], this->cards[pos]);
+            return;
+        }
+    }
+    PLOG_FATAL << "Card not found in remaining deck (deck might be not complete or card is invalid): " << card.toString();
+    throw std::invalid_argument("Card not found in remaining deck");
+}

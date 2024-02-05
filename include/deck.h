@@ -33,6 +33,7 @@ struct Card {
 /// @brief Represents a deck of 52 cards
 /// @see Card
 class Deck {
+    friend class GameTest;
    public:
     /// @brief Generates a new deck of 52 cards
     /// @exception Guarantee No-throw
@@ -111,6 +112,18 @@ class Deck {
     friend bool operator!=(const Deck& lhs, const Deck& rhs) noexcept { return !(lhs == rhs); };
 
    private:
+    /// @brief Searches the card in the remaining deck and swaps it with the card at the given position
+    /// @param card The card to put at the given position
+    /// @param cardPos The position to put the card. 0 is the next card to draw, 1 is the card after that, etc.
+    /// @exception Guarantee Strong
+    /// @throws std::invalid_argument if the card is not in the remaining deck or invalid
+    /// @throws std::invalid_argument if the cardPos is greater than the remaining deck length
+    /// @note The method is accessed in GameTest for testing purposes
+    /// @note The card will be swapped with the cardPos-th next drawn card in the deck
+    /// @note The card needs to be in the remaining deck
+    /// @note The cardPos needs to be less than the remaining deck length
+    void putCard(const Card card, const u_int8_t cardPos);
+
     /// @brief The cards in the deck
     Card cards[CARD_NUM];
     /// @brief The number of cards in the deck
