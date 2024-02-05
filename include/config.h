@@ -31,7 +31,7 @@ const constexpr char* SUIT_SYMBOLS[] = {
     u8"\xE2\x99\xA3"   // Clubs
 };
 /// @brief The maximum number of players allowed in a game (affects the memory usage of the program)
-const constexpr u_int8_t MAX_PLAYERS = 10;
+const constexpr u_int8_t MAX_PLAYERS = 10;  // 23 is the maximum value, because 23 * 2 hand cards + 5 community cards = 51 cards
 /// @brief The maximum amount of chips in the game (MAX_CHIPS/numPlayers is the maximum starting amount for each player)
 constexpr u_int64_t MAX_CHIPS = INT64_MAX - 1;
 /// @brief The maximum character length allowed for a player name
