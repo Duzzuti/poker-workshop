@@ -7,14 +7,16 @@
 #include "human_player/human_player.h"
 #include "rand_player/rand_player.h"
 
-void Game::run() {
+void Game::run(const bool initPlayers) {
     // config players
     // init players
-    this->players[0] = std::move(std::make_unique<CheckPlayer>(1));
-    this->players[1] = std::move(std::make_unique<RandPlayer>(2));
-    this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
-    this->players[3] = std::move(std::make_unique<RandPlayer>(4));
-    this->players[4] = std::move(std::make_unique<RandPlayer>(5));
+    if (initPlayers) {
+        this->players[0] = std::move(std::make_unique<CheckPlayer>(1));
+        this->players[1] = std::move(std::make_unique<RandPlayer>(2));
+        this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
+        this->players[3] = std::move(std::make_unique<RandPlayer>(4));
+        this->players[4] = std::move(std::make_unique<RandPlayer>(5));
+    }
 
     this->data.numPlayers = this->config.numPlayers;
     // reset winners
