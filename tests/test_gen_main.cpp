@@ -42,7 +42,7 @@ u_int8_t getUC(const std::string askForInput, const u_int8_t min = 0, const u_in
         try {
             inputNum = std::stoi(userInput);
             if (inputNum < min || inputNum > max) {
-                std::cout << "Invalid input. Please enter a number between " << min << " and " << max << ": ";
+                std::cout << "Invalid input. Please enter a number between " << +min << " and " << +max << ": ";
                 continue;
             }
             validInput = true;
@@ -169,7 +169,7 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
             try {
                 u_int64_t bet = std::stoull(input.substr(2));
                 return Action{Actions::RAISE, bet};
-            } catch (std::invalid_argument& e) {
+            } catch (std::exception& e) {
                 std::cout << "Invalid input! Try again" << std::endl;
                 continue;
             }
@@ -177,7 +177,7 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
             try {
                 u_int64_t bet = std::stoull(input.substr(2));
                 return Action{Actions::BET, bet};
-            } catch (std::invalid_argument& e) {
+            } catch (std::exception& e) {
                 std::cout << "Invalid input! Try again" << std::endl;
                 continue;
             }
