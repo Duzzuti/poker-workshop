@@ -216,6 +216,7 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communit
                 turns << std::endl;
             }
             // get the move of the player
+            std::cout << turns.str();
             std::optional<Action> move = getMove(playerInd, first, bigBlind);
             first = false;
             // bet round is over
@@ -243,7 +244,6 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communit
                 default:
                     throw std::invalid_argument("Invalid action");
             }
-            std::cout << turns.str();
         }
 
         // get the community cards for the round
@@ -317,20 +317,33 @@ int main() {
     getMoves(numPlayers, smallBlind * 2, communityCards, drawnCards, numPlayers * 2, playerActions);
     std::cout << std::endl;
 
-    // game should only last one round and not shuffle players or deck
-    Config config{1, numPlayers, playerChips, smallBlind, 0, false, false, 1};
-    GameTest game(config);
-    // build the deck for the game
-    game.buildDeck(playerHands, numPlayers, communityCards);
+    bool shouldSimulate = true;
+    bool shouldPrintData = true;
 
-    // generate players and their actions for the game
-    for (int i = 0; i < numPlayers; i++) {
-        std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
-        testPlayer->setActions(&playerActions[i][0], playerActions[i].size());
-        game.getPlayers()[i] = std::move(testPlayer);
+    if (shouldSimulate) {
+        // game should only last one round and not shuffle players or deck
+        Config config{1, numPlayers, playerChips, smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(playerHands, numPlayers, communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (playerActions[i].size() > 0) testPlayer->setActions(&playerActions[i][0], playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+        if (shouldPrintData) {
+            std::cout << "Game data: " << std::endl;
+            // FIXME: prints invalid winner data (no winners)
+            // FIXME: cards are not drawn correctly
+            // FIXME: player actions are not fulfilled correctly
+            game.getData().print();
+        }
     }
-
-    game.run();
 
     return 0;
 }

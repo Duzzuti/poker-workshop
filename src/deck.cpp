@@ -6,7 +6,7 @@ const char* Card::toString() const {
 
     // Invalid suit
     if (this->suit > 3) {
-        PLOG_FATAL << "Invalid suit: " << this->suit;
+        PLOG_FATAL << "Invalid suit: " << +this->suit;
         throw std::logic_error("Invalid suit");
     }
     // Add the suit symbol to the string (unicode)
@@ -14,7 +14,7 @@ const char* Card::toString() const {
 
     // Invalid rank
     if (this->rank < 2 || this->rank > 14) {
-        PLOG_FATAL << "Invalid rank: " << this->rank;
+        PLOG_FATAL << "Invalid rank: " << +this->rank;
         throw std::logic_error("Invalid rank");
     }
 

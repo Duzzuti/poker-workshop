@@ -167,19 +167,13 @@ struct Data {
         std::cout << "********************** GAME DATA ***********************" << std::endl;
         std::cout << "numNonOutPlayers: " << +this->gameData.numNonOutPlayers << std::endl;
         std::cout << "playerOut: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) {
-            if (this->gameData.playerOut[i]) std::cout << +i << " ";
-        }
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.playerOut[i] << " ";
         std::cout << std::endl;
         std::cout << "playerChips: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) {
-            std::cout << +i << "::" << this->gameData.playerChips[i] << " ";
-        }
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.playerChips[i] << " ";
         std::cout << std::endl;
         std::cout << "winners: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) {
-            std::cout << +i << "::" << this->gameData.winners[i] << " ";
-        }
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.winners[i] << " ";
         std::cout << std::endl;
         std::cout << "********************** ROUND DATA **********************" << std::endl;
         std::cout << "smallBlind: " << this->roundData.smallBlind << std::endl;
@@ -191,14 +185,14 @@ struct Data {
         std::cout << "pot: " << this->roundData.pot << std::endl;
         std::cout << "numActivePlayers: " << +this->roundData.numActivePlayers << std::endl;
         std::cout << "playerFolded: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) {
-            if (this->roundData.playerFolded[i]) std::cout << +i << " ";
-        }
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->roundData.playerFolded[i] << " ";
         std::cout << std::endl;
         std::cout << "communityCards: ";
-        for (u_int8_t i = 0; i < 5; i++) {
-            std::cout << this->roundData.communityCards[i].toString() << " ";
-        }
+        u_int8_t communityCardsCount = this->roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : this->roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : this->roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                               : 5;
+        for (u_int8_t i = 0; i < communityCardsCount; i++) std::cout << this->roundData.communityCards[i].toString() << " ";
         std::cout << std::endl;
         std::cout << "result: " << EnumToString::enumToString(this->roundData.result) << std::endl;
         std::cout << "betRoundState: " << EnumToString::enumToString(this->roundData.betRoundState) << std::endl;
@@ -207,9 +201,7 @@ struct Data {
         std::cout << "currentBet: " << this->betRoundData.currentBet << std::endl;
         std::cout << "minimumRaise: " << this->betRoundData.minimumRaise << std::endl;
         std::cout << "playerBets: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) {
-            std::cout << +i << "::" << this->betRoundData.playerBets[i] << " ";
-        }
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->betRoundData.playerBets[i] << " ";
         std::cout << std::endl;
         std::cout << "********************** END OF DATA *********************" << std::endl;
     }
