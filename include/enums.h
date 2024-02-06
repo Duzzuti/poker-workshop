@@ -73,3 +73,155 @@ enum class OutEnum {
     /// @brief The ROUND and pot is won by a player
     ROUND_WON,
 };
+
+/// @brief This class is used to convert the enum values to strings for logging purposes
+class EnumToString {
+   public:
+    /// @brief Converts OutEnum to a corresponding string
+    /// @param outEnum The enum value to convert
+    /// @return The string representation of the enum value
+    /// @exception Guarantee No-throw
+    static const char* enumToString(const OutEnum outEnum) noexcept {
+        switch (outEnum) {
+            case OutEnum::ROUND_CONTINUE:
+                return "CONTINUE";
+                break;
+
+            case OutEnum::GAME_WON:
+                return "GAME WON";
+                break;
+
+            case OutEnum::ROUND_WON:
+                return "ROUND WON";
+                break;
+        }
+    }
+
+    /// @brief Converts Actions to a corresponding string
+    /// @param action The enum value to convert
+    /// @return The string representation of the enum value
+    /// @exception Guarantee No-throw
+    static const char* enumToString(const Actions action) noexcept {
+        switch (action) {
+            case Actions::FOLD:
+                return "FOLD";
+                break;
+
+            case Actions::CALL:
+                return "CALL";
+                break;
+
+            case Actions::RAISE:
+                return "RAISE";
+                break;
+
+            case Actions::CHECK:
+                return "CHECK";
+                break;
+
+            case Actions::BET:
+                return "BET";
+                break;
+        }
+    }
+
+    /// @brief Converts CardSuits to a corresponding string
+    /// @param suit The enum value to convert
+    /// @return The string representation of the enum value
+    /// @exception Guarantee No-throw
+    static const char* enumToString(const CardSuits suit) noexcept {
+        switch (suit) {
+            case CardSuits::DIAMONDS:
+                return "DIAMONDS";
+                break;
+
+            case CardSuits::HEARTS:
+                return "HEARTS";
+                break;
+
+            case CardSuits::SPADES:
+                return "SPADES";
+                break;
+
+            case CardSuits::CLUBS:
+                return "CLUBS";
+                break;
+        }
+    }
+
+    /// @brief Converts HandKinds to a corresponding string
+    /// @param handKind The enum value to convert
+    /// @return The string representation of the enum value
+    /// @exception Guarantee No-throw
+    static const char* enumToString(const HandKinds handKind) noexcept {
+        switch (handKind) {
+            case HandKinds::NO_HAND:
+                return "NO HAND";
+                break;
+
+            case HandKinds::HIGH_CARD:
+                return "HIGH CARD";
+                break;
+
+            case HandKinds::PAIR:
+                return "PAIR";
+                break;
+
+            case HandKinds::TWO_PAIR:
+                return "TWO PAIR";
+                break;
+
+            case HandKinds::THREE_OF_A_KIND:
+                return "THREE OF A KIND";
+                break;
+
+            case HandKinds::STRAIGHT:
+                return "STRAIGHT";
+                break;
+
+            case HandKinds::FLUSH:
+                return "FLUSH";
+                break;
+
+            case HandKinds::FULL_HOUSE:
+                return "FULL HOUSE";
+                break;
+
+            case HandKinds::FOUR_OF_A_KIND:
+                return "FOUR OF A KIND";
+                break;
+
+            case HandKinds::STRAIGHT_FLUSH:
+                return "STRAIGHT FLUSH";
+                break;
+
+            case HandKinds::ROYAL_FLUSH:
+                return "ROYAL FLUSH";
+                break;
+        }
+    }
+
+    /// @brief Converts BetRoundState to a corresponding string
+    /// @param betRoundState The enum value to convert
+    /// @return The string representation of the enum value
+    /// @exception Guarantee No-throw
+    static const char* enumToString(const BetRoundState betRoundState) noexcept {
+        switch (betRoundState) {
+            case BetRoundState::PREFLOP:
+                return "PREFLOP";
+                break;
+
+            case BetRoundState::FLOP:
+                return "FLOP";
+                break;
+
+            case BetRoundState::TURN:
+                return "TURN";
+                break;
+
+            case BetRoundState::RIVER:
+                return "RIVER";
+                break;
+        }
+    }
+};

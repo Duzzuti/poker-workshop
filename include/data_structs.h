@@ -158,4 +158,59 @@ struct Data {
      * @exception Guarantee No-throw
      */
     u_int64_t getRaiseAdd(const u_int64_t bet) const noexcept { return bet - this->betRoundData.playerBets[this->betRoundData.playerPos]; }
+
+    /// @brief Prints all data to the console
+    /// @exception Guarantee No-throw
+    void print() const noexcept {
+        std::cout << "********************** BASIC DATA **********************" << std::endl;
+        std::cout << "numPlayers: " << +this->numPlayers << std::endl;
+        std::cout << "********************** GAME DATA ***********************" << std::endl;
+        std::cout << "numNonOutPlayers: " << +this->gameData.numNonOutPlayers << std::endl;
+        std::cout << "playerOut: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) {
+            if (this->gameData.playerOut[i]) std::cout << +i << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "playerChips: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) {
+            std::cout << +i << "::" << this->gameData.playerChips[i] << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "winners: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) {
+            std::cout << +i << "::" << this->gameData.winners[i] << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "********************** ROUND DATA **********************" << std::endl;
+        std::cout << "smallBlind: " << this->roundData.smallBlind << std::endl;
+        std::cout << "bigBlind: " << this->roundData.bigBlind << std::endl;
+        std::cout << "addBlind: " << this->roundData.addBlind << std::endl;
+        std::cout << "dealerPos: " << +this->roundData.dealerPos << std::endl;
+        std::cout << "smallBlindPos: " << +this->roundData.smallBlindPos << std::endl;
+        std::cout << "bigBlindPos: " << +this->roundData.bigBlindPos << std::endl;
+        std::cout << "pot: " << this->roundData.pot << std::endl;
+        std::cout << "numActivePlayers: " << +this->roundData.numActivePlayers << std::endl;
+        std::cout << "playerFolded: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) {
+            if (this->roundData.playerFolded[i]) std::cout << +i << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "communityCards: ";
+        for (u_int8_t i = 0; i < 5; i++) {
+            std::cout << this->roundData.communityCards[i].toString() << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "result: " << EnumToString::enumToString(this->roundData.result) << std::endl;
+        std::cout << "betRoundState: " << EnumToString::enumToString(this->roundData.betRoundState) << std::endl;
+        std::cout << "********************** BET ROUND DATA ******************" << std::endl;
+        std::cout << "playerPos: " << +this->betRoundData.playerPos << std::endl;
+        std::cout << "currentBet: " << this->betRoundData.currentBet << std::endl;
+        std::cout << "minimumRaise: " << this->betRoundData.minimumRaise << std::endl;
+        std::cout << "playerBets: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) {
+            std::cout << +i << "::" << this->betRoundData.playerBets[i] << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "********************** END OF DATA *********************" << std::endl;
+    }
 };
