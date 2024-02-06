@@ -286,6 +286,13 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communit
 }
 
 int main() {
+    srand(time(NULL));  // init random seed
+    // init logger
+    static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+    // add file logger
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("data/log_test_gen.txt", 1024 * 1024 * 10, 3);
+    plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
+
     // get game parameters
     u_int8_t numPlayers = getUC("Enter the number of players: ", 2, MAX_PLAYERS);
     std::cout << std::endl;
