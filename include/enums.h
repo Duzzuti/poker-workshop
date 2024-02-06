@@ -85,15 +85,15 @@ class EnumToString {
         switch (outEnum) {
             case OutEnum::ROUND_CONTINUE:
                 return "CONTINUE";
-                break;
 
             case OutEnum::GAME_WON:
                 return "GAME WON";
-                break;
 
             case OutEnum::ROUND_WON:
                 return "ROUND WON";
-                break;
+
+            default:
+                return "INVALID OutEnum value";
         }
     }
 
@@ -105,23 +105,21 @@ class EnumToString {
         switch (action) {
             case Actions::FOLD:
                 return "FOLD";
-                break;
 
             case Actions::CALL:
                 return "CALL";
-                break;
 
             case Actions::RAISE:
                 return "RAISE";
-                break;
 
             case Actions::CHECK:
                 return "CHECK";
-                break;
 
             case Actions::BET:
                 return "BET";
-                break;
+
+            default:
+                return "INVALID Actions value";
         }
     }
 
@@ -133,19 +131,18 @@ class EnumToString {
         switch (suit) {
             case CardSuits::DIAMONDS:
                 return "DIAMONDS";
-                break;
 
             case CardSuits::HEARTS:
                 return "HEARTS";
-                break;
 
             case CardSuits::SPADES:
                 return "SPADES";
-                break;
 
             case CardSuits::CLUBS:
                 return "CLUBS";
-                break;
+
+            default:
+                return "INVALID CardSuits value";
         }
     }
 
@@ -157,47 +154,39 @@ class EnumToString {
         switch (handKind) {
             case HandKinds::NO_HAND:
                 return "NO HAND";
-                break;
 
             case HandKinds::HIGH_CARD:
                 return "HIGH CARD";
-                break;
 
             case HandKinds::PAIR:
                 return "PAIR";
-                break;
 
             case HandKinds::TWO_PAIR:
                 return "TWO PAIR";
-                break;
 
             case HandKinds::THREE_OF_A_KIND:
                 return "THREE OF A KIND";
-                break;
 
             case HandKinds::STRAIGHT:
                 return "STRAIGHT";
-                break;
 
             case HandKinds::FLUSH:
                 return "FLUSH";
-                break;
 
             case HandKinds::FULL_HOUSE:
                 return "FULL HOUSE";
-                break;
 
             case HandKinds::FOUR_OF_A_KIND:
                 return "FOUR OF A KIND";
-                break;
 
             case HandKinds::STRAIGHT_FLUSH:
                 return "STRAIGHT FLUSH";
-                break;
 
             case HandKinds::ROYAL_FLUSH:
                 return "ROYAL FLUSH";
-                break;
+
+            default:
+                return "INVALID HandKinds value";
         }
     }
 
@@ -209,19 +198,18 @@ class EnumToString {
         switch (betRoundState) {
             case BetRoundState::PREFLOP:
                 return "PREFLOP";
-                break;
 
             case BetRoundState::FLOP:
                 return "FLOP";
-                break;
 
             case BetRoundState::TURN:
                 return "TURN";
-                break;
 
             case BetRoundState::RIVER:
                 return "RIVER";
-                break;
+
+            default:
+                return "INVALID BetRoundState value";
         }
     }
 };
