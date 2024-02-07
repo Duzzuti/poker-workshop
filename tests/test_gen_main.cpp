@@ -190,7 +190,6 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
 /// @brief Gets the moves and community cards for each player in the game from the user
 /// @param numPlayers The number of players in the game
 /// @param bigBlind The amount of the big blind
-/// @param firstPlayer The index of the first player to make a move (after the big blind)
 /// @param communityCards The array to store the community cards
 /// @param drawnCards The array for the drawn cards, which should not be drawn again. Should be long enough
 /// @param drawnCardCount The length of the drawnCards array
@@ -201,14 +200,14 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
 /// @note The input is not processed (players who fold are not removed from the game, etc.)
 /// @note The user is informed about all previous actions before asking for the next action
 /// @note Undefined behavior if drawnCards array is not long enough. Has to have at least 5 empty slots.
-void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communityCards[], Card drawnCards[], u_int8_t drawnCardCount, std::vector<Action> playerActions[],
-              const u_int8_t firstPlayer = 2) {
+void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communityCards[], Card drawnCards[], u_int8_t drawnCardCount, std::vector<Action> playerActions[]) {
     BetRoundState betRoundState = BetRoundState::PREFLOP;
     bool first = true;
     // store the information about the moves and community cards
     std::stringstream turns;
     while (true) {
-        int16_t playerInd = firstPlayer - 1;
+        // consider heads up rule (if there are only 2 players, 0 = small blind, 1 = big blind else 0 = dealer, 1 = small blind, 2 = big blind)
+        int16_t playerInd = (numPlayers == 2) ? 1 : 2;
         while (true) {
             playerInd++;
             if (playerInd == numPlayers) {
@@ -339,7 +338,6 @@ int main() {
         if (shouldPrintData) {
             std::cout << "Game data: " << std::endl;
             // FIXME: prints invalid winner data (no winners)
-            // FIXME: player actions are not fulfilled correctly
             game.getData().print();
         }
     }
