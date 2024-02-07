@@ -167,7 +167,7 @@ struct Data {
         std::cout << "********************** GAME DATA ***********************" << std::endl;
         std::cout << "numNonOutPlayers: " << +this->gameData.numNonOutPlayers << std::endl;
         std::cout << "playerOut: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.playerOut[i] << " ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << (this->gameData.playerOut[i] ? "true" : "false") << " ";
         std::cout << std::endl;
         std::cout << "playerChips: ";
         for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.playerChips[i] << " ";
@@ -185,7 +185,7 @@ struct Data {
         std::cout << "pot: " << this->roundData.pot << std::endl;
         std::cout << "numActivePlayers: " << +this->roundData.numActivePlayers << std::endl;
         std::cout << "playerFolded: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->roundData.playerFolded[i] << " ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << (this->roundData.playerFolded[i] ? "true" : "false") << " ";
         std::cout << std::endl;
         std::cout << "communityCards: ";
         u_int8_t communityCardsCount = this->roundData.betRoundState == BetRoundState::PREFLOP ? 0

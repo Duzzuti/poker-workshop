@@ -207,11 +207,11 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communit
     std::stringstream turns;
     while (true) {
         // consider heads up rule (if there are only 2 players, 0 = small blind, 1 = big blind else 0 = dealer, 1 = small blind, 2 = big blind)
-        int16_t playerInd = (numPlayers == 2) ? 1 : 2;
+        int16_t playerInd = first ? ((numPlayers == 2) ? 1 : 2) : 2;
         while (true) {
             playerInd++;
-            if (playerInd == numPlayers) {
-                playerInd = 0;
+            if (playerInd >= numPlayers) {
+                playerInd %= numPlayers;
                 turns << std::endl;
             }
             // get the move of the player
