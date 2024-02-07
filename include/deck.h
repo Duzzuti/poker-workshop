@@ -44,6 +44,11 @@ class Deck {
     /// @exception Guarantee No-throw
     void shuffle() noexcept;
 
+    /// @brief Resets the deck to its initial state
+    /// @exception Guarantee No-throw
+    /// @note The deck will be in the same order as it was before drawing the first card
+    void reset() noexcept;
+
     /// @brief Draws the top card from the deck
     /// @return The top card from the deck
     /// @exception Guarantee Strong

@@ -39,7 +39,10 @@ void Game::run(const bool initPlayers) {
         while (this->data.gameData.numNonOutPlayers > 1 && (this->config.maxRounds < 0 || round < this->config.maxRounds - 1)) {
             // ONE ROUND
             round++;
-            this->deck = Deck();
+            if (this->config.shuffleDeck)
+                this->deck = Deck();
+            else
+                this->deck.reset();
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
             this->data.roundData.numActivePlayers = this->data.gameData.numNonOutPlayers;
 

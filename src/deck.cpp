@@ -39,10 +39,9 @@ Deck::Deck() noexcept {
     }
 }
 
-void Deck::shuffle() noexcept {
-    // shuffle deck
-    std::random_shuffle(&this->cards[0], &this->cards[CARD_NUM]);
-}
+void Deck::shuffle() noexcept { std::random_shuffle(&this->cards[0], &this->cards[CARD_NUM]); }
+
+void Deck::reset() noexcept { this->len = CARD_NUM; }
 
 Card Deck::draw() {
     // draw card from deck

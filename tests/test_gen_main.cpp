@@ -339,7 +339,6 @@ int main() {
         if (shouldPrintData) {
             std::cout << "Game data: " << std::endl;
             // FIXME: prints invalid winner data (no winners)
-            // FIXME: cards are not drawn correctly
             // FIXME: player actions are not fulfilled correctly
             game.getData().print();
         }
