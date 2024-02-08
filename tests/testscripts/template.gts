@@ -10,8 +10,8 @@ SMALL_BLIND: 10                 // small blind (big blind is 2 * small blind)
 // the following are the action taken by each player
 // the player is identified with P0, P1, P2, etc. until Pn-1
 
-// actions are in the format of: P<n>: <action> [<amount>]
-// actions are: c (call), r <bet> (raise), f (fold), chk (check), b <bet> (bet)
+// actions are in the format of: P<n>: <action>[<amount>]
+// actions are: c (call), r<bet> (raise), f (fold), chk (check), b<bet> (bet)
 // small blind and big blind are set, first-to-act player is P0 (for 2 or 3 players) or P3 (for 4 or more players)
 
 // preflop

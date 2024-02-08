@@ -104,6 +104,81 @@ void findTest(std::ifstream& file, u_int64_t& currentLine, TestConfig& testConfi
     PLOG_VERBOSE << "Test name: " << testConfig.testName << " in class " << testConfig.className << " from file " << testConfig.fileName << std::endl;
 }
 
+/// @brief Parses the moves for each player in the test and stores them in the testConfig
+/// @param file The file to read from (the current (already read) line should be the first line of the moves)
+/// @param currentLine The current line in the file
+/// @param firstLine The first (already read) line of the moves
+/// @param testConfig The configuration for the test, where the moves will be stored
+/// @exception Guarantee No-throw
+/// @note The file, currentLine and testConfig will be modified in-place
+/// @note If illegal characters or ill-formed moves are found, the program will exit
+/// @note Undefined behavior if the testConfig is not valid
+/// @see To parse a whole test: parseTest()
+void parseMoves(std::ifstream& file, u_int64_t& currentLine, const std::string& firstLine, TestConfig& testConfig) noexcept {
+    std::string line = firstLine;
+    u_int64_t playerIndex;
+    currentLine--;  // the first line was already read
+    do {
+        currentLine++;
+        removeComments(line);
+        if (line[0] == 'P') {
+            // get the player index
+            u_int16_t lineColumn = 1;
+            findNumber(line, playerIndex, currentLine, lineColumn, 0, testConfig.numPlayers - 1, true);
+            while (line[lineColumn] != ':') {
+                lineColumn++;
+                if (lineColumn >= line.size()) {
+                    std::cerr << "Could not find ':' after the player index in line: " << currentLine << std::endl;
+                    exit(1);
+                }
+            }
+            // skip the ':'
+            lineColumn++;
+            if (lineColumn >= line.size()) {
+                std::cerr << "No move found after the player index in line: " << currentLine << std::endl;
+                exit(1);
+            }
+            // get the move string
+            std::string moveString = findCharacterString(line, currentLine, lineColumn);
+            switch (moveString[0]) {
+                case 'f':
+                    // fold
+                    testConfig.playerActions[playerIndex].push_back(Action{Actions::FOLD});
+                    break;
+                case 'c':
+                    // check
+                    if (moveString.size() == 3 && moveString[1] == 'h' && moveString[2] == 'k') testConfig.playerActions[playerIndex].push_back(Action{Actions::CHECK});
+                    // call
+                    else if (moveString.size() == 1)
+                        testConfig.playerActions[playerIndex].push_back(Action{Actions::CALL});
+                    else {
+                        std::cerr << "Invalid move (" << moveString << ") found in line: " << currentLine << std::endl;
+                        exit(1);
+                    }
+                    break;
+                case 'r':
+                    // raise
+                    testConfig.playerActions[playerIndex].push_back(Action{Actions::RAISE, findNumber(moveString, currentLine, 1, 1)});
+                    break;
+                case 'b':
+                    // bet
+                    testConfig.playerActions[playerIndex].push_back(Action{Actions::BET, findNumber(moveString, currentLine, 1, 1)});
+                    break;
+                default:
+                    std::cerr << "Invalid move (" << moveString << ") found in line: " << currentLine << std::endl;
+                    exit(1);
+            }
+        } else if (line.rfind("TEST:") == 0) {
+            // next test found (end of moves)
+            break;
+        } else if (!isLineEmpty(line)) {
+            // invalid line found
+            std::cerr << "Invalid format. Expect move, TEST token or blank line (line: " << currentLine << ")" << std::endl;
+            exit(1);
+        }
+    } while (std::getline(file, line));
+}
+
 /// @brief Parses one test from the file and stores the configuration in the testConfig
 /// @param file The file to read from (the next line should be the first line of the test (after the TEST: token))
 /// @param currentLine The current line in the file
@@ -165,7 +240,7 @@ void parseTest(std::ifstream& file, u_int64_t& currentLine, TestConfig& testConf
     // get the amount of chips for each player
     u_int16_t index = 13;
     for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
-        testConfig.playerChips[i] = findNumber(linePlayerChips, currentLine, index);
+        findNumber(linePlayerChips, testConfig.playerChips[i], currentLine, index);
     }
     // get the hand for each player
     index = 14;
@@ -179,6 +254,8 @@ void parseTest(std::ifstream& file, u_int64_t& currentLine, TestConfig& testConf
 
     // generate the random cards that are represented by invalid placeholders (Card{0,0})
     generateRandomCards(testConfig, drawnCardCount);
+    // parse the moves for each player
+    parseMoves(file, currentLine, line, testConfig);
 }
 
 /// @brief Returns the configuration for the n-th test in the file

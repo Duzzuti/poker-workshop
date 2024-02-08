@@ -94,22 +94,25 @@ std::string findCharacterString(const std::string& line, const u_int32_t lineInd
 
 /// @brief Finds the first number in a line without spaces
 /// @param line The line to search
+/// @param result The number to store the result in
 /// @param lineInd The index of the line in the file
 /// @param index The index of the character in the line to start searching from
 /// @param min The minimum allowed value for the number
 /// @param max The maximum allowed value for the number
-/// @return The found number
+/// @param acceptColonEnd If true, the number can end with a colon
 /// @exception Guarantee No-throw
+/// @note The result and index are changed in place
 /// @note Searches for the first valid character while skipping spaces, then searches for the next space or end of line to end the number
 /// @note If any invalid characters are found, the program will exit
 /// @note If the number is out of range, the program will exit
+/// @see For a non-in-place version, see findNumber(const std::string&, const u_int32_t, u_int16_t, const u_int64_t, const u_int64_t, const bool)
 /// @see If you search strings: findCharacterString()
 /// @see If you search cards: findCard()
-u_int64_t findNumber(const std::string& line, const u_int32_t lineInd, u_int16_t index, const u_int64_t min = 0, const u_int64_t max = -1) noexcept {
+void findNumber(const std::string& line, u_int64_t& result, const u_int32_t lineInd, u_int16_t& index, const u_int64_t min = 0, const u_int64_t max = -1, const bool acceptColonEnd = false) noexcept {
     const std::string validChars = "1234567890";
     // characters that are used to separate the number from other characters
     const std::string validSepChars = " ";
-    u_int64_t result = 0;
+    result = 0;  // reset the result
     bool foundFirst = false;
     for (; index < line.size(); index++) {
         // check for separator characters
@@ -118,6 +121,9 @@ u_int64_t findNumber(const std::string& line, const u_int32_t lineInd, u_int16_t
             if (foundFirst) break;
             continue;
         }
+        // end the number if the character is a colon and the number is already found
+        if (acceptColonEnd && line[index] == ':' && foundFirst) break;
+
         // check if the character is valid
         if (std::find(validChars.begin(), validChars.end(), line[index]) == validChars.end()) invalidCharFound(lineInd, index, line[index]);
 
@@ -131,6 +137,26 @@ u_int64_t findNumber(const std::string& line, const u_int32_t lineInd, u_int16_t
         std::cerr << "Number out of range (" << min << "-" << max << ") in line " << lineInd << " at position " << index << " (" << result << ")" << std::endl;
         exit(1);
     }
+}
+
+/// @brief Finds the first number in a line without spaces
+/// @param line The line to search
+/// @param lineInd The index of the line in the file
+/// @param index The index of the character in the line to start searching from
+/// @param min The minimum allowed value for the number
+/// @param max The maximum allowed value for the number
+/// @param acceptColonEnd If true, the number can end with a colon
+/// @return The found number
+/// @exception Guarantee No-throw
+/// @note Searches for the first valid character while skipping spaces, then searches for the next space or end of line to end the number
+/// @note If any invalid characters are found, the program will exit
+/// @note If the number is out of range, the program will exit
+/// @see For an in-place version, see findNumber(const std::string&, u_int64_t&, const u_int32_t, u_int16_t&, const u_int64_t, const u_int64_t, const bool)
+/// @see If you search strings: findCharacterString()
+/// @see If you search cards: findCard()
+u_int64_t findNumber(const std::string& line, const u_int32_t lineInd, u_int16_t index, const u_int64_t min = 0, const u_int64_t max = -1, const bool acceptColonEnd = false) noexcept {
+    u_int64_t result;
+    findNumber(line, result, lineInd, index, min, max, acceptColonEnd);
     return result;
 }
 
