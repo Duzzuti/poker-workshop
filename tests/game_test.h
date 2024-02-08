@@ -3,6 +3,30 @@
 #include "game.h"
 #include "rand_player/rand_player.h"
 
+/// @brief Contains the configuration for a test
+struct TestConfig {
+    /// @brief The name of the test file where the test should be stored
+    std::string fileName = "test.cpp";
+    /// @brief The name of the google test class
+    std::string className = "test";
+    /// @brief The name of the google test
+    std::string testName = "test";
+    /// @brief The number of players in the game
+    u_int8_t numPlayers;
+    /// @brief The small blind of the game
+    u_int64_t smallBlind;
+    /// @brief The starting chips of the players
+    u_int64_t playerChips[MAX_PLAYERS];
+    /// @brief The hands of the players
+    std::pair<Card, Card> playerHands[MAX_PLAYERS];
+    /// @brief Stores the cards that have been drawn from the deck and should not be drawn again
+    Card drawnCards[MAX_PLAYERS * 2 + 5];  // 2 hand cards per player and 5 community cards
+    /// @brief The community cards
+    Card communityCards[5];
+    /// @brief The actions for each player
+    std::vector<Action> playerActions[MAX_PLAYERS];
+};
+
 /// @brief Mocks the Game class for testing
 class GameTest : public Game {
    public:
