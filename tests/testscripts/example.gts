@@ -1,5 +1,6 @@
 // comment, empty lines are not considered
-FILE_NAME: gametest_test.cpp    // file name, stored in gametests folder
+FILE_NAME: test_gametest.cpp    // file name, should be unique, stored in gametests folder
+CMAKE_TEST_NAME: test           // cmake test name, should be unique, used in cmake add_test
 
 TEST: ClassName TestName        // googletest class name and test name
 // these can be in any order until SMALL_BLIND

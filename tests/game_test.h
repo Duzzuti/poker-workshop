@@ -7,6 +7,8 @@
 struct TestConfig {
     /// @brief The name of the test file where the test should be stored
     std::string fileName = "test.cpp";
+    /// @brief The name of the cmake test that should be created
+    std::string cmakeTestName = "test";
     /// @brief The name of the google test class
     std::string className = "test";
     /// @brief The name of the google test

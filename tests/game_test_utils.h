@@ -2,6 +2,16 @@
 
 #include "deck.h"
 
+/// @brief Converts a string to uppercase
+/// @param str The string to convert
+/// @return The uppercase string
+/// @exception Guarantee No-throw
+std::string stringToUpper(std::string str) noexcept {
+    std::string result;
+    for (char c : str) result += std::toupper(c);
+    return result;
+}
+
 /// @brief Removes the comments from a line
 /// @param line The line to remove the comments from
 /// @exception Guarantee No-throw
