@@ -305,7 +305,6 @@ void simulateTest(const TestConfig& testConfig, const bool printData = true) {
     // run the game without setting new players
     game.run(false);
     std::cout << "Game data: " << std::endl;
-    // FIXME: prints invalid winner data (no winners)
     if (printData) game.getData().print();
 }
 

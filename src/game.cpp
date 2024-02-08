@@ -36,7 +36,18 @@ void Game::run(const bool initPlayers) {
         for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips[i];
         int16_t round = -1;
 
-        while (this->data.gameData.numNonOutPlayers > 1 && (this->config.maxRounds < 0 || round < this->config.maxRounds - 1)) {
+        while (this->data.gameData.numNonOutPlayers > 1) {
+            if (this->config.maxRounds >= 0 && round >= this->config.maxRounds - 1) {
+                // find the player with the most chips
+                u_int8_t maxChipsPlayer = 0;
+                for (u_int8_t i = 1; i < this->config.numPlayers; i++) {
+                    if (this->data.gameData.playerChips[i] > this->data.gameData.playerChips[maxChipsPlayer]) maxChipsPlayer = i;
+                }
+                // set the player with the most chips as the winner
+                this->players[maxChipsPlayer]->gameWon();
+                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo(maxChipsPlayer) << "\n\n";
+                break;
+            }
             // ONE ROUND
             round++;
             if (this->config.shuffleDeck)
