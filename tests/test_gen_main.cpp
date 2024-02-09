@@ -12,6 +12,8 @@
 /// @throw std::invalid_argument If the gotten action or the bet round state is invalid
 /// @note does not set fileName, testName and className
 void getArgsFromUser(TestConfig& testConfig) {
+    testConfig.className = "GameTest";
+    testConfig.testName = "test";
     testConfig.numPlayers = getUC("Enter the number of players: ", 2, MAX_PLAYERS);
     std::cout << std::endl;
     testConfig.smallBlind = getUL("Enter the small blind amount: ");

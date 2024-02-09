@@ -6,9 +6,9 @@
 /// @brief Contains the configuration for a test
 struct TestConfig {
     /// @brief The name of the google test class
-    std::string className = "test";
+    std::string className = "";
     /// @brief The name of the google test
-    std::string testName = "test";
+    std::string testName = "";
     /// @brief The number of players in the game
     u_int8_t numPlayers;
     /// @brief The small blind of the game
