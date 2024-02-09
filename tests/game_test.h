@@ -5,10 +5,6 @@
 
 /// @brief Contains the configuration for a test
 struct TestConfig {
-    /// @brief The name of the test file where the test should be stored
-    std::string fileName = "test.cpp";
-    /// @brief The name of the cmake test that should be created
-    std::string cmakeTestName = "test";
     /// @brief The name of the google test class
     std::string className = "test";
     /// @brief The name of the google test
@@ -27,6 +23,16 @@ struct TestConfig {
     Card communityCards[5];
     /// @brief The actions for each player
     std::vector<Action> playerActions[MAX_PLAYERS];
+};
+
+/// @brief Contains all test configurations for a file
+struct FileConfig {
+    /// @brief The name of the test file where the test should be stored
+    std::string fileName = "test_gametest.cpp";
+    /// @brief The name of the cmake test that should be created
+    std::string cmakeTestName = "test";
+    /// @brief The configurations for the tests in the file
+    std::vector<TestConfig> config;
 };
 
 /// @brief Mocks the Game class for testing
