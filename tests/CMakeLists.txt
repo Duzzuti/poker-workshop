@@ -9,3 +9,5 @@ target_include_directories(testc PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR})
 target_link_libraries(testc plog)
 
 add_subdirectory(unittests)
+
+add_subdirectory(gametests)
