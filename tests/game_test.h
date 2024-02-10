@@ -3,6 +3,24 @@
 #include "game.h"
 #include "rand_player/rand_player.h"
 
+/// @brief Contains the expected result of a test
+struct ResultData {
+    /// @brief A bool for each player that is true if the player is out of the game
+    bool outPlayers[MAX_PLAYERS];
+    /// @brief A bool for each player that is true if the player has folded
+    bool foldedPlayers[MAX_PLAYERS];
+    /// @brief The number of players that are not out of the game
+    u_int8_t nonOutPlayers = 0;
+    /// @brief The number of active players in the game (not out and not folded)
+    u_int8_t numActivePlayers = 0;
+    /// @brief The amount of wins for each player
+    u_int32_t winners[MAX_PLAYERS];
+    /// @brief The pot at the end of the game
+    u_int64_t pot;
+    /// @brief The state of the bet round at the end of the game
+    BetRoundState betRoundState;
+};
+
 /// @brief Contains the configuration for a test
 struct TestConfig {
     /// @brief The name of the google test class
@@ -23,6 +41,8 @@ struct TestConfig {
     Card communityCards[5];
     /// @brief The actions for each player
     std::vector<Action> playerActions[MAX_PLAYERS];
+    /// @brief The expected output of the game
+    ResultData resultData;
 };
 
 /// @brief Contains all test configurations for a file
