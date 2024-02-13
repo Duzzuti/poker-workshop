@@ -1,1 +1,1 @@
-clang-format -i src/*.cpp include/*.h tests/*.cpp tests/*.h tests/unittests/*.cpp tests/gametests/*.cpp src/players/*/*.cpp src/players/*/*.h --style file:.clang-format
+clang-format -i src/*.cpp include/*.h tests/*.cpp tests/*.h tests/*/*.cpp tests/*/*.h src/players/*/*.cpp src/players/*/*.h --style file:.clang-format

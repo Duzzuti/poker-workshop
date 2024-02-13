@@ -1,7 +1,5 @@
 #pragma once
 
-#include "deck.h"
-
 /// @brief Get an unsigned long from the user
 /// @param askForInput The string to ask the user for input
 /// @return The unsigned long from the user

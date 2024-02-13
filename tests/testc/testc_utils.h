@@ -1,7 +1,5 @@
 #pragma once
 
-#include "deck.h"
-
 /// @brief Converts a string to uppercase
 /// @param str The string to convert
 /// @return The uppercase string
