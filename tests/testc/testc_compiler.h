@@ -1,4 +1,138 @@
 #pragma once
+
+#include "testc_utils.h"
+
+/// @brief Compiles the test configuration for the game (TestConfig that holds all the data for a test)
+/// @param outputFile The file to write to (should be gametests/*_gametest.cpp)
+/// @param testConfig The test configuration that should be compiled to the file
+/// @exception Guarantee No-throw
+/// @note Should be called in the beginning of every test
+void compileTestConfig(std::ofstream& outputFile, const TestConfig& testConfig) noexcept {
+    // game configuration data
+    outputFile << "\tconst TestConfig testConfig{" << std::endl << "\t";
+    outputFile << "\t.numPlayers = " << +testConfig.numPlayers << "," << std::endl << "\t";
+    outputFile << "\t.smallBlind = " << testConfig.smallBlind << "," << std::endl << "\t";
+    outputFile << "\t.playerChips = {";
+    for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
+        outputFile << testConfig.playerChips[i];
+        if (i != testConfig.numPlayers - 1) outputFile << ", ";
+    }
+    outputFile << "}," << std::endl << "\t";
+    outputFile << "\t.playerHands = {";
+    for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
+        outputFile << "{Card{" << +testConfig.playerHands[i].first.suit << ", " << +testConfig.playerHands[i].first.rank << "}, ";
+        outputFile << "Card{" << +testConfig.playerHands[i].second.suit << ", " << +testConfig.playerHands[i].second.rank << "}}";
+        if (i != testConfig.numPlayers - 1) outputFile << ",";
+        outputFile << std::endl << "\t\t";
+        if (i != testConfig.numPlayers - 1) outputFile << "\t\t\t\t";
+    }
+    outputFile << "}," << std::endl << "\t";
+    outputFile << "\t.communityCards = {";
+    for (u_int8_t i = 0; i < 5; i++) {
+        outputFile << "Card{" << +testConfig.communityCards[i].suit << ", " << +testConfig.communityCards[i].rank << "}";
+        if (i != 4) outputFile << ", ";
+    }
+    outputFile << "}," << std::endl << "\t";
+    outputFile << "\t.playerActions = {" << std::endl << "\t";
+    for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
+        outputFile << "\t\t{";
+        for (u_int8_t j = 0; j < testConfig.playerActions[i].size(); j++) {
+            outputFile << "Action{Actions::" << EnumToString::enumToString(testConfig.playerActions[i][j].action);
+            outputFile << ", " << testConfig.playerActions[i][j].bet << "}";
+            if (j != testConfig.playerActions[i].size() - 1) outputFile << ", ";
+        }
+        outputFile << "}";
+        if (i != testConfig.numPlayers - 1) outputFile << ",";
+        outputFile << std::endl << "\t";
+    }
+    outputFile << "\t}" << std::endl << "\t";
+    // expected result data
+    // TODO: add the result data
+    outputFile << "};" << std::endl;
+}
+
+/// @brief Compiles the checks for the result data of the game
+/// @param outputFile The file to write to (should be gametests/*_gametest.cpp)
+/// @exception Guarantee No-throw
+/// @note Should be called after the game has run in every test
+void compileResultDataCheck(std::ofstream& outputFile) noexcept {
+    outputFile << "\t// check if the game has run as expected" << std::endl;
+    outputFile << "\tData data = game.getData();" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.numPlayers, data.numPlayers);" << std::endl;
+    outputFile << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);" << std::endl;
+    outputFile << "\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
+    outputFile << "\t\tEXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);" << std::endl;
+    outputFile << "\t}" << std::endl;
+    outputFile << "\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
+    outputFile << "\t\tEXPECT_EQ(testConfig.playerChips[i], data.gameData.playerChips[i]);" << std::endl;
+    outputFile << "\t}" << std::endl;
+    outputFile << "\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
+    outputFile << "\t\tEXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);" << std::endl;
+    outputFile << "\t}" << std::endl;
+    outputFile << std::endl;
+    outputFile << "\tEXPECT_EQ(0, data.roundData.addBlind);" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 0, data.roundData.dealerPos);" << std::endl;
+    outputFile << "\tu_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0" << std::endl;
+    outputFile << "\t\t\t\t\t\t\t\t\t: data.roundData.betRoundState == BetRoundState::FLOP  ? 3" << std::endl;
+    outputFile << "\t\t\t\t\t\t\t\t\t: data.roundData.betRoundState == BetRoundState::TURN  ? 4" << std::endl;
+    outputFile << "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t: 5;" << std::endl;
+    outputFile << "\tfor (int i = 0; i < communityCardsCount; i++) {" << std::endl;
+    outputFile << "\t\tEXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);" << std::endl;
+    outputFile << "\t}" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);" << std::endl;
+    outputFile << "\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
+    outputFile << "\t\tEXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);" << std::endl;
+    outputFile << "\t}" << std::endl;
+    outputFile << "\tEXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);" << std::endl;
+    outputFile << "\tEXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);" << std::endl;
+    outputFile << std::endl;
+}
+
+/// @brief Compiles one test file with all tests which should be included in that file
+/// @param outputFile The file to write to (should be gametests/*_gametest.cpp)
+/// @param fileConfig The file configuration to correctly set up the test file
+/// @exception Guarantee No-throw
+/// @note Writes every test from FileConfig.config to the file
+void compileFile(std::ofstream& outputFile, const FileConfig& fileConfig) noexcept {
+    // write the header of the file
+    outputFile << "#include <gtest/gtest.h>" << std::endl;
+    outputFile << "" << std::endl;
+    outputFile << "#include \"game_test.h\"" << std::endl;
+    outputFile << "#include \"test_player/test_player.h\"" << std::endl;
+    outputFile << "" << std::endl;
+    // write the tests
+    for (const TestConfig& testConfig : fileConfig.config) {
+        outputFile << "TEST(" << testConfig.className << ", " << testConfig.testName << ") {" << std::endl;
+        // init the test config
+        compileTestConfig(outputFile, testConfig);
+        outputFile << "\t// game should only last one round and not shuffle players or deck" << std::endl;
+        outputFile << "\tConfig config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};" << std::endl;
+        outputFile << "\tGameTest game(config);" << std::endl;
+        outputFile << "\t// build the deck for the game" << std::endl;
+        outputFile << "\tgame.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);" << std::endl;
+        outputFile << std::endl;
+        outputFile << "\t// generate players and their actions for the game" << std::endl;
+        outputFile << "\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
+        outputFile << "\t\tstd::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);" << std::endl;
+        outputFile << "\t\tif (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());" << std::endl;
+        outputFile << "\t\tgame.getPlayers()[i] = std::move(testPlayer);" << std::endl;
+        outputFile << "\t}" << std::endl;
+        outputFile << std::endl;
+        outputFile << "\t// run the game without setting new players" << std::endl;
+        outputFile << "\tgame.run(false);" << std::endl;
+        outputFile << std::endl;
+        // add the checks for the result data
+        compileResultDataCheck(outputFile);
+        outputFile << "}" << std::endl << std::endl;
+    }
+}
+
 /// @brief Compiles the CMakeLists.txt file for the tests
 /// @param cmakeLists The file to write to (should be gametests/CMakeLists.txt)
 /// @param fileConfigs The file configurations to correctly set up the cmake file
