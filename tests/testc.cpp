@@ -272,7 +272,16 @@ int main(int argc, char* argv[]) {
     }
 
     // *********************************************** SIMULATOR ***********************************************
-    // TODO simulateTest(testConfigs[testIndex]);
+    // if argc == 3, simulate the test with the given index
+    if(argc == 3) {
+        // get the test index
+        int64_t testIndex = std::stol(argv[2]);
+        if (testIndex < 0 || testIndex >= (int64_t)fileConfigs[0].config.size()) {
+            std::cerr << "Invalid test index (" << testIndex << ") only " << fileConfigs[0].config.size() << " tests available for this file" << std::endl;
+            return 1;
+        }
+        simulateTest(fileConfigs[0].config[testIndex]);
+    }
 
     // *********************************************** BUILD ***************************************************
     // TODO rebuild the project with the new files
