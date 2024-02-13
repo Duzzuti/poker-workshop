@@ -256,7 +256,7 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
             playerChipsLine = line;  // mark it as found
             u_int16_t index = 13;
             for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
-                testConfig.resultData.playerChips[i] = findNumber(line, currentLine, index);
+                findNumber(line, testConfig.resultData.playerChips[i], currentLine, index);
             }
         } else if (potLine.empty() && line.rfind("POT:", 0) == 0) {
             potLine = line;  // mark it as found

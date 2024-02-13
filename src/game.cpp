@@ -45,6 +45,7 @@ void Game::run(const bool initPlayers) {
                 }
                 // set the player with the most chips as the winner
                 this->players[maxChipsPlayer]->gameWon();
+                this->data.roundData.result = OutEnum::GAME_WON;
                 PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo(maxChipsPlayer) << "\n\n";
                 break;
             }
@@ -119,6 +120,8 @@ void Game::run(const bool initPlayers) {
             PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << winnerString << ". Starting new round";
         }
     }
+    // update winners
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.winners[i] = this->players[i]->getWins();
     PLOG_INFO << "Statistics: \n";
     // sort players by wins
     std::pair<u_int8_t, u_int32_t> winners[this->data.numPlayers];
