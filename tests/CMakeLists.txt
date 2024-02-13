@@ -9,5 +9,9 @@ target_include_directories(testc PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR})
 target_link_libraries(testc plog)
 
 add_subdirectory(unittests)
-
-add_subdirectory(gametests)
+# Check if the directory exists
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/gametests/CMakeLists.txt")
+    add_subdirectory(gametests)
+else()
+    message(STATUS "CMakeLists.txt not found in gametests, skipping...")
+endif()

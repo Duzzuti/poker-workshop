@@ -269,11 +269,17 @@ int main(int argc, char* argv[]) {
             std::ofstream outputFile(gametestsDir / fileConfig.fileName, std::ios::out);
             compileFile(outputFile, fileConfig);
         }
+
+        // format the files
+        if (system("bash format.sh") != 0) {
+            std::cerr << "The files could not be formatted." << std::endl;
+            return 1;
+        }
     }
 
     // *********************************************** SIMULATOR ***********************************************
     // if argc == 3, simulate the test with the given index
-    if(argc == 3) {
+    if (argc == 3) {
         // get the test index
         int64_t testIndex = std::stol(argv[2]);
         if (testIndex < 0 || testIndex >= (int64_t)fileConfigs[0].config.size()) {
@@ -284,7 +290,22 @@ int main(int argc, char* argv[]) {
     }
 
     // *********************************************** BUILD ***************************************************
-    // TODO rebuild the project with the new files
+    // build the new generated files
+    if (argc != 3 && !fileConfigs.empty()) {
+        if (system("cmake -B build") != 0) {
+            std::cerr << "The project could not be configured." << std::endl;
+            return 1;
+        }
+        std::string buildCommand = "cmake --build build --target ";
+        for (const FileConfig& fileConfig : fileConfigs) {
+            buildCommand += "gtestc_" + fileConfig.cmakeTestName + " ";
+        }
+        buildCommand += "-j 20";
+        if (system(buildCommand.c_str()) != 0) {
+            std::cerr << "The project could not be built." << std::endl;
+            return 1;
+        }
+    }
 
     return 0;
 }
