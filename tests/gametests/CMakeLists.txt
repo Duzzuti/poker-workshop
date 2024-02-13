@@ -9,7 +9,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 # tests
-add_executable(gtestc_test main_test.cpp test_gametest.cpp ${COMMON_SRC} ${TEST_PLAYER})
+add_executable(gtestc_test main_test.cpp test_gametest.cpp ${SRC_DIR}/game.cpp ${COMMON_SRC} ${TEST_PLAYER} ${RAND_PLAYER} ${CHECK_PLAYER})
 target_link_libraries(gtestc_test gtest_main)
 target_include_directories(gtestc_test PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR} ${TEST_DIR})
 

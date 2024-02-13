@@ -20,16 +20,17 @@ void compileTestConfig(std::ofstream& outputFile, const TestConfig& testConfig) 
     outputFile << "}," << std::endl << "\t";
     outputFile << "\t.playerHands = {";
     for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
-        outputFile << "{Card{" << +testConfig.playerHands[i].first.suit << ", " << +testConfig.playerHands[i].first.rank << "}, ";
-        outputFile << "Card{" << +testConfig.playerHands[i].second.suit << ", " << +testConfig.playerHands[i].second.rank << "}}";
+        outputFile << "{Card{" << +testConfig.playerHands[i].first.rank << ", " << +testConfig.playerHands[i].first.suit << "}, ";
+        outputFile << "Card{" << +testConfig.playerHands[i].second.rank << ", " << +testConfig.playerHands[i].second.suit << "}}";
         if (i != testConfig.numPlayers - 1) outputFile << ",";
         outputFile << std::endl << "\t\t";
         if (i != testConfig.numPlayers - 1) outputFile << "\t\t\t\t";
     }
     outputFile << "}," << std::endl << "\t";
+    outputFile << "\t.drawnCards = {}," << std::endl << "\t";
     outputFile << "\t.communityCards = {";
     for (u_int8_t i = 0; i < 5; i++) {
-        outputFile << "Card{" << +testConfig.communityCards[i].suit << ", " << +testConfig.communityCards[i].rank << "}";
+        outputFile << "Card{" << +testConfig.communityCards[i].rank << ", " << +testConfig.communityCards[i].suit << "}";
         if (i != 4) outputFile << ", ";
     }
     outputFile << "}," << std::endl << "\t";
@@ -45,9 +46,32 @@ void compileTestConfig(std::ofstream& outputFile, const TestConfig& testConfig) 
         if (i != testConfig.numPlayers - 1) outputFile << ",";
         outputFile << std::endl << "\t";
     }
-    outputFile << "\t}" << std::endl << "\t";
+    outputFile << "\t}," << std::endl << "\t";
     // expected result data
-    // TODO: add the result data
+    outputFile << "\t.resultData{" << std::endl << "\t";
+    outputFile << "\t\t.outPlayers = {" << std::endl << "\t\t\t\t";
+    for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
+        outputFile << (testConfig.resultData.outPlayers[i] ? "true" : "false");
+        if (i != testConfig.numPlayers - 1) outputFile << ", ";
+    }
+    outputFile << std::endl << "\t\t\t}," << std::endl << "\t";
+    outputFile << "\t\t.foldedPlayers = {" << std::endl << "\t\t\t\t";
+    for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
+        outputFile << (testConfig.resultData.foldedPlayers[i] ? "true" : "false");
+        if (i != testConfig.numPlayers - 1) outputFile << ", ";
+    }
+    outputFile << std::endl << "\t\t\t}," << std::endl << "\t";
+    outputFile << "\t\t.nonOutPlayers = " << +testConfig.resultData.nonOutPlayers << "," << std::endl << "\t";
+    outputFile << "\t\t.numActivePlayers = " << +testConfig.resultData.numActivePlayers << "," << std::endl << "\t";
+    outputFile << "\t\t.winners = {" << std::endl << "\t\t\t\t";
+    for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
+        outputFile << +testConfig.resultData.winners[i];
+        if (i != testConfig.numPlayers - 1) outputFile << ", ";
+    }
+    outputFile << std::endl << "\t\t\t}," << std::endl << "\t";
+    outputFile << "\t\t.pot = " << testConfig.resultData.pot << "," << std::endl << "\t";
+    outputFile << "\t\t.betRoundState = BetRoundState::" << EnumToString::enumToString(testConfig.resultData.betRoundState) << "," << std::endl << "\t";
+    outputFile << "\t}" << std::endl << "\t";
     outputFile << "};" << std::endl;
 }
 
@@ -91,7 +115,6 @@ void compileResultDataCheck(std::ofstream& outputFile) noexcept {
     outputFile << "\t}" << std::endl;
     outputFile << "\tEXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);" << std::endl;
     outputFile << "\tEXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);" << std::endl;
-    outputFile << std::endl;
 }
 
 /// @brief Compiles one test file with all tests which should be included in that file
@@ -150,7 +173,8 @@ void compileCmake(std::ofstream& cmakeLists, const std::vector<FileConfig>& file
     cmakeLists << "" << std::endl;
     cmakeLists << "# tests" << std::endl;
     for (const FileConfig& fileConfig : fileConfigs) {
-        cmakeLists << "add_executable(gtestc_" << fileConfig.cmakeTestName << " main_test.cpp " << fileConfig.fileName << " ${COMMON_SRC} ${TEST_PLAYER})" << std::endl;
+        cmakeLists << "add_executable(gtestc_" << fileConfig.cmakeTestName << " main_test.cpp " << fileConfig.fileName
+                   << " ${SRC_DIR}/game.cpp ${COMMON_SRC} ${TEST_PLAYER} ${RAND_PLAYER} ${CHECK_PLAYER})" << std::endl;
         cmakeLists << "target_link_libraries(gtestc_" << fileConfig.cmakeTestName << " gtest_main)" << std::endl;
         cmakeLists << "target_include_directories(gtestc_" << fileConfig.cmakeTestName << " PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR} ${TEST_DIR})" << std::endl;
         cmakeLists << std::endl;
