@@ -33,6 +33,8 @@ END_MOVES                   // required token to indicate end of moves
 // result data (expected data after the test ran the game)
 // how many chips are in the pot at the end of the game, in format of: POT: <pot>
 POT: 
+// chips for each player after the game, in format of: PLAYER_CHIPS: <P0 chips> <P1 chips>...<Pn-1 chips>
+PLAYER_CHIPS: 
 // which player is out, "t" and "f" for true and false, in format of: PLAYER_OUT: <P0 out?><P1 out?>...<Pn-1 out?>
 PLAYER_OUT: 
 // which player folded, "t" and "f" for true and false, in format of: PLAYER_FOLD: <P0 fold?><P1 fold?>...<Pn-1 fold?>

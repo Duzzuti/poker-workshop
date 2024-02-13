@@ -17,6 +17,8 @@ struct ResultData {
     u_int32_t winners[MAX_PLAYERS];
     /// @brief The pot at the end of the game
     u_int64_t pot;
+    /// @brief The chips of the players at the end of the game
+    u_int64_t playerChips[MAX_PLAYERS];
     /// @brief The state of the bet round at the end of the game
     BetRoundState betRoundState;
 };

@@ -40,6 +40,8 @@ END_MOVES                   // indicates the end of moves
 // result data
 // how many chips are in the pot at the end of the game, in format of: POT: <pot>
 POT: 360
+// chips for each player after the game, in format of: PLAYER_CHIPS: <P0 chips> <P1 chips>...<Pn-1 chips>
+PLAYER_CHIPS: 730 690 100
 // which player is out, "t" and "f" for true and false, in format of: PLAYER_OUT: <P0 out?><P1 out?>...<Pn-1 out?>
 PLAYER_OUT: fff
 // which player folded, "t" and "f" for true and false, in format of: PLAYER_FOLD: <P0 fold?><P1 fold?>...<Pn-1 fold?>

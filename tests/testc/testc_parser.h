@@ -181,10 +181,11 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
     std::string winnerLine;
     std::string gameStageLine;
     std::string potLine;
+    std::string playerChipsLine;
     while (std::getline(file, line)) {
         currentLine++;
         removeComments(line);
-        if (line.rfind("PLAYER_OUT:", 0) == 0) {
+        if (playerOutLine.empty() && line.rfind("PLAYER_OUT:", 0) == 0) {
             playerOutLine = findCharacterString(line, currentLine, 11);
             if (playerOutLine.size() != testConfig.numPlayers) {
                 std::cerr << "Invalid number of chars in PLAYER_OUT token, needs to match with PLAYER_NUM (line: " << currentLine << ")" << std::endl;
@@ -201,7 +202,7 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
                     exit(1);
                 }
             }
-        } else if (line.rfind("WINNER:", 0) == 0) {
+        } else if (winnerLine.empty() && line.rfind("WINNER:", 0) == 0) {
             winnerLine = findCharacterString(line, currentLine, 7);
             if (winnerLine.size() != testConfig.numPlayers) {
                 std::cerr << "Invalid number of chars in WINNER token, needs to match with PLAYER_NUM (line: " << currentLine << ")" << std::endl;
@@ -217,7 +218,7 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
                     exit(1);
                 }
             }
-        } else if (line.rfind("GAME_STAGE:", 0) == 0) {
+        } else if (gameStageLine.empty() && line.rfind("GAME_STAGE:", 0) == 0) {
             gameStageLine = findCharacterString(line, currentLine, 11);
             if (gameStageLine.size() != 1) {
                 std::cerr << "Invalid number of chars in GAME_STAGE token, needs to be 1 (line: " << currentLine << ")" << std::endl;
@@ -235,7 +236,7 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
                 std::cerr << "Invalid character in GAME_STAGE token, only 'p', 'f', 't' and 'r' are allowed (line: " << currentLine << ", char: " << gameStageLine[0] << ")" << std::endl;
                 exit(1);
             }
-        } else if (line.rfind("PLAYER_FOLD:", 0) == 0) {
+        } else if (playerFoldLine.empty() && line.rfind("PLAYER_FOLD:", 0) == 0) {
             playerFoldLine = findCharacterString(line, currentLine, 12);
             if (playerFoldLine.size() != testConfig.numPlayers) {
                 std::cerr << "Invalid number of chars in PLAYER_FOLD token, needs to match with PLAYER_NUM (line: " << currentLine << ")" << std::endl;
@@ -251,12 +252,18 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
                     exit(1);
                 }
             }
-        } else if (line.rfind("POT:", 0) == 0) {
+        } else if (playerChipsLine.empty() && line.rfind("PLAYER_CHIPS:", 0) == 0) {
+            playerChipsLine = line;  // mark it as found
+            u_int16_t index = 13;
+            for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
+                testConfig.resultData.playerChips[i] = findNumber(line, currentLine, index);
+            }
+        } else if (potLine.empty() && line.rfind("POT:", 0) == 0) {
             potLine = line;  // mark it as found
             testConfig.resultData.pot = findNumber(line, currentLine, 4);
-        } else if (line.rfind("TEST:", 0) == 0)
+        } else if (line.rfind("TEST:", 0) == 0) {
             break;
-        else if (!isLineEmpty(line)) {
+        } else if (!isLineEmpty(line)) {
             std::cerr << "Invalid format. Expect TEST token or blank line (line: " << currentLine << ")" << std::endl;
             exit(1);
         }
@@ -273,6 +280,8 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
         missedToken = "PLAYER_FOLD";
     else if (potLine == "")
         missedToken = "POT";
+    else if (playerChipsLine == "")
+        missedToken = "PLAYER_CHIPS";
 
     if (missedToken != "") {
         std::cerr << missedToken << " not found" << std::endl;
@@ -311,15 +320,15 @@ std::string parseTest(std::ifstream& file, u_int64_t& currentLine, TestConfig& t
         currentLine++;
         removeComments(line);
         // check if the line starts with the tokens
-        if (line.rfind("PLAYER_NUM:", 0) == 0)
+        if (testConfig.numPlayers == 0 && line.rfind("PLAYER_NUM:", 0) == 0)
             testConfig.numPlayers = findNumber(line, currentLine, 11, 2, MAX_PLAYERS);
-        else if (line.rfind("SMALL_BLIND:", 0) == 0)
+        else if (testConfig.smallBlind == 0 && line.rfind("SMALL_BLIND:", 0) == 0)
             testConfig.smallBlind = findNumber(line, currentLine, 12, 1);
-        else if (line.rfind("PLAYER_CHIPS:", 0) == 0)
+        else if (linePlayerChips.empty() && line.rfind("PLAYER_CHIPS:", 0) == 0)
             linePlayerChips = line;  // store the line for later
-        else if (line.rfind("PLAYER_CARDS:", 0) == 0)
+        else if (linePlayerCards.empty() && line.rfind("PLAYER_CARDS:", 0) == 0)
             linePlayerCards = line;  // store the line for later
-        else if (line.rfind("COMMUNITY_CARDS:", 0) == 0) {
+        else if (lineCommunityCards.empty() && line.rfind("COMMUNITY_CARDS:", 0) == 0) {
             // saves the community cards directly
             u_int16_t index = 16;
             findCharacterString(line, lineCommunityCards, currentLine, index);
@@ -346,8 +355,7 @@ std::string parseTest(std::ifstream& file, u_int64_t& currentLine, TestConfig& t
         missedToken = "COMMUNITY_CARDS";
 
     if (missedToken != "") {
-        std::cerr << missedToken << " not found" << std::endl;
-        exit(1);
+        std::cerr << missedToken << " not found until line " << currentLine << std::endl;
     }
 
     // get the amount of chips for each player
