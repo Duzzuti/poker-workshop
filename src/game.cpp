@@ -39,14 +39,30 @@ void Game::run(const bool initPlayers) {
         while (this->data.gameData.numNonOutPlayers > 1) {
             if (this->config.maxRounds >= 0 && round >= this->config.maxRounds - 1) {
                 // find the player with the most chips
-                u_int8_t maxChipsPlayer = 0;
-                for (u_int8_t i = 1; i < this->config.numPlayers; i++) {
-                    if (this->data.gameData.playerChips[i] > this->data.gameData.playerChips[maxChipsPlayer]) maxChipsPlayer = i;
+                this->data.nextActivePlayer();
+                u_int8_t firstActivePlayer = this->data.betRoundData.playerPos;
+                u_int8_t maxChipsPlayers[MAX_PLAYERS] = {firstActivePlayer};
+                u_int8_t maxChipsPlayersCount = 1;
+                this->data.nextActivePlayer();
+                while (this->data.betRoundData.playerPos != firstActivePlayer) {
+                    if (this->data.getChips() > this->data.gameData.playerChips[maxChipsPlayers[0]]) {
+                        maxChipsPlayers[0] = this->data.betRoundData.playerPos;
+                        maxChipsPlayersCount = 1;
+                    } else if (this->data.getChips() == this->data.gameData.playerChips[maxChipsPlayers[0]]) {
+                        maxChipsPlayers[maxChipsPlayersCount++] = this->data.betRoundData.playerPos;
+                    }
+                    this->data.nextActivePlayer();
                 }
-                // set the player with the most chips as the winner
-                this->players[maxChipsPlayer]->gameWon();
+                // set the players with the most chips as the winner
+                for (u_int8_t i = 0; i < maxChipsPlayersCount; i++) this->players[maxChipsPlayers[i]]->gameWon();
                 this->data.roundData.result = OutEnum::GAME_WON;
-                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo(maxChipsPlayer) << "\n\n";
+                winnerString[0] = '\0';
+                for (u_int8_t i = 0; i < maxChipsPlayersCount; i++) {
+                    // depending MAX_POT_DIST_STRING_LENGTH
+                    std::strncat(winnerString, this->getPlayerInfo(maxChipsPlayers[i]), MAX_GET_PLAYER_INFO_LENGTH);
+                    if (i != maxChipsPlayersCount - 1) std::strcat(winnerString, ", ");
+                }
+                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << winnerString << "\n\n";
                 break;
             }
             // ONE ROUND
