@@ -33,7 +33,7 @@ void getArgsFromUser(TestConfig& testConfig) {
     std::cout << std::endl;
 }
 
-/// @brief Checks if the file configurations are valid
+/// @brief Checks if the file configurations are valid except for empty (random) cards
 /// @param fileConfigs The file configurations to check
 /// @return True if the file configurations are valid, false otherwise
 /// @exception Guarantee Strong
@@ -43,7 +43,7 @@ void getArgsFromUser(TestConfig& testConfig) {
 /// @note 3. Check for empty or duplicate class and test name combinations
 /// @note 4. Check for invalid number of players, small blind and player chips
 /// @note 5. Check for empty player actions
-/// @note 6. Check for invalid community and player hand cards
+/// @note 6. Check for invalid community and player hand cards (ignoring empty (random) cards)
 /// @note 7. Check for duplicate cards
 /// @note 8. Check for duplicate class names in different files
 bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
