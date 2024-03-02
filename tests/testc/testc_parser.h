@@ -373,8 +373,6 @@ std::string parseTest(std::ifstream& file, u_int64_t& currentLine, TestConfig& t
         testConfig.playerHands[i].second = findCard(playerPart, currentLine, handIndex, testConfig.drawnCards, drawnCardCount);
     }
 
-    // generate the random cards that are represented by invalid placeholders (Card{0,0})
-    generateRandomCards(testConfig, drawnCardCount);
     // parse the moves for each player
     parseMoves(file, currentLine, line, testConfig);
     // parse the result data

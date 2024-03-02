@@ -103,7 +103,7 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
             std::vector<Card> drawnCards{};
             for (u_int8_t i = 0; i < 5; i++) {
                 drawnCards.push_back(testConfig.communityCards[i]);
-                if (testConfig.communityCards[i].rank < 2 || testConfig.communityCards[i].rank > 14 || testConfig.communityCards[i].suit > 3) {
+                if (testConfig.communityCards[i] != Card{0, 0} && (testConfig.communityCards[i].rank < 2 || testConfig.communityCards[i].rank > 14 || testConfig.communityCards[i].suit > 3)) {
                     throw std::logic_error("Invalid community card (" + std::to_string(testConfig.communityCards[i].suit) + " " + std::to_string(testConfig.communityCards[i].rank) + ")" +
                                            errorLocation);
                 }
@@ -112,11 +112,13 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
             for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
                 drawnCards.push_back(testConfig.playerHands[i].first);
                 drawnCards.push_back(testConfig.playerHands[i].second);
-                if (testConfig.playerHands[i].first.rank < 2 || testConfig.playerHands[i].first.rank > 14 || testConfig.playerHands[i].first.suit > 3) {
+                if (testConfig.playerHands[i].first != Card{0, 0} &&
+                    (testConfig.playerHands[i].first.rank < 2 || testConfig.playerHands[i].first.rank > 14 || testConfig.playerHands[i].first.suit > 3)) {
                     throw std::logic_error("Invalid player hand card (" + std::to_string(testConfig.playerHands[i].first.suit) + " " + std::to_string(testConfig.playerHands[i].first.rank) + ")" +
                                            errorLocation);
                 }
-                if (testConfig.playerHands[i].second.rank < 2 || testConfig.playerHands[i].second.rank > 14 || testConfig.playerHands[i].second.suit > 3) {
+                if (testConfig.playerHands[i].second != Card{0, 0} &&
+                    (testConfig.playerHands[i].second.rank < 2 || testConfig.playerHands[i].second.rank > 14 || testConfig.playerHands[i].second.suit > 3)) {
                     throw std::logic_error("Invalid player hand card (" + std::to_string(testConfig.playerHands[i].second.suit) + " " + std::to_string(testConfig.playerHands[i].second.rank) + ")" +
                                            errorLocation);
                 }
@@ -124,7 +126,7 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
             // check for duplicate cards
             for (u_int8_t i = 0; i < drawnCards.size(); i++) {
                 for (u_int8_t j = i + 1; j < drawnCards.size(); j++) {
-                    if (drawnCards[i] == drawnCards[j]) throw std::logic_error("Duplicate card (" + std::string(drawnCards[i].toString()) + ")" + errorLocation);
+                    if (drawnCards[i] == drawnCards[j] && drawnCards[i] != Card{0, 0}) throw std::logic_error("Duplicate card (" + std::string(drawnCards[i].toString()) + ")" + errorLocation);
                 }
             }
         }

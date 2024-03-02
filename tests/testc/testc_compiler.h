@@ -2,6 +2,17 @@
 
 #include "testc_utils.h"
 
+/// @brief Generates a string representing a Card object in c++
+/// @param card The card to generate the string for
+/// @return The string representing the card
+/// @exception Guarantee No-throw
+/// @note The string will be in the format "Card{rank, suit}"
+/// @note If the rank is 0, the string will be "Deck::getRandomCardExceptAdd(drawnCards)" to generate a random card
+std::string streamCard(Card card) noexcept {
+    if (card.rank == 0) return "Deck::getRandomCardExceptAdd(drawnCards)";
+    return "Card{" + std::to_string(card.rank) + ", " + std::to_string(card.suit) + "}";
+}
+
 /// @brief Compiles the test configuration for the game (TestConfig that holds all the data for a test)
 /// @param outputFile The file to write to (should be gametests/*_gametest.cpp)
 /// @param testConfig The test configuration that should be compiled to the file
@@ -9,7 +20,16 @@
 /// @note Should be called in the beginning of every test
 void compileTestConfig(std::ofstream& outputFile, const TestConfig& testConfig) noexcept {
     // game configuration data
-    outputFile << "\tconst TestConfig testConfig{" << std::endl << "\t";
+    outputFile << "\tstd::vector<Card> drawnCards = {";
+    bool first = true;
+    for (u_int8_t i = 0; i < MAX_DRAWN_CARDS; i++) {
+        if (testConfig.drawnCards[i].rank == 0) continue;
+        if (!first) outputFile << ", ";
+        first = false;
+        outputFile << streamCard(testConfig.drawnCards[i]);
+    }
+    outputFile << "};" << std::endl;
+    outputFile << "\tTestConfig testConfig{" << std::endl << "\t";
     outputFile << "\t.numPlayers = " << +testConfig.numPlayers << "," << std::endl << "\t";
     outputFile << "\t.smallBlind = " << testConfig.smallBlind << "," << std::endl << "\t";
     outputFile << "\t.playerChips = {";
@@ -20,8 +40,8 @@ void compileTestConfig(std::ofstream& outputFile, const TestConfig& testConfig) 
     outputFile << "}," << std::endl << "\t";
     outputFile << "\t.playerHands = {";
     for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
-        outputFile << "{Card{" << +testConfig.playerHands[i].first.rank << ", " << +testConfig.playerHands[i].first.suit << "}, ";
-        outputFile << "Card{" << +testConfig.playerHands[i].second.rank << ", " << +testConfig.playerHands[i].second.suit << "}}";
+        outputFile << "{" << streamCard(testConfig.playerHands[i].first) << ", ";
+        outputFile << streamCard(testConfig.playerHands[i].second) << "}";
         if (i != testConfig.numPlayers - 1) outputFile << ",";
         outputFile << std::endl << "\t\t";
         if (i != testConfig.numPlayers - 1) outputFile << "\t\t\t\t";
@@ -30,7 +50,7 @@ void compileTestConfig(std::ofstream& outputFile, const TestConfig& testConfig) 
     outputFile << "\t.drawnCards = {}," << std::endl << "\t";
     outputFile << "\t.communityCards = {";
     for (u_int8_t i = 0; i < 5; i++) {
-        outputFile << "Card{" << +testConfig.communityCards[i].rank << ", " << +testConfig.communityCards[i].suit << "}";
+        outputFile << streamCard(testConfig.communityCards[i]);
         if (i != 4) outputFile << ", ";
     }
     outputFile << "}," << std::endl << "\t";
@@ -139,25 +159,27 @@ void compileFile(std::ofstream& outputFile, const FileConfig& fileConfig) noexce
     for (const TestConfig& testConfig : fileConfig.config) {
         outputFile << "TEST(" << testConfig.className << ", " << testConfig.testName << ") {" << std::endl;
         // init the test config
+        outputFile << "\tfor(int iters = 0; iters < TEST_ITERS; iters++){" << std::endl;
         compileTestConfig(outputFile, testConfig);
-        outputFile << "\t// game should only last one round and not shuffle players or deck" << std::endl;
-        outputFile << "\tConfig config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};" << std::endl;
-        outputFile << "\tGameTest game(config);" << std::endl;
-        outputFile << "\t// build the deck for the game" << std::endl;
-        outputFile << "\tgame.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);" << std::endl;
+        outputFile << "\t\t// game should only last one round and not shuffle players or deck" << std::endl;
+        outputFile << "\t\tConfig config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};" << std::endl;
+        outputFile << "\t\tGameTest game(config);" << std::endl;
+        outputFile << "\t\t// build the deck for the game" << std::endl;
+        outputFile << "\t\tgame.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);" << std::endl;
         outputFile << std::endl;
-        outputFile << "\t// generate players and their actions for the game" << std::endl;
-        outputFile << "\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
-        outputFile << "\t\tstd::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);" << std::endl;
-        outputFile << "\t\tif (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());" << std::endl;
-        outputFile << "\t\tgame.getPlayers()[i] = std::move(testPlayer);" << std::endl;
-        outputFile << "\t}" << std::endl;
+        outputFile << "\t\t// generate players and their actions for the game" << std::endl;
+        outputFile << "\t\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
+        outputFile << "\t\t\tstd::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);" << std::endl;
+        outputFile << "\t\t\tif (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());" << std::endl;
+        outputFile << "\t\t\tgame.getPlayers()[i] = std::move(testPlayer);" << std::endl;
+        outputFile << "\t\t}" << std::endl;
         outputFile << std::endl;
-        outputFile << "\t// run the game without setting new players" << std::endl;
-        outputFile << "\tgame.run(false);" << std::endl;
+        outputFile << "\t\t// run the game without setting new players" << std::endl;
+        outputFile << "\t\tgame.run(false);" << std::endl;
         outputFile << std::endl;
         // add the checks for the result data
         compileResultDataCheck(outputFile);
+        outputFile << "\t}" << std::endl;
         outputFile << "}" << std::endl << std::endl;
     }
 }
