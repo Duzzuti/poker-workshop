@@ -38,7 +38,7 @@ struct TestConfig {
     /// @brief The hands of the players
     std::pair<Card, Card> playerHands[MAX_PLAYERS];
     /// @brief Stores the cards that have been drawn from the deck and should not be drawn again
-    Card drawnCards[MAX_PLAYERS * 2 + 5];  // 2 hand cards per player and 5 community cards
+    Card drawnCards[MAX_DRAWN_CARDS];
     /// @brief The community cards
     Card communityCards[5];
     /// @brief The actions for each player

@@ -32,6 +32,8 @@ const constexpr char* SUIT_SYMBOLS[] = {
 };
 /// @brief The maximum number of players allowed in a game (affects the memory usage of the program)
 const constexpr u_int8_t MAX_PLAYERS = 10;  // 23 is the maximum value, because 23 * 2 hand cards + 5 community cards = 51 cards
+/// @brief The maximum number of cards that can be included in a game
+const constexpr u_int8_t MAX_DRAWN_CARDS = MAX_PLAYERS * 2 + 5;  // 2 hand cards per player and 5 community cards
 /// @brief The maximum amount of chips in the game (MAX_CHIPS/numPlayers is the maximum starting amount for each player)
 constexpr u_int64_t MAX_CHIPS = INT64_MAX - 1;
 /// @brief The maximum character length allowed for a player name
@@ -68,6 +70,9 @@ const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH =
     LEN_UINT64 + 1;
 /// @brief The maximum character length for the string that represents an error of type raise or action
 const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(constexpr_strlen(STR_RAISE_ERROR), constexpr_strlen(STR_ACTION_ERROR)) + LEN_UINT64 + 1;
+
+/// @brief The iteration count per gametest
+const constexpr int TEST_ITERS = 1000;
 
 /**
  * @brief Sets parameters for the game
