@@ -1,0 +1,1 @@
+This player is choosing their moves according to a sequence of Actions that are set. The sequence is a list of Action objects, and the player will play the first action in the list, then the second, and so on. When the list is empty, the player will play a default action (FOLD). This player is used for testing purposes only.

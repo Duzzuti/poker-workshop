@@ -1,8 +1,5 @@
 #pragma once
-#include <iostream>
-
 #include "data_structs.h"
-#include "deck.h"
 
 /// @brief Player class contains functionalities for a player in the game
 /// @note Player is an abstract class

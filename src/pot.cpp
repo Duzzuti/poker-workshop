@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include "logger.h"
-
 void Pot::reset() noexcept {
     this->potValue = 0;
     this->potCap = 0;

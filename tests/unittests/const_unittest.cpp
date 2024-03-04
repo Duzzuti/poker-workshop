@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "config.h"
 #include "game_test.h"
 
 TEST(CONST, IntLens) {
@@ -39,7 +38,7 @@ TEST(CONST, PlayerGetNameLength) {
 
 TEST(CONST, PlayerInfoLength) {
     GameTest game{Config{1, 5, INT64_MAX, 10, 1}};
-    game.initPlayer();
+    game.setRealisticPlayers();
     for (u_int8_t i = 0; i < 5; i++) {
         EXPECT_GE(MAX_GET_PLAYER_INFO_LENGTH, std::strlen(game.getPlayerInfo(i, INT64_MAX)));
         EXPECT_GE(MAX_GET_PLAYER_INFO_LENGTH, std::strlen(game.getPlayerInfo(i, INT64_MIN)));

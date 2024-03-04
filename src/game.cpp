@@ -3,20 +3,20 @@
 #include <algorithm>
 
 #include "check_player/check_player.h"
-#include "deck.h"
 #include "hand_strengths.h"
 #include "human_player/human_player.h"
-#include "logger.h"
 #include "rand_player/rand_player.h"
 
-void Game::run() {
+void Game::run(const bool initPlayers) {
     // config players
     // init players
-    this->players[0] = std::move(std::make_unique<CheckPlayer>(1));
-    this->players[1] = std::move(std::make_unique<RandPlayer>(2));
-    this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
-    this->players[3] = std::move(std::make_unique<RandPlayer>(4));
-    this->players[4] = std::move(std::make_unique<RandPlayer>(5));
+    if (initPlayers) {
+        this->players[0] = std::move(std::make_unique<CheckPlayer>(1));
+        this->players[1] = std::move(std::make_unique<RandPlayer>(2));
+        this->players[2] = std::move(std::make_unique<CheckPlayer>(3));
+        this->players[3] = std::move(std::make_unique<RandPlayer>(4));
+        this->players[4] = std::move(std::make_unique<RandPlayer>(5));
+    }
 
     this->data.numPlayers = this->config.numPlayers;
     // reset winners
@@ -25,7 +25,7 @@ void Game::run() {
     char winnerString[MAX_POT_DIST_STRING_LENGTH];
 
     // run for the number of games specified in the config
-    for (u_int64_t game = 0; game < this->config.numRounds; game++) {
+    for (u_int64_t game = 0; game < this->config.numGames; game++) {
         // ONE GAME
         // shuffle players
         PLOG_DEBUG << "Starting game " << game;
@@ -33,13 +33,28 @@ void Game::run() {
         this->data.gameData.numNonOutPlayers = this->config.numPlayers;
         // reset player out
         std::memset(this->data.gameData.playerOut, 0, sizeof(this->data.gameData.playerOut));
-        for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips;
-        int32_t round = -1;
+        for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips[i];
+        int16_t round = -1;
 
         while (this->data.gameData.numNonOutPlayers > 1) {
+            if (this->config.maxRounds >= 0 && round >= this->config.maxRounds - 1) {
+                // find the player with the most chips
+                u_int8_t maxChipsPlayer = 0;
+                for (u_int8_t i = 1; i < this->config.numPlayers; i++) {
+                    if (this->data.gameData.playerChips[i] > this->data.gameData.playerChips[maxChipsPlayer]) maxChipsPlayer = i;
+                }
+                // set the player with the most chips as the winner
+                this->players[maxChipsPlayer]->gameWon();
+                this->data.roundData.result = OutEnum::GAME_WON;
+                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo(maxChipsPlayer) << "\n\n";
+                break;
+            }
             // ONE ROUND
             round++;
-            this->deck = Deck();
+            if (this->config.shuffleDeck)
+                this->deck = Deck();
+            else
+                this->deck.reset();
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
             this->data.roundData.numActivePlayers = this->data.gameData.numNonOutPlayers;
 
@@ -105,6 +120,8 @@ void Game::run() {
             PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << winnerString << ". Starting new round";
         }
     }
+    // update winners
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.winners[i] = this->players[i]->getWins();
     PLOG_INFO << "Statistics: \n";
     // sort players by wins
     std::pair<u_int8_t, u_int32_t> winners[this->data.numPlayers];
@@ -129,8 +146,8 @@ const char* Game::getPlayerInfo(u_int8_t playerPos, const int64_t chipsDiff) con
 }
 
 void Game::initPlayerOrder() noexcept {
-    // shuffle deck
-    std::random_shuffle(&this->players[0], &this->players[this->config.numPlayers]);
+    // shuffle player order
+    if (this->config.shufflePlayers) std::random_shuffle(&this->players[0], &this->players[this->config.numPlayers]);
     PLOG_INFO << "Shuffled players, new order:";
     for (u_int8_t i = 0; i < this->config.numPlayers; i++) {
         // set playerPosNum for each player
@@ -191,7 +208,7 @@ void Game::setupBetRound() noexcept {
 
 void Game::startRound(const bool firstRound) {
     // reset deck and round data
-    this->deck.shuffle();
+    if (this->config.shuffleDeck) this->deck.shuffle();
     // select new dealer
     u_int8_t lastDealerPos = this->data.roundData.dealerPos;
     this->data.selectDealer(firstRound);

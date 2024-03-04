@@ -10,6 +10,7 @@ latex
 
 #data
 data
+model
 issues.txt
 log.*txt
 

@@ -1,72 +1,6 @@
 #pragma once
-#include <iostream>
-
-#include "config.h"
 #include "deck.h"
-
-/// @brief Represents a type of action that a player has to take in their turn
-enum class Actions {
-    /// @brief The player wants to discard their hand and leave the round
-    FOLD,
-    /// @brief The player wants to match the current bet
-    CALL,
-    /// @brief The player wants to increase the current bet
-    RAISE,
-    /// @brief The player wants to pass their turn
-    CHECK,
-    /// @brief The player wants to open the betting round with a bet
-    BET,
-};
-
-/// @brief Represents a card suit
-enum CardSuits {
-    /// @brief Diamonds suit
-    DIAMONDS = 0,
-    /// @brief Hearts suit
-    HEARTS,
-    /// @brief Spades suit
-    SPADES,
-    /// @brief Clubs suit
-    CLUBS,
-};
-
-/// @brief Represents a 5 cards poker hand type
-enum HandKinds {
-    /// @brief Used as a placeholder for an invalid or undefined hand
-    NO_HAND = 0,
-    /// @brief The hand does not contain any valuable combination
-    HIGH_CARD,
-    /// @brief The hand contains a single pair
-    PAIR,
-    /// @brief The hand contains two pairs
-    TWO_PAIR,
-    /// @brief The hand contains three cards of the same rank
-    THREE_OF_A_KIND,
-    /// @brief The hand contains five cards of ascending rank
-    STRAIGHT,
-    /// @brief The hand contains five cards of the same suit
-    FLUSH,
-    /// @brief The hand contains three cards of the same rank and another pair
-    FULL_HOUSE,
-    /// @brief The hand contains four cards of the same rank
-    FOUR_OF_A_KIND,
-    /// @brief The hand contains five cards of ascending rank and the same suit
-    STRAIGHT_FLUSH,
-    /// @brief The hand contains A, K, Q, J and 10 of the same suit
-    ROYAL_FLUSH,
-};
-
-/// @brief Represents the current state of a betting round (preflop, flop, turn, river)
-enum class BetRoundState {
-    /// @brief There are no community cards yet
-    PREFLOP,
-    /// @brief The first three community cards are on the table
-    FLOP,
-    /// @brief The fourth community card is on the table
-    TURN,
-    /// @brief The fifth community card is on the table
-    RIVER,
-};
+#include "enums.h"
 
 /// @brief Represents a full action that a player can take in their turn
 /// @see Actions
@@ -75,16 +9,6 @@ struct Action {
     Actions action;
     /// @brief If the action requires a bet, this is the amount of chips that the player wants to bet
     u_int64_t bet = 0;
-};
-
-/// @brief Represents the state of the whole round
-enum class OutEnum {
-    /// @brief The round is still ongoing
-    ROUND_CONTINUE,
-    /// @brief The GAME is won by a player
-    GAME_WON,
-    /// @brief The ROUND and pot is won by a player
-    ROUND_WON,
 };
 
 /// @brief Contains the data for a single bet round (preflop, flop, turn, river)
@@ -234,4 +158,51 @@ struct Data {
      * @exception Guarantee No-throw
      */
     u_int64_t getRaiseAdd(const u_int64_t bet) const noexcept { return bet - this->betRoundData.playerBets[this->betRoundData.playerPos]; }
+
+    /// @brief Prints all data to the console
+    /// @exception Guarantee No-throw
+    void print() const noexcept {
+        std::cout << "********************** BASIC DATA **********************" << std::endl;
+        std::cout << "numPlayers: " << +this->numPlayers << std::endl;
+        std::cout << "********************** GAME DATA ***********************" << std::endl;
+        std::cout << "numNonOutPlayers: " << +this->gameData.numNonOutPlayers << std::endl;
+        std::cout << "playerOut: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << (this->gameData.playerOut[i] ? "true" : "false") << " ";
+        std::cout << std::endl;
+        std::cout << "playerChips: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.playerChips[i] << " ";
+        std::cout << std::endl;
+        std::cout << "winners: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.winners[i] << " ";
+        std::cout << std::endl;
+        std::cout << "********************** ROUND DATA **********************" << std::endl;
+        std::cout << "smallBlind: " << this->roundData.smallBlind << std::endl;
+        std::cout << "bigBlind: " << this->roundData.bigBlind << std::endl;
+        std::cout << "addBlind: " << this->roundData.addBlind << std::endl;
+        std::cout << "dealerPos: " << +this->roundData.dealerPos << std::endl;
+        std::cout << "smallBlindPos: " << +this->roundData.smallBlindPos << std::endl;
+        std::cout << "bigBlindPos: " << +this->roundData.bigBlindPos << std::endl;
+        std::cout << "pot: " << this->roundData.pot << std::endl;
+        std::cout << "numActivePlayers: " << +this->roundData.numActivePlayers << std::endl;
+        std::cout << "playerFolded: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << (this->roundData.playerFolded[i] ? "true" : "false") << " ";
+        std::cout << std::endl;
+        std::cout << "communityCards: ";
+        u_int8_t communityCardsCount = this->roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : this->roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : this->roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                               : 5;
+        for (u_int8_t i = 0; i < communityCardsCount; i++) std::cout << this->roundData.communityCards[i].toString() << " ";
+        std::cout << std::endl;
+        std::cout << "result: " << EnumToString::enumToString(this->roundData.result) << std::endl;
+        std::cout << "betRoundState: " << EnumToString::enumToString(this->roundData.betRoundState) << std::endl;
+        std::cout << "********************** BET ROUND DATA ******************" << std::endl;
+        std::cout << "playerPos: " << +this->betRoundData.playerPos << std::endl;
+        std::cout << "currentBet: " << this->betRoundData.currentBet << std::endl;
+        std::cout << "minimumRaise: " << this->betRoundData.minimumRaise << std::endl;
+        std::cout << "playerBets: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->betRoundData.playerBets[i] << " ";
+        std::cout << std::endl;
+        std::cout << "********************** END OF DATA *********************" << std::endl;
+    }
 };

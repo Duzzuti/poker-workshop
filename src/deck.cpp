@@ -1,14 +1,12 @@
 #include "deck.h"
 
-#include "logger.h"
-
 const char* Card::toString() const {
     // Size should accommodate null terminator and Unicode symbol
     static char str[CARD_STR_LEN];
 
     // Invalid suit
     if (this->suit > 3) {
-        PLOG_FATAL << "Invalid suit: " << this->suit;
+        PLOG_FATAL << "Invalid suit: " << +this->suit;
         throw std::logic_error("Invalid suit");
     }
     // Add the suit symbol to the string (unicode)
@@ -16,7 +14,7 @@ const char* Card::toString() const {
 
     // Invalid rank
     if (this->rank < 2 || this->rank > 14) {
-        PLOG_FATAL << "Invalid rank: " << this->rank;
+        PLOG_FATAL << "Invalid rank: " << +this->rank;
         throw std::logic_error("Invalid rank");
     }
 
@@ -41,10 +39,9 @@ Deck::Deck() noexcept {
     }
 }
 
-void Deck::shuffle() noexcept {
-    // shuffle deck
-    std::random_shuffle(&this->cards[0], &this->cards[CARD_NUM]);
-}
+void Deck::shuffle() noexcept { std::random_shuffle(&this->cards[0], &this->cards[CARD_NUM]); }
+
+void Deck::reset() noexcept { this->len = CARD_NUM; }
 
 Card Deck::draw() {
     // draw card from deck
@@ -67,6 +64,8 @@ const char* Deck::toString(const char sep) const {
     return str;
 }
 
+Card Deck::getRandomCard() noexcept { return Card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)}; }
+
 Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, const int8_t suit, const u_int8_t ranks[], const u_int8_t rankLen) noexcept {
     // get random card from deck except cards in array
     // except with suit if suit != -1
@@ -79,6 +78,16 @@ Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, cons
             return card;
         }
     }
+}
+
+Card Deck::getRandomCardExceptAdd(std::vector<Card>& drawnCards) noexcept {
+    // get random card from deck except cards in array
+    Card card;
+    do {
+        card = Card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)};
+    } while (std::find(drawnCards.begin(), drawnCards.end(), card) != drawnCards.end());
+    drawnCards.push_back(card);
+    return card;
 }
 
 Card Deck::getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int8_t cardsLen, const int8_t suit, const int8_t rank) noexcept {
@@ -97,4 +106,21 @@ Card Deck::getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int
         // check if card is in exceptionCards
     } while (std::find(exceptionCards, &exceptionCards[cardsLen], card) != &exceptionCards[cardsLen]);
     return card;
+}
+
+void Deck::putCard(const Card card, const u_int8_t cardPos) {
+    // find card in deck and swap it with the card at cardPos
+    int8_t pos = this->len - cardPos - 1;
+    if (pos < 0) {
+        PLOG_FATAL << "Invalid card position: there are only " << this->len << " cards in the deck; trying to put a card at position " << cardPos;
+        throw std::invalid_argument("Invalid card position: there are only " + std::to_string(this->len) + " cards in the deck; trying to put a card at position " + std::to_string(cardPos));
+    }
+    for (u_int8_t i = 0; i < this->len; i++) {
+        if (this->cards[i] == card) {
+            std::swap(this->cards[i], this->cards[pos]);
+            return;
+        }
+    }
+    PLOG_FATAL << "Card not found in remaining deck (deck might be not complete or card is invalid): " << card.toString();
+    throw std::invalid_argument("Card not found in remaining deck");
 }

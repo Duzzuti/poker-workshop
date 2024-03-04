@@ -1,6 +1,4 @@
-#include "config.h"
 #include "game.h"
-#include "logger.h"
 
 int main(int argc, char** argv) {
     srand(time(NULL));  // init random seed

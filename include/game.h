@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 
-#include "config.h"
 #include "player.h"
 
 /// @brief Simulates a set of poker games
@@ -18,13 +17,15 @@ class Game {
     Game(const Config& config) noexcept : config(config), players(new std::unique_ptr<Player>[config.numPlayers]) {}
 
     /// @brief Runs the simulation
+    /// @param initPlayers Whether the method is responsible for initializing the players
     /// @exception Guarantee None
     /// @throws std::invalid_argument if the player name is too long
     /// @throws std::logic_error if the deck is empty
     /// @throws std::logic_error if the player could not call a matched bet
     /// @throws std::logic_error if the player choose an action which is not covered
     /// @note The simulation is changing the data field. This is where the results are stored.
-    void run();
+    /// @note Undefined behavior if the players are not initialized externally and initPlayers is set to false
+    void run(const bool initPlayers = true);
 
     /// @brief Frees the allocated memory for the players
     /// @exception Guarantee No-throw
