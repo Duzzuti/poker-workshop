@@ -84,6 +84,15 @@ class Deck {
     /// @see getRandomCardExceptCardsWith() if you want to make a more inclusive selection
     static Card getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, const int8_t suit = -1, const u_int8_t ranks[] = {}, const u_int8_t rankLen = 0) noexcept;
 
+    /// @brief Gets a random card that is not in the drawnCards array and adds it to the drawnCards array
+    /// @param drawnCards The cards to EXCLUDE from the selection
+    /// @return A random card that is not in the drawnCards array
+    /// @exception Guarantee No-throw
+    /// @note The method is static, it does not interact with the deck. It is considering every card
+    /// @note The method is used for debug/testing purposes
+    /// @note The drawn card will be added to the drawnCards array
+    static Card getRandomCardExceptAdd(std::vector<Card>& drawnCards) noexcept;
+
     /// @brief Gets a random card that matches the given criteria
     /// @param exceptionCards The cards to EXCLUDE from the selection
     /// @param cardsLen The number of cards in the exceptionCards array

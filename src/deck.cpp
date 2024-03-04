@@ -80,6 +80,16 @@ Card Deck::getRandomCardExcept(const Card cards[], const u_int8_t cardsLen, cons
     }
 }
 
+Card Deck::getRandomCardExceptAdd(std::vector<Card>& drawnCards) noexcept {
+    // get random card from deck except cards in array
+    Card card;
+    do {
+        card = Card{.rank = (u_int8_t)((std::rand() % 13) + 2), .suit = (u_int8_t)(std::rand() % 4)};
+    } while (std::find(drawnCards.begin(), drawnCards.end(), card) != drawnCards.end());
+    drawnCards.push_back(card);
+    return card;
+}
+
 Card Deck::getRandomCardExceptCardsWith(const Card exceptionCards[], const u_int8_t cardsLen, const int8_t suit, const int8_t rank) noexcept {
     // get random card from deck with suit if suit != -1 and rank if rank != -1
     // except cards in array
