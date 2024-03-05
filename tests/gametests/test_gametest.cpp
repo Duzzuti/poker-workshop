@@ -62,7 +62,7 @@ TEST(ClassName, TestName) {
         EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
         EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
         EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
-        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 0, data.roundData.dealerPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
         u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
                                        : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
                                        : data.roundData.betRoundState == BetRoundState::TURN  ? 4

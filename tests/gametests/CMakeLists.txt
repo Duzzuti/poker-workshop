@@ -13,4 +13,9 @@ add_executable(gtestc_test main_test.cpp test_gametest.cpp ${SRC_DIR}/game.cpp $
 target_link_libraries(gtestc_test gtest_main)
 target_include_directories(gtestc_test PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR} ${TEST_DIR})
 
+add_executable(gtestc_illegal_moves main_test.cpp illegal_moves_gametest.cpp ${SRC_DIR}/game.cpp ${COMMON_SRC} ${TEST_PLAYER} ${RAND_PLAYER} ${CHECK_PLAYER})
+target_link_libraries(gtestc_illegal_moves gtest_main)
+target_include_directories(gtestc_illegal_moves PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR} ${TEST_DIR})
+
 add_test(GTEST_TEST gtestc_test)
+add_test(GTEST_ILLEGAL_MOVES gtestc_illegal_moves)

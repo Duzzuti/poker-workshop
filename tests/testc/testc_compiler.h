@@ -127,7 +127,7 @@ void compileResultDataCheck(std::ofstream& outputFile) noexcept {
     outputFile << "\tEXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);" << std::endl;
     outputFile << "\tEXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);" << std::endl;
     outputFile << "\tEXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);" << std::endl;
-    outputFile << "\tEXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 0, data.roundData.dealerPos);" << std::endl;
+    outputFile << "\tEXPECT_EQ(0, data.roundData.dealerPos);" << std::endl;
     outputFile << "\tu_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0" << std::endl;
     outputFile << "\t\t\t\t\t\t\t\t\t: data.roundData.betRoundState == BetRoundState::FLOP  ? 3" << std::endl;
     outputFile << "\t\t\t\t\t\t\t\t\t: data.roundData.betRoundState == BetRoundState::TURN  ? 4" << std::endl;

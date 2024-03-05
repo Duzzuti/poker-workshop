@@ -57,7 +57,6 @@ void Game::run(const bool initPlayers) {
                 this->deck.reset();
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
             this->data.roundData.numActivePlayers = this->data.gameData.numNonOutPlayers;
-
             PLOG_DEBUG << "Starting round " << round;
             this->startRound(round == 0);
             // PREFLOP
@@ -78,6 +77,7 @@ void Game::run(const bool initPlayers) {
             } else if (this->data.roundData.result == OutEnum::GAME_WON) {
                 // switch to the winner
                 this->data.nextActivePlayer();
+                this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 this->players[this->data.betRoundData.playerPos]->gameWon();
                 PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo() << "\n\n";
                 break;
@@ -163,7 +163,7 @@ OutEnum Game::setBlinds() noexcept {
     if (this->data.gameData.numNonOutPlayers == 2) {
         // heads up rule (small blind is the dealer)
         // adjust button if the big blind would be the same player again
-        if (this->data.roundData.bigBlindPos != this->data.roundData.dealerPos) this->data.roundData.dealerPos = this->data.roundData.bigBlindPos;
+        this->data.roundData.dealerPos = this->data.roundData.bigBlindPos;
         this->data.betRoundData.playerPos = this->data.roundData.dealerPos;
     }
     OutEnum res = OutEnum::ROUND_CONTINUE;
@@ -230,8 +230,8 @@ void Game::startRound(const bool firstRound) {
         if (this->data.gameData.playerOut[i]) continue;
         this->players[i]->setHand(this->deck.draw(), this->deck.draw());
     }
-
     // first action is setting the blinds
+    if (firstRound) this->data.roundData.bigBlindPos = 0;  // fix first round heads up
     this->data.roundData.result = this->setBlinds();
 }
 
