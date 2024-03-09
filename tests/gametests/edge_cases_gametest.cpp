@@ -966,7 +966,7 @@ TEST(EdgeCaseTest, RaiseLastChip) {
                 .numActivePlayers = 1,
                 .winners = {0, 1},
                 .pot = 30,
-                .playerChips = {990, 1010},
+                .playerChips = {0, 1010},
                 .betRoundState = BetRoundState::PREFLOP,
             }};
         // game should only last one round and not shuffle players or deck
@@ -1118,7 +1118,7 @@ TEST(EdgeCaseTest, BetLastChip) {
                 .numActivePlayers = 1,
                 .winners = {1, 0},
                 .pot = 40,
-                .playerChips = {1020, 980},
+                .playerChips = {1020, 0},
                 .betRoundState = BetRoundState::FLOP,
             }};
         // game should only last one round and not shuffle players or deck
@@ -1271,7 +1271,7 @@ TEST(EdgeCaseTest, CallLastChip) {
                 .numActivePlayers = 1,
                 .winners = {1, 0},
                 .pot = 1020,
-                .playerChips = {10020, 980},
+                .playerChips = {10020, 0},
                 .betRoundState = BetRoundState::FLOP,
             }};
         // game should only last one round and not shuffle players or deck

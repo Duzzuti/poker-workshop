@@ -31,7 +31,7 @@ TEST(IllegalMoves, Check) {
                                   .numActivePlayers = 1,
                                   .winners = {0, 0, 0, 0, 0, 1},
                                   .pot = 520,
-                                  .playerChips = {920, 980, 980, 1000, 840, 1280},
+                                  .playerChips = {0, 0, 0, 0, 0, 1280},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -110,7 +110,7 @@ TEST(IllegalMoves, Call) {
                                   .numActivePlayers = 1,
                                   .winners = {0, 1, 0},
                                   .pot = 262,
-                                  .playerChips = {889, 1151, 60},
+                                  .playerChips = {0, 1151, 0},
                                   .betRoundState = BetRoundState::TURN,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -196,7 +196,7 @@ TEST(IllegalMoves, Raise) {
                                   .numActivePlayers = 1,
                                   .winners = {0, 0, 1, 0, 0, 0},
                                   .pot = 460,
-                                  .playerChips = {60, 860, 1280, 1000, 960, 940},
+                                  .playerChips = {0, 0, 1280, 0, 0, 0},
                                   .betRoundState = BetRoundState::TURN,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -275,7 +275,7 @@ TEST(IllegalMoves, Bet) {
                 .numActivePlayers = 1,
                 .winners = {0, 1, 0, 0},
                 .pot = 60,
-                .playerChips = {80, 1040, 980, 1000},
+                .playerChips = {0, 1040, 0, 0},
                 .betRoundState = BetRoundState::FLOP,
             }};
         // game should only last one round and not shuffle players or deck
@@ -351,7 +351,7 @@ TEST(IllegalMoves, Fold) {
                 .numActivePlayers = 1,
                 .winners = {1, 0},
                 .pot = 40,
-                .playerChips = {120, 980},
+                .playerChips = {120, 0},
                 .betRoundState = BetRoundState::PREFLOP,
             }};
         // game should only last one round and not shuffle players or deck

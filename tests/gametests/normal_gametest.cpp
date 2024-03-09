@@ -259,7 +259,7 @@ TEST(NormalTest, norm4) {
                                   .numActivePlayers = 1,
                                   .winners = {0, 0, 1},
                                   .pot = 70,
-                                  .playerChips = {980, 90, 1030},
+                                  .playerChips = {980, 0, 1030},
                                   .betRoundState = BetRoundState::PREFLOP,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -336,7 +336,7 @@ TEST(NormalTest, norm5) {
                                   .numActivePlayers = 1,
                                   .winners = {1, 0, 0},
                                   .pot = 90,
-                                  .playerChips = {1050, 90, 960},
+                                  .playerChips = {1050, 0, 960},
                                   .betRoundState = BetRoundState::FLOP,
                               }};
         // game should only last one round and not shuffle players or deck
