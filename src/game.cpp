@@ -446,6 +446,7 @@ OutEnum Game::playerOut(const char* reason) noexcept {
     this->data.gameData.numNonOutPlayers--;
     this->data.roundData.numActivePlayers--;
     this->data.gameData.playerOut[this->data.betRoundData.playerPos] = true;
+    this->data.gameData.playerChips[this->data.betRoundData.playerPos] = 0;
     this->data.nextPlayer();
 
     return this->getOutEnum();
