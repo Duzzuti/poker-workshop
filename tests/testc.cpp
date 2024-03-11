@@ -95,7 +95,7 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
             // check for empty player actions
             for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
                 if (testConfig.playerActions[i].empty()) {
-                    std::cerr << "No moves found for player " << i << errorLocation << std::endl;
+                    std::cerr << "No moves found for player " << +i << errorLocation << std::endl;
                     return false;
                 }
             }

@@ -39,14 +39,30 @@ void Game::run(const bool initPlayers) {
         while (this->data.gameData.numNonOutPlayers > 1) {
             if (this->config.maxRounds >= 0 && round >= this->config.maxRounds - 1) {
                 // find the player with the most chips
-                u_int8_t maxChipsPlayer = 0;
-                for (u_int8_t i = 1; i < this->config.numPlayers; i++) {
-                    if (this->data.gameData.playerChips[i] > this->data.gameData.playerChips[maxChipsPlayer]) maxChipsPlayer = i;
+                this->data.nextActivePlayer();
+                u_int8_t firstActivePlayer = this->data.betRoundData.playerPos;
+                u_int8_t maxChipsPlayers[MAX_PLAYERS] = {firstActivePlayer};
+                u_int8_t maxChipsPlayersCount = 1;
+                this->data.nextActivePlayer();
+                while (this->data.betRoundData.playerPos != firstActivePlayer) {
+                    if (this->data.getChips() > this->data.gameData.playerChips[maxChipsPlayers[0]]) {
+                        maxChipsPlayers[0] = this->data.betRoundData.playerPos;
+                        maxChipsPlayersCount = 1;
+                    } else if (this->data.getChips() == this->data.gameData.playerChips[maxChipsPlayers[0]]) {
+                        maxChipsPlayers[maxChipsPlayersCount++] = this->data.betRoundData.playerPos;
+                    }
+                    this->data.nextActivePlayer();
                 }
-                // set the player with the most chips as the winner
-                this->players[maxChipsPlayer]->gameWon();
+                // set the players with the most chips as the winner
+                for (u_int8_t i = 0; i < maxChipsPlayersCount; i++) this->players[maxChipsPlayers[i]]->gameWon();
                 this->data.roundData.result = OutEnum::GAME_WON;
-                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo(maxChipsPlayer) << "\n\n";
+                winnerString[0] = '\0';
+                for (u_int8_t i = 0; i < maxChipsPlayersCount; i++) {
+                    // depending MAX_POT_DIST_STRING_LENGTH
+                    std::strncat(winnerString, this->getPlayerInfo(maxChipsPlayers[i]), MAX_GET_PLAYER_INFO_LENGTH);
+                    if (i != maxChipsPlayersCount - 1) std::strcat(winnerString, ", ");
+                }
+                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << winnerString << "\n\n";
                 break;
             }
             // ONE ROUND
@@ -57,7 +73,6 @@ void Game::run(const bool initPlayers) {
                 this->deck.reset();
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
             this->data.roundData.numActivePlayers = this->data.gameData.numNonOutPlayers;
-
             PLOG_DEBUG << "Starting round " << round;
             this->startRound(round == 0);
             // PREFLOP
@@ -78,6 +93,7 @@ void Game::run(const bool initPlayers) {
             } else if (this->data.roundData.result == OutEnum::GAME_WON) {
                 // switch to the winner
                 this->data.nextActivePlayer();
+                this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 this->players[this->data.betRoundData.playerPos]->gameWon();
                 PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo() << "\n\n";
                 break;
@@ -163,7 +179,7 @@ OutEnum Game::setBlinds() noexcept {
     if (this->data.gameData.numNonOutPlayers == 2) {
         // heads up rule (small blind is the dealer)
         // adjust button if the big blind would be the same player again
-        if (this->data.roundData.bigBlindPos != this->data.roundData.dealerPos) this->data.roundData.dealerPos = this->data.roundData.bigBlindPos;
+        this->data.roundData.dealerPos = this->data.roundData.bigBlindPos;
         this->data.betRoundData.playerPos = this->data.roundData.dealerPos;
     }
     OutEnum res = OutEnum::ROUND_CONTINUE;
@@ -230,8 +246,8 @@ void Game::startRound(const bool firstRound) {
         if (this->data.gameData.playerOut[i]) continue;
         this->players[i]->setHand(this->deck.draw(), this->deck.draw());
     }
-
     // first action is setting the blinds
+    if (firstRound) this->data.roundData.bigBlindPos = 0;  // fix first round heads up
     this->data.roundData.result = this->setBlinds();
 }
 
