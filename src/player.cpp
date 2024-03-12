@@ -17,7 +17,7 @@ Player::Player(const char* name) {
 }
 
 const char* Player::createPlayerName(const char* name, const u_int8_t playerNum, const bool appendNum) noexcept {
-    if (appendNum) return name;
+    if (!appendNum) return name;
 
     static char playerName[MAX_PLAYER_NAME_LENGTH];
     // format: "nameNum"
