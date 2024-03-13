@@ -6,7 +6,9 @@
 class Player {
    public:
     /// @brief Default constructor
-    Player() noexcept = default;
+    /// @param index The index of the player
+    /// @exception Guarantee No-throw
+    Player(u_int8_t index) noexcept : index(index) {};
 
     /// @brief Gets the name of the player
     /// @return The name of the player in the format: "<playerPosNum>:<name>"
@@ -18,15 +20,6 @@ class Player {
     /// @param num The playerPosNum of the player
     /// @exception Guarantee No-throw
     virtual void setPlayerPosNum(u_int8_t num) noexcept final { this->playerPosNum = num; };
-
-    /// @brief Increments the number of wins of the player
-    /// @exception Guarantee No-throw
-    virtual void gameWon() noexcept final { wins++; };
-
-    /// @brief Gets the number of wins of the player
-    /// @return The number of wins of the player
-    /// @exception Guarantee No-throw
-    virtual u_int32_t getWins() const noexcept final { return wins; };
 
     /// @brief Sets the hand of the player
     /// @param card1 First card
@@ -53,22 +46,27 @@ class Player {
     /// @brief Default destructor
     virtual ~Player() noexcept = default;
 
+    /// @brief The players index
+    const u_int8_t index;
+
    protected:
     /// @brief Player constructor with player name
     /// @param name The name of the player (has to be at most MAX_PLAYER_NAME_LENGTH long)
+    /// @param index The index of the player
     /// @exception Guarantee Strong
     /// @throws std::invalid_argument If the name is too long
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the name
-    Player(const char* name);
+    Player(const char* name, u_int8_t index);
 
     /// @brief Creates a player name with the player number and name
     /// @param name A name for the player
     /// @param playerNum A number for the player
-    /// @return The player name in the format: "<name><playerNum>"
+    /// @param appendNum If true, the player number will be appended to the name
+    /// @return The player name in the format: "<name><playerNum>" or "<name>"
     /// @exception Guarantee No-throw
     /// @note Cuts of the name if it is too long, so that the returned string is at most MAX_PLAYER_NAME_LENGTH long
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the returned string
-    static const char* createPlayerName(const char* name, u_int8_t playerNum) noexcept;
+    static const char* createPlayerName(const char* name, const u_int8_t playerNum, const bool appendNum) noexcept;
 
     /// @brief The name of the player
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the name
@@ -81,7 +79,4 @@ class Player {
 
     /// @brief Player position number
     u_int8_t playerPosNum = 0;
-
-    /// @brief The number of wins of the player
-    u_int32_t wins = 0;
 };
