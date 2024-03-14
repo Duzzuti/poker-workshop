@@ -58,7 +58,11 @@ struct GameData {
     /// @brief True if the player is out of the game
     bool playerOut[MAX_PLAYERS];
     /// @brief The number of game wins for each player
-    u_int32_t winners[MAX_PLAYERS];
+    u_int32_t gameWins[MAX_PLAYERS];
+    /// @brief The number of round wins for each player (side pot wins included)
+    u_int32_t chipWins[MAX_PLAYERS];
+    /// @brief The number of chips won for each player (side pot wins included)
+    u_int64_t chipWinsAmount[MAX_PLAYERS];
     /// @brief The number of chips that each player has
     u_int64_t playerChips[MAX_PLAYERS];
 };
@@ -172,8 +176,14 @@ struct Data {
         std::cout << "playerChips: ";
         for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.playerChips[i] << " ";
         std::cout << std::endl;
-        std::cout << "winners: ";
-        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.winners[i] << " ";
+        std::cout << "Game wins: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.gameWins[i] << " ";
+        std::cout << std::endl;
+        std::cout << "Chip wins: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.chipWins[i] << " ";
+        std::cout << std::endl;
+        std::cout << "Chip wins amount: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->gameData.chipWinsAmount[i] << " ";
         std::cout << std::endl;
         std::cout << "********************** ROUND DATA **********************" << std::endl;
         std::cout << "smallBlind: " << this->roundData.smallBlind << std::endl;

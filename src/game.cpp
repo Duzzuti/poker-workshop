@@ -20,7 +20,9 @@ void Game::run(const bool initPlayers) {
 
     this->data.numPlayers = this->config.numPlayers;
     // reset winners
-    std::memset(this->data.gameData.winners, 0, sizeof(this->data.gameData.winners));
+    std::memset(this->data.gameData.gameWins, 0, sizeof(this->data.gameData.gameWins));
+    std::memset(this->data.gameData.chipWins, 0, sizeof(this->data.gameData.chipWins));
+    std::memset(this->data.gameData.chipWinsAmount, 0, sizeof(this->data.gameData.chipWinsAmount));
 
     char winnerString[MAX_POT_DIST_STRING_LENGTH];
 
@@ -137,7 +139,7 @@ void Game::run(const bool initPlayers) {
         }
     }
     // update winners
-    for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.winners[i] = this->players[i]->getWins();
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.gameWins[i] = this->players[i]->getWins();
     PLOG_INFO << "Statistics: \n";
     // sort players by wins
     std::pair<u_int8_t, u_int32_t> winners[this->data.numPlayers];
@@ -169,7 +171,7 @@ void Game::initPlayerOrder() noexcept {
         // set playerPosNum for each player
         this->players[i]->setPlayerPosNum(i);
         // load the current player wins into the data struct
-        this->data.gameData.winners[i] = this->players[i]->getWins();
+        this->data.gameData.gameWins[i] = this->players[i]->getWins();
         PLOG_INFO << this->players[i]->getName();
     }
 }
