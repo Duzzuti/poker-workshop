@@ -29,7 +29,7 @@ TEST(IllegalMoves, Check) {
                                   .foldedPlayers = {false, false, false, false, false, false},
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
-                                  .winners = {0, 0, 0, 0, 0, 1},
+                                  .gameWins = {0, 0, 0, 0, 0, 1},
                                   .pot = 520,
                                   .playerChips = {0, 0, 0, 0, 0, 1280},
                                   .betRoundState = BetRoundState::RIVER,
@@ -62,7 +62,7 @@ TEST(IllegalMoves, Check) {
             EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
         }
         for (int i = 0; i < testConfig.numPlayers; i++) {
-            EXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
         }
 
         EXPECT_EQ(0, data.roundData.addBlind);
@@ -108,7 +108,7 @@ TEST(IllegalMoves, Call) {
                                   .foldedPlayers = {false, false, false},
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
-                                  .winners = {0, 1, 0},
+                                  .gameWins = {0, 1, 0},
                                   .pot = 262,
                                   .playerChips = {0, 1151, 0},
                                   .betRoundState = BetRoundState::TURN,
@@ -141,7 +141,7 @@ TEST(IllegalMoves, Call) {
             EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
         }
         for (int i = 0; i < testConfig.numPlayers; i++) {
-            EXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
         }
 
         EXPECT_EQ(0, data.roundData.addBlind);
@@ -194,7 +194,7 @@ TEST(IllegalMoves, Raise) {
                                   .foldedPlayers = {false, false, false, false, false, false},
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
-                                  .winners = {0, 0, 1, 0, 0, 0},
+                                  .gameWins = {0, 0, 1, 0, 0, 0},
                                   .pot = 460,
                                   .playerChips = {0, 0, 1280, 0, 0, 0},
                                   .betRoundState = BetRoundState::TURN,
@@ -227,7 +227,7 @@ TEST(IllegalMoves, Raise) {
             EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
         }
         for (int i = 0; i < testConfig.numPlayers; i++) {
-            EXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
         }
 
         EXPECT_EQ(0, data.roundData.addBlind);
@@ -273,7 +273,7 @@ TEST(IllegalMoves, Bet) {
                 .foldedPlayers = {false, false, false, false},
                 .nonOutPlayers = 1,
                 .numActivePlayers = 1,
-                .winners = {0, 1, 0, 0},
+                .gameWins = {0, 1, 0, 0},
                 .pot = 60,
                 .playerChips = {0, 1040, 0, 0},
                 .betRoundState = BetRoundState::FLOP,
@@ -306,7 +306,7 @@ TEST(IllegalMoves, Bet) {
             EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
         }
         for (int i = 0; i < testConfig.numPlayers; i++) {
-            EXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
         }
 
         EXPECT_EQ(0, data.roundData.addBlind);
@@ -349,7 +349,7 @@ TEST(IllegalMoves, Fold) {
                 .foldedPlayers = {false, false},
                 .nonOutPlayers = 1,
                 .numActivePlayers = 1,
-                .winners = {1, 0},
+                .gameWins = {1, 0},
                 .pot = 40,
                 .playerChips = {120, 0},
                 .betRoundState = BetRoundState::PREFLOP,
@@ -382,7 +382,7 @@ TEST(IllegalMoves, Fold) {
             EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
         }
         for (int i = 0; i < testConfig.numPlayers; i++) {
-            EXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
         }
 
         EXPECT_EQ(0, data.roundData.addBlind);

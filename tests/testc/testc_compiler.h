@@ -83,9 +83,9 @@ void compileTestConfig(std::ofstream& outputFile, const TestConfig& testConfig) 
     outputFile << std::endl << "\t\t\t}," << std::endl << "\t";
     outputFile << "\t\t.nonOutPlayers = " << +testConfig.resultData.nonOutPlayers << "," << std::endl << "\t";
     outputFile << "\t\t.numActivePlayers = " << +testConfig.resultData.numActivePlayers << "," << std::endl << "\t";
-    outputFile << "\t\t.winners = {" << std::endl << "\t\t\t\t";
+    outputFile << "\t\t.gameWins = {" << std::endl << "\t\t\t\t";
     for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
-        outputFile << +testConfig.resultData.winners[i];
+        outputFile << +testConfig.resultData.gameWins[i];
         if (i != testConfig.numPlayers - 1) outputFile << ", ";
     }
     outputFile << std::endl << "\t\t\t}," << std::endl << "\t";
@@ -118,7 +118,7 @@ void compileResultDataCheck(std::ofstream& outputFile) noexcept {
     outputFile << "\t\tEXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);" << std::endl;
     outputFile << "\t}" << std::endl;
     outputFile << "\tfor (int i = 0; i < testConfig.numPlayers; i++) {" << std::endl;
-    outputFile << "\t\tEXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);" << std::endl;
+    outputFile << "\t\tEXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);" << std::endl;
     outputFile << "\t}" << std::endl;
     outputFile << std::endl;
     outputFile << "\tEXPECT_EQ(0, data.roundData.addBlind);" << std::endl;
