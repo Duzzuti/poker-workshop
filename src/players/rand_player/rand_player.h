@@ -14,10 +14,11 @@ class RandPlayer : public Player {
 
     /// @brief Constructor with default name and custom playerNum
     /// @param playerNum The number of the player which will be appended to the default name
+    /// @param appendNum If true, the player number will be appended to the default name
     /// @exception Guarantee No-throw
     /// @note Cuts of the name if it is too long, so that the returned string is at most MAX_PLAYER_NAME_LENGTH long
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the saved name
-    RandPlayer(u_int8_t playerNum = 0) noexcept : Player(createPlayerName("RandPlayer", playerNum)){};
+    RandPlayer(const u_int8_t playerNum, const bool appendNum = true) noexcept : Player(createPlayerName("RandPlayer", playerNum, appendNum)){};
 
     /// @brief Simulates one turn of the rand player
     /// @param data The data of the game

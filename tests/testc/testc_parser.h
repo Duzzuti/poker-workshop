@@ -210,9 +210,9 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
             }
             for (u_int8_t i = 0; i < winnerLine.size(); i++) {
                 if (winnerLine[i] == 'f')
-                    testConfig.resultData.winners[i] = false;
+                    testConfig.resultData.gameWins[i] = 0;
                 else if (winnerLine[i] == 't')
-                    testConfig.resultData.winners[i] = true;
+                    testConfig.resultData.gameWins[i] = 1;
                 else {
                     std::cerr << "Invalid character in WINNER token, only 'f' and 't' are allowed (line: " << currentLine << ", char: " << winnerLine[i] << ")" << std::endl;
                     exit(1);

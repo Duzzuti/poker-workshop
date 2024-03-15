@@ -16,8 +16,8 @@ Player::Player(const char* name) {
     std::strncpy(this->name, name, MAX_PLAYER_NAME_LENGTH);
 }
 
-const char* Player::createPlayerName(const char* name, u_int8_t playerNum) noexcept {
-    if (playerNum == 0) return name;
+const char* Player::createPlayerName(const char* name, const u_int8_t playerNum, const bool appendNum) noexcept {
+    if (!appendNum) return name;
 
     static char playerName[MAX_PLAYER_NAME_LENGTH];
     // format: "nameNum"

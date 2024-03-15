@@ -6,6 +6,7 @@
 class Player {
    public:
     /// @brief Default constructor
+    /// @exception Guarantee No-throw
     Player() noexcept = default;
 
     /// @brief Gets the name of the player
@@ -16,17 +17,20 @@ class Player {
 
     /// @brief Sets the playerPosNum of the player
     /// @param num The playerPosNum of the player
-    /// @exception Guarantee No-throw
-    virtual void setPlayerPosNum(u_int8_t num) noexcept final { this->playerPosNum = num; };
+    /// @exception Guarantee Strong
+    /// @throws std::invalid_argument If the number is too high (>= MAX_PLAYERS)
+    virtual void setPlayerPosNum(const u_int8_t num) final {
+        if (num >= MAX_PLAYERS) {
+            PLOG_FATAL << "Player position number too high";
+            throw std::invalid_argument("Player position number too high");
+        }
+        this->playerPosNum = num;
+    };
 
-    /// @brief Increments the number of wins of the player
+    /// @brief Gets the playerPosNum of the player
+    /// @return The playerPosNum of the player
     /// @exception Guarantee No-throw
-    virtual void gameWon() noexcept final { wins++; };
-
-    /// @brief Gets the number of wins of the player
-    /// @return The number of wins of the player
-    /// @exception Guarantee No-throw
-    virtual u_int32_t getWins() const noexcept final { return wins; };
+    virtual u_int8_t getPlayerPosNum() const noexcept final { return this->playerPosNum; };
 
     /// @brief Sets the hand of the player
     /// @param card1 First card
@@ -64,11 +68,12 @@ class Player {
     /// @brief Creates a player name with the player number and name
     /// @param name A name for the player
     /// @param playerNum A number for the player
-    /// @return The player name in the format: "<name><playerNum>"
+    /// @param appendNum If true, the player number will be appended to the name
+    /// @return The player name in the format: "<name><playerNum>" or "<name>"
     /// @exception Guarantee No-throw
     /// @note Cuts of the name if it is too long, so that the returned string is at most MAX_PLAYER_NAME_LENGTH long
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the returned string
-    static const char* createPlayerName(const char* name, u_int8_t playerNum) noexcept;
+    static const char* createPlayerName(const char* name, const u_int8_t playerNum, const bool appendNum) noexcept;
 
     /// @brief The name of the player
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the name
@@ -79,9 +84,6 @@ class Player {
     /// @see Card
     std::pair<Card, Card> hand;
 
-    /// @brief Player position number
+    /// @brief Player table position number
     u_int8_t playerPosNum = 0;
-
-    /// @brief The number of wins of the player
-    u_int32_t wins = 0;
 };

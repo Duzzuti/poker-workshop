@@ -20,7 +20,7 @@ TEST(ClassName, TestName) {
                                   .foldedPlayers = {false, false, true},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 2,
-                                  .winners = {1, 0, 0},
+                                  .gameWins = {1, 0, 0},
                                   .pot = 360,
                                   .playerChips = {1090, 330, 100},
                                   .betRoundState = BetRoundState::RIVER,
@@ -53,7 +53,7 @@ TEST(ClassName, TestName) {
             EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
         }
         for (int i = 0; i < testConfig.numPlayers; i++) {
-            EXPECT_EQ(testConfig.resultData.winners[i], data.gameData.winners[i]);
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
         }
 
         EXPECT_EQ(0, data.roundData.addBlind);

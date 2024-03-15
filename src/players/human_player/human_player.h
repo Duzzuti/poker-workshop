@@ -15,10 +15,11 @@ class HumanPlayer : public Player {
 
     /// @brief Constructor with default name and custom playerNum
     /// @param playerNum The number of the player which will be appended to the default name
+    /// @param appendNum If true, the player number will be appended to the default name
     /// @exception Guarantee No-throw
     /// @note Cuts of the name if it is too long, so that the returned string is at most MAX_PLAYER_NAME_LENGTH long
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the saved name
-    HumanPlayer(u_int8_t playerNum = 0) noexcept : Player(createPlayerName("HumanPlayer", playerNum)){};
+    HumanPlayer(const u_int8_t playerNum, const bool appendNum = true) noexcept : Player(createPlayerName("HumanPlayer", playerNum, appendNum)){};
 
     /// @brief Ask the user what to do
     /// @param data The data of the game

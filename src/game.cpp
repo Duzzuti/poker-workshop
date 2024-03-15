@@ -20,7 +20,9 @@ void Game::run(const bool initPlayers) {
 
     this->data.numPlayers = this->config.numPlayers;
     // reset winners
-    std::memset(this->data.gameData.winners, 0, sizeof(this->data.gameData.winners));
+    std::memset(this->data.gameData.gameWins, 0, sizeof(this->data.gameData.gameWins));
+    std::memset(this->data.gameData.chipWins, 0, sizeof(this->data.gameData.chipWins));
+    std::memset(this->data.gameData.chipWinsAmount, 0, sizeof(this->data.gameData.chipWinsAmount));
 
     char winnerString[MAX_POT_DIST_STRING_LENGTH];
 
@@ -54,7 +56,7 @@ void Game::run(const bool initPlayers) {
                     this->data.nextActivePlayer();
                 }
                 // set the players with the most chips as the winner
-                for (u_int8_t i = 0; i < maxChipsPlayersCount; i++) this->players[maxChipsPlayers[i]]->gameWon();
+                for (u_int8_t i = 0; i < maxChipsPlayersCount; i++) this->data.gameData.gameWins[maxChipsPlayers[i]]++;
                 this->data.roundData.result = OutEnum::GAME_WON;
                 winnerString[0] = '\0';
                 for (u_int8_t i = 0; i < maxChipsPlayersCount; i++) {
@@ -89,12 +91,16 @@ void Game::run(const bool initPlayers) {
                 this->data.nextActivePlayer();
                 PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->getPlayerInfo(MAX_PLAYERS, this->data.roundData.pot) << ". Starting new round";
                 this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
+                this->data.gameData.chipWins[this->data.betRoundData.playerPos]++;
+                this->data.gameData.chipWinsAmount[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 continue;
             } else if (this->data.roundData.result == OutEnum::GAME_WON) {
                 // switch to the winner
                 this->data.nextActivePlayer();
                 this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
-                this->players[this->data.betRoundData.playerPos]->gameWon();
+                this->data.gameData.gameWins[this->data.betRoundData.playerPos]++;
+                this->data.gameData.chipWins[this->data.betRoundData.playerPos]++;
+                this->data.gameData.chipWinsAmount[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo() << "\n\n";
                 break;
             }
@@ -131,17 +137,17 @@ void Game::run(const bool initPlayers) {
                 // depending MAX_POT_DIST_STRING_LENGTH
                 std::strncat(winnerString, this->getPlayerInfo(winners[i], potPerWinner), MAX_GET_PLAYER_INFO_LENGTH);
                 this->data.gameData.playerChips[winners[i]] += potPerWinner;
+                this->data.gameData.chipWins[winners[i]]++;
+                this->data.gameData.chipWinsAmount[winners[i]] += potPerWinner;
                 if (i != numWinners - 1) std::strcat(winnerString, ", ");
             }
             PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << winnerString << ". Starting new round";
         }
     }
-    // update winners
-    for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.winners[i] = this->players[i]->getWins();
     PLOG_INFO << "Statistics: \n";
     // sort players by wins
     std::pair<u_int8_t, u_int32_t> winners[this->data.numPlayers];
-    for (u_int8_t i = 0; i < this->config.numPlayers; i++) winners[i] = std::make_pair(i, this->players[i]->getWins());
+    for (u_int8_t i = 0; i < this->config.numPlayers; i++) winners[i] = std::make_pair(i, this->data.gameData.gameWins[i]);
     std::sort(&winners[0], &winners[this->config.numPlayers], [](const std::pair<u_int8_t, u_int32_t>& a, const std::pair<u_int8_t, u_int32_t>& b) { return a.second > b.second; });
     for (u_int8_t i = 0; i < this->config.numPlayers; i++) PLOG_INFO << STR_PLAYER << this->players[winners[i].first]->getName() << " won " << winners[i].second << " games";
     PLOG_INFO << "\n";
@@ -165,11 +171,19 @@ void Game::initPlayerOrder() noexcept {
     // shuffle player order
     if (this->config.shufflePlayers) std::random_shuffle(&this->players[0], &this->players[this->config.numPlayers]);
     PLOG_INFO << "Shuffled players, new order:";
+    // rearrange the game stats according to the new player order
+    u_int32_t gameWinsCopy[MAX_PLAYERS];
+    u_int32_t chipWinsCopy[MAX_PLAYERS];
+    u_int64_t chipWinsAmountCopy[MAX_PLAYERS];
+    std::memcpy(gameWinsCopy, this->data.gameData.gameWins, sizeof(gameWinsCopy));
+    std::memcpy(chipWinsCopy, this->data.gameData.chipWins, sizeof(chipWinsCopy));
+    std::memcpy(chipWinsAmountCopy, this->data.gameData.chipWinsAmount, sizeof(chipWinsAmountCopy));
     for (u_int8_t i = 0; i < this->config.numPlayers; i++) {
         // set playerPosNum for each player
+        this->data.gameData.gameWins[i] = gameWinsCopy[this->players[i]->getPlayerPosNum()];
+        this->data.gameData.chipWins[i] = chipWinsCopy[this->players[i]->getPlayerPosNum()];
+        this->data.gameData.chipWinsAmount[i] = chipWinsAmountCopy[this->players[i]->getPlayerPosNum()];
         this->players[i]->setPlayerPosNum(i);
-        // load the current player wins into the data struct
-        this->data.gameData.winners[i] = this->players[i]->getWins();
         PLOG_INFO << this->players[i]->getName();
     }
 }
