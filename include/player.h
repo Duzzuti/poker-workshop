@@ -6,9 +6,8 @@
 class Player {
    public:
     /// @brief Default constructor
-    /// @param index The index of the player
     /// @exception Guarantee No-throw
-    Player(u_int8_t index) noexcept : index(index) {};
+    Player() noexcept = default;
 
     /// @brief Gets the name of the player
     /// @return The name of the player in the format: "<playerPosNum>:<name>"
@@ -18,8 +17,20 @@ class Player {
 
     /// @brief Sets the playerPosNum of the player
     /// @param num The playerPosNum of the player
+    /// @exception Guarantee Strong
+    /// @throws std::invalid_argument If the number is too high (>= MAX_PLAYERS)
+    virtual void setPlayerPosNum(const u_int8_t num) final {
+        if (num >= MAX_PLAYERS) {
+            PLOG_FATAL << "Player position number too high";
+            throw std::invalid_argument("Player position number too high");
+        }
+        this->playerPosNum = num;
+    };
+
+    /// @brief Gets the playerPosNum of the player
+    /// @return The playerPosNum of the player
     /// @exception Guarantee No-throw
-    virtual void setPlayerPosNum(u_int8_t num) noexcept final { this->playerPosNum = num; };
+    virtual u_int8_t getPlayerPosNum() const noexcept final { return this->playerPosNum; };
 
     /// @brief Sets the hand of the player
     /// @param card1 First card
@@ -46,17 +57,13 @@ class Player {
     /// @brief Default destructor
     virtual ~Player() noexcept = default;
 
-    /// @brief The players index
-    const u_int8_t index;
-
    protected:
     /// @brief Player constructor with player name
     /// @param name The name of the player (has to be at most MAX_PLAYER_NAME_LENGTH long)
-    /// @param index The index of the player
     /// @exception Guarantee Strong
     /// @throws std::invalid_argument If the name is too long
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the name
-    Player(const char* name, u_int8_t index);
+    Player(const char* name);
 
     /// @brief Creates a player name with the player number and name
     /// @param name A name for the player
@@ -77,6 +84,6 @@ class Player {
     /// @see Card
     std::pair<Card, Card> hand;
 
-    /// @brief Player position number
+    /// @brief Player table position number
     u_int8_t playerPosNum = 0;
 };

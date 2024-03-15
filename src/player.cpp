@@ -7,7 +7,7 @@ const char* Player::getName() const noexcept {
     return s;
 }
 
-Player::Player(const char* name, u_int8_t index) : index(index) {
+Player::Player(const char* name) {
     if (std::strlen(name) > MAX_PLAYER_NAME_LENGTH) {
         PLOG_FATAL << "Player name too long";
         throw std::invalid_argument("Player name too long");
