@@ -120,7 +120,7 @@ void Game::run(const bool initPlayers) {
             for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
                 if (this->data.roundData.playerFolded[i] || this->data.gameData.playerOut[i]) continue;
                 PLOG_DEBUG << this->getPlayerInfo(i) << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
-                           << handStrengths[i].handkind << " " << handStrengths[i].rankStrength;
+                           << EnumToString::enumToString(handStrengths[i].handkind) << " " << handStrengths[i].rankStrength;
                 if (handStrengths[i] > strongestHand) {
                     strongestHand = handStrengths[i];
                     numWinners = 1;

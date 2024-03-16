@@ -20,14 +20,14 @@ struct Card {
     /// @param rhs Second card
     /// @return True if the cards are equal, false otherwise
     /// @exception Guarantee No-throw
-    friend bool operator==(const Card& lhs, const Card& rhs) noexcept { return lhs.rank == rhs.rank && lhs.suit == rhs.suit; };
+    friend constexpr bool operator==(const Card& lhs, const Card& rhs) noexcept { return lhs.rank == rhs.rank && lhs.suit == rhs.suit; };
 
     /// @brief Checks if two cards are not equal
     /// @param lhs First card
     /// @param rhs Second card
     /// @return True if the cards are not equal, false otherwise
     /// @exception Guarantee No-throw
-    friend bool operator!=(const Card& lhs, const Card& rhs) noexcept { return !(lhs == rhs); };
+    friend constexpr bool operator!=(const Card& lhs, const Card& rhs) noexcept { return !(lhs == rhs); };
 };
 
 /// @brief Represents a deck of 52 cards
@@ -38,16 +38,26 @@ class Deck {
    public:
     /// @brief Generates a new deck of 52 cards
     /// @exception Guarantee No-throw
-    Deck() noexcept;
+    constexpr Deck() noexcept {
+        // generate a 53 cards poker deck
+        u_int8_t i = 0;
+        for (u_int8_t suit = 0; suit < 4; suit++) {
+            for (u_int8_t rank = 2; rank < 15; rank++) {
+                this->cards[i].rank = rank;
+                this->cards[i].suit = suit;
+                i++;
+            }
+        }
+    }
 
     /// @brief Shuffles the deck randomly
     /// @exception Guarantee No-throw
-    void shuffle() noexcept;
+    void shuffle() noexcept { std::random_shuffle(&this->cards[0], &this->cards[CARD_NUM]); }
 
     /// @brief Resets the deck to its initial state
     /// @exception Guarantee No-throw
     /// @note The deck will be in the same order as it was before drawing the first card
-    void reset() noexcept;
+    constexpr void reset() noexcept { this->len = CARD_NUM; };
 
     /// @brief Draws the top card from the deck
     /// @return The top card from the deck
@@ -110,7 +120,7 @@ class Deck {
     /// @param rhs Second deck
     /// @return True if the decks are equal, false otherwise
     /// @exception Guarantee No-throw
-    friend bool operator==(const Deck& lhs, const Deck& rhs) noexcept {
+    friend constexpr bool operator==(const Deck& lhs, const Deck& rhs) noexcept {
         // If the length is different, the decks are not equal
         if (lhs.len != rhs.len) return false;
         for (u_int8_t i = 0; i < lhs.len; i++) {
@@ -124,7 +134,7 @@ class Deck {
     /// @param rhs Second deck
     /// @return True if the decks are not equal, false otherwise
     /// @exception Guarantee No-throw
-    friend bool operator!=(const Deck& lhs, const Deck& rhs) noexcept { return !(lhs == rhs); };
+    friend constexpr bool operator!=(const Deck& lhs, const Deck& rhs) noexcept { return !(lhs == rhs); };
 
    private:
     /// @brief Searches the card in the remaining deck and swaps it with the card at the given position
@@ -140,7 +150,7 @@ class Deck {
     void putCard(const Card card, const u_int8_t cardPos);
 
     /// @brief The cards in the deck
-    Card cards[CARD_NUM];
+    Card cards[CARD_NUM]{};
     /// @brief The number of cards in the deck
     /// @note Used to indicate the top card in the deck
     u_int8_t len = CARD_NUM;

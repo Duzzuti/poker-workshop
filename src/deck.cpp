@@ -27,22 +27,6 @@ const char* Card::toString() const {
     return str;
 }
 
-Deck::Deck() noexcept {
-    // generate a 53 cards poker deck
-    u_int8_t i = 0;
-    for (u_int8_t suit = 0; suit < 4; suit++) {
-        for (u_int8_t rank = 2; rank < 15; rank++) {
-            this->cards[i].rank = rank;
-            this->cards[i].suit = suit;
-            i++;
-        }
-    }
-}
-
-void Deck::shuffle() noexcept { std::random_shuffle(&this->cards[0], &this->cards[CARD_NUM]); }
-
-void Deck::reset() noexcept { this->len = CARD_NUM; }
-
 Card Deck::draw() {
     // draw card from deck
     // if deck is empty throw exception

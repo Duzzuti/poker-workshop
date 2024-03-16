@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <iostream>
 
 #include "logger.h"
@@ -7,7 +8,7 @@
 /// @param str string to get length of
 /// @return length of string
 /// @exception Guarantee No-throw
-constexpr std::size_t constexpr_strlen(const char* str) {
+constexpr std::size_t constexpr_strlen(const char* str) noexcept {
     std::size_t len = 0;
     while (str[len] != '\0') {
         len++;
@@ -82,7 +83,7 @@ const constexpr int TEST_ITERS = 1000;
 class Config {
    public:
     /// @brief Starting chips for each player
-    const u_int64_t* startingChips;
+    const std::array<u_int64_t, MAX_PLAYERS> startingChips;
     /// @brief Small blind amount
     /// @note Big blind is always twice the small blind
     const u_int64_t smallBlind;
@@ -118,8 +119,8 @@ class Config {
     /// @note Undefined behavior if the length of playerChips is less than players
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
-    Config(const u_int16_t games, const u_int8_t players, const u_int64_t* playerChips, const u_int64_t small, const u_int64_t addBlind, const bool shufflePlayers = true,
-           const bool shuffleDeck = true, const int16_t maxRounds = -1)
+    constexpr Config(const u_int16_t games, const u_int8_t players, const std::array<u_int64_t, MAX_PLAYERS> playerChips, const u_int64_t small, const u_int64_t addBlind,
+                     const bool shufflePlayers = true, const bool shuffleDeck = true, const int16_t maxRounds = -1)
         : startingChips(playerChips),
           smallBlind(small),
           addBlindPerDealer0(addBlind),
@@ -161,8 +162,8 @@ class Config {
     /// @note AddBlind is used to avoid infinite games
     /// @see MAX_PLAYERS for the maximum number of players
     /// @see MAX_CHIPS for the maximum amount of chips
-    Config(const u_int16_t games, const u_int8_t players, const u_int64_t startChips, const u_int64_t small, const u_int64_t addBlind, const bool shufflePlayers = true, const bool shuffleDeck = true,
-           const int16_t maxRounds = -1)
+    constexpr Config(const u_int16_t games, const u_int8_t players, const u_int64_t startChips, const u_int64_t small, const u_int64_t addBlind, const bool shufflePlayers = true,
+                     const bool shuffleDeck = true, const int16_t maxRounds = -1)
         : Config(games, players, getPlayerChipsArray(startChips, players), small, addBlind, shufflePlayers, shuffleDeck, maxRounds){};
 
    private:
@@ -171,8 +172,8 @@ class Config {
     /// @param players Number of players in the game
     /// @return Array of starting chips for each player
     /// @exception Guarantee No-throw
-    u_int64_t* getPlayerChipsArray(const u_int64_t startChips, const u_int8_t players) {
-        static u_int64_t playerChips[MAX_PLAYERS];
+    constexpr const std::array<u_int64_t, MAX_PLAYERS> getPlayerChipsArray(const u_int64_t startChips, const u_int8_t players) const noexcept {
+        std::array<u_int64_t, MAX_PLAYERS> playerChips{};
         for (u_int8_t i = 0; i < players; i++) {
             playerChips[i] = startChips;
         }
@@ -184,5 +185,5 @@ class Config {
 class BaseConfig : public Config {
    public:
     /// @brief generates a Config object with default values
-    BaseConfig() : Config(10000, 5, 1000, 10, 1) {}
+    constexpr BaseConfig() : Config(10000, 5, 1000, 10, 1) {}
 };

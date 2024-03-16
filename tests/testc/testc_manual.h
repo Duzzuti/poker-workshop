@@ -111,7 +111,7 @@ Card getCard(const std::string askForInput, Card drawnCards[], const u_int8_t dr
 /// @param numPlayers The number of players in the game
 /// @param playerChips The array to store the amount of chips for each player
 /// @exception Guarantee No-throw
-void getPlayersChips(const u_int8_t numPlayers, u_int64_t playerChips[]) noexcept {
+void getPlayersChips(const u_int8_t numPlayers, std::array<u_int64_t, MAX_PLAYERS> playerChips) noexcept {
     for (u_int8_t i = 0; i < numPlayers; i++) playerChips[i] = getUL("Enter the amount of chips for player " + std::to_string(i + 1) + ": ");
 }
 

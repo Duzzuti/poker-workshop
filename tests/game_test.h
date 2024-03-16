@@ -34,7 +34,7 @@ struct TestConfig {
     /// @brief The small blind of the game
     u_int64_t smallBlind;
     /// @brief The starting chips of the players
-    u_int64_t playerChips[MAX_PLAYERS];
+    std::array<u_int64_t, MAX_PLAYERS> playerChips;
     /// @brief The hands of the players
     std::pair<Card, Card> playerHands[MAX_PLAYERS];
     /// @brief Stores the cards that have been drawn from the deck and should not be drawn again

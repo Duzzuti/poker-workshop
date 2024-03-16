@@ -1,4 +1,4 @@
-set(COMMON_SRC ${SRC_DIR}/deck.cpp ${SRC_DIR}/hand_strengths.cpp ${SRC_DIR}/player.cpp ${SRC_DIR}/pot.cpp)
+set(COMMON_SRC ${SRC_DIR}/deck.cpp ${SRC_DIR}/player.cpp)
 
 # Add the executable target
 add_executable(testc testc.cpp ${SRC_DIR}/game.cpp ${COMMON_SRC} ${TEST_PLAYER} ${CHECK_PLAYER} ${RAND_PLAYER})

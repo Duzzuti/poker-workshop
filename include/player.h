@@ -7,19 +7,19 @@ class Player {
    public:
     /// @brief Default constructor
     /// @exception Guarantee No-throw
-    Player() noexcept = default;
+    constexpr Player() noexcept = default;
 
     /// @brief Gets the name of the player
     /// @return The name of the player in the format: "<playerPosNum>:<name>"
     /// @exception Guarantee No-throw
     /// @see MAX_PLAYER_GET_NAME_LENGTH for the maximum length of the returned string
-    virtual const char* getName() const noexcept final;
+    const char* getName() const noexcept;
 
     /// @brief Sets the playerPosNum of the player
     /// @param num The playerPosNum of the player
     /// @exception Guarantee Strong
     /// @throws std::invalid_argument If the number is too high (>= MAX_PLAYERS)
-    virtual void setPlayerPosNum(const u_int8_t num) final {
+    void setPlayerPosNum(const u_int8_t num) {
         if (num >= MAX_PLAYERS) {
             PLOG_FATAL << "Player position number too high";
             throw std::invalid_argument("Player position number too high");
@@ -30,18 +30,18 @@ class Player {
     /// @brief Gets the playerPosNum of the player
     /// @return The playerPosNum of the player
     /// @exception Guarantee No-throw
-    virtual u_int8_t getPlayerPosNum() const noexcept final { return this->playerPosNum; };
+    constexpr u_int8_t getPlayerPosNum() const noexcept { return this->playerPosNum; };
 
     /// @brief Sets the hand of the player
     /// @param card1 First card
     /// @param card2 Second card
     /// @exception Guarantee No-throw
-    virtual void setHand(const Card card1, const Card card2) noexcept final { this->hand = std::pair<Card, Card>(card1, card2); };
+    void setHand(const Card card1, const Card card2) noexcept { this->hand = std::pair<Card, Card>(card1, card2); };
 
     /// @brief Gets the hand of the player
     /// @return The hand of the player
     /// @exception Guarantee No-throw
-    virtual const std::pair<Card, Card> getHand() const noexcept final { return this->hand; };
+    constexpr const std::pair<Card, Card> getHand() const noexcept { return this->hand; };
 
     /// @brief Simulates one turn of the player
     /// @param data The data of the game
@@ -77,7 +77,7 @@ class Player {
 
     /// @brief The name of the player
     /// @see MAX_PLAYER_NAME_LENGTH for the maximum length of the name
-    char name[MAX_PLAYER_NAME_LENGTH];
+    char name[MAX_PLAYER_NAME_LENGTH]{};
 
    private:
     /// @brief The hand of the player
