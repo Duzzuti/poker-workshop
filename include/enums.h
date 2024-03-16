@@ -27,7 +27,7 @@ enum CardSuits {
 };
 
 /// @brief Represents a 5 cards poker hand type
-enum HandKinds {
+enum class HandKinds {
     /// @brief Used as a placeholder for an invalid or undefined hand
     NO_HAND = 0,
     /// @brief The hand does not contain any valuable combination
@@ -81,7 +81,7 @@ class EnumToString {
     /// @param outEnum The enum value to convert
     /// @return The string representation of the enum value
     /// @exception Guarantee No-throw
-    static const char* enumToString(const OutEnum outEnum) noexcept {
+    static constexpr const char* enumToString(const OutEnum outEnum) noexcept {
         switch (outEnum) {
             case OutEnum::ROUND_CONTINUE:
                 return "CONTINUE";
@@ -101,7 +101,7 @@ class EnumToString {
     /// @param action The enum value to convert
     /// @return The string representation of the enum value
     /// @exception Guarantee No-throw
-    static const char* enumToString(const Actions action) noexcept {
+    static constexpr const char* enumToString(const Actions action) noexcept {
         switch (action) {
             case Actions::FOLD:
                 return "FOLD";
@@ -127,7 +127,7 @@ class EnumToString {
     /// @param suit The enum value to convert
     /// @return The string representation of the enum value
     /// @exception Guarantee No-throw
-    static const char* enumToString(const CardSuits suit) noexcept {
+    static constexpr const char* enumToString(const CardSuits suit) noexcept {
         switch (suit) {
             case CardSuits::DIAMONDS:
                 return "DIAMONDS";
@@ -150,7 +150,7 @@ class EnumToString {
     /// @param handKind The enum value to convert
     /// @return The string representation of the enum value
     /// @exception Guarantee No-throw
-    static const char* enumToString(const HandKinds handKind) noexcept {
+    static constexpr const char* enumToString(const HandKinds handKind) noexcept {
         switch (handKind) {
             case HandKinds::NO_HAND:
                 return "NO HAND";
@@ -194,7 +194,7 @@ class EnumToString {
     /// @param betRoundState The enum value to convert
     /// @return The string representation of the enum value
     /// @exception Guarantee No-throw
-    static const char* enumToString(const BetRoundState betRoundState) noexcept {
+    static constexpr const char* enumToString(const BetRoundState betRoundState) noexcept {
         switch (betRoundState) {
             case BetRoundState::PREFLOP:
                 return "PREFLOP";
