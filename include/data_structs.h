@@ -118,7 +118,7 @@ struct Data {
      * @note For the first round the dealer position is always 0
      * @note For all other rounds the dealer position is the next active player position after the current dealer position
      */
-    void selectDealer(const bool firstRound) noexcept {
+    constexpr void selectDealer(const bool firstRound) noexcept {
         if (firstRound) {
             this->roundData.dealerPos = 0;
         } else {
