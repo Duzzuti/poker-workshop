@@ -33,7 +33,7 @@ TEST(CONST, PlayerGetNameLength) {
         CheckPlayer p{std::string(i, 'a').c_str()};
         p.setPlayerPosNum(0);
         // actual max is name255 but playerPosNum is limited by MAX_PLAYERS, test with 0 that is always valid (but we need to subtract 2 for the missing digits)
-        EXPECT_GE(MAX_PLAYER_GET_NAME_LENGTH-2, std::strlen(p.getName()));
+        EXPECT_GE(MAX_PLAYER_GET_NAME_LENGTH - 2, std::strlen(p.getName()));
     }
 }
 
