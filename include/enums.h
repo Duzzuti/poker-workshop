@@ -120,6 +120,9 @@ class EnumToString {
             case Actions::BET:
                 return "BET";
 
+            case Actions::ALL_IN:
+                return "ALL_IN";
+
             default:
                 return "INVALID Actions value";
         }

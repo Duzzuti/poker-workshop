@@ -257,6 +257,7 @@ P9: f
 P0: f
 P1: f
 P3: f
+P2: f   // should not be considered
 
 END_MOVES
 
@@ -285,6 +286,8 @@ P0: f
 P2: f
 P3: f
 
+P1: f   // should not be considered
+
 END_MOVES
 
 POT: 12 23
@@ -310,6 +313,9 @@ P8: f
 P9: f
 P0: f
 P3: f
+
+P1: f   // should not be considered
+P2: f   // should not be considered
 
 END_MOVES
 
@@ -337,6 +343,9 @@ P9: f
 P0: f
 P3: f
 
+P1: f   // should not be considered
+P2: f   // should not be considered
+
 END_MOVES
 
 POT: 12 12 10
@@ -362,6 +371,9 @@ P8: f
 P9: f
 P0: f
 P3: f
+
+P1: f   // should not be considered
+P2: f   // should not be considered
 
 END_MOVES
 
