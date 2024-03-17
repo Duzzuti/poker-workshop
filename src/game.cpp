@@ -277,9 +277,9 @@ OutEnum Game::betRound() {
             // player is out of the game or folded, skip turn
             this->data.nextPlayer();
             continue;
-        } else if (this->currentPlayerCanOnlyRaiseOrCall()) {
-            // player can only raise or call
-            OutEnum turnRes = this->playerTurnOnlyRaise();
+        } else if (this->currentPlayerBlindOption()) {
+            // player has the blind option
+            OutEnum turnRes = this->playerTurnBlindOption();
             if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
         } else {
             OutEnum turnRes = this->playerTurn(firstChecker);
@@ -297,13 +297,13 @@ bool Game::betRoundContinue(const u_int8_t firstChecker) const noexcept {
     return !this->currentPlayerActive() ||                                                                                 // player is out of the game or folded, should be skipped
            this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] ||  // current bet is not called by the player
            (this->data.betRoundData.currentBet == 0 && firstChecker != this->data.betRoundData.playerPos) ||               // current bet is 0 and the current player is not the first checker
-           this->currentPlayerCanOnlyRaiseOrCall();                                                                        // current player is the live big blind in the preflop round
+           this->currentPlayerBlindOption();                                                                               // current player is the live big blind in the preflop round
 }
 
 bool Game::currentPlayerActive() const noexcept { return !this->data.gameData.playerOut[this->data.betRoundData.playerPos] && !this->data.roundData.playerFolded[this->data.betRoundData.playerPos]; }
 
-bool Game::currentPlayerCanOnlyRaiseOrCall() const noexcept {
-    // current bet is the big blind and the current player is the big blind and it is the preflop round (in the preflop round the big blind can raise)
+bool Game::currentPlayerBlindOption() const noexcept {
+    // current bet is the big blind and the current player is the big blind and it is the preflop round (the big blind can raise in the preflop round)
     return this->data.roundData.betRoundState == BetRoundState::PREFLOP && this->data.betRoundData.currentBet == this->data.roundData.bigBlind &&
            this->data.betRoundData.playerPos == this->data.roundData.bigBlindPos;
 }
@@ -390,7 +390,7 @@ OutEnum Game::playerTurn(u_int8_t& firstChecker) {
     return OutEnum::ROUND_CONTINUE;
 }
 
-OutEnum Game::playerTurnOnlyRaise() {
+OutEnum Game::playerTurnBlindOption() {
     // get action from player
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data, true);
     OutEnum res;

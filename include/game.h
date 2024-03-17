@@ -91,11 +91,11 @@ class Game {
     /// @exception Guarantee No-throw
     bool currentPlayerActive() const noexcept;
 
-    /// @brief Checks if special condition is met that the current player can only raise or call
-    /// @return True if the current player can only raise or call
+    /// @brief Checks if the current player has the blind option (can only raise, call or all-in)
+    /// @return True if the current player can only raise, call or all-in
     /// @exception Guarantee No-throw
-    /// @note This is used to consider the live big blind rule
-    bool currentPlayerCanOnlyRaiseOrCall() const noexcept;
+    /// @note This is used to consider the live big blind rule (blind option)
+    bool currentPlayerBlindOption() const noexcept;
 
     /// @brief Simulates a single non out player turn
     /// @param firstChecker The first player who checked in this bet round
@@ -109,7 +109,7 @@ class Game {
     /// @see Player::turn
     OutEnum playerTurn(u_int8_t& firstChecker);
 
-    /// @brief Simulates a single non out player turn where the player can only raise or call
+    /// @brief Simulates a single non out player turn where the player has the blind option (can only raise, call or all-in)
     /// @return An OutEnum which indicates if the game or round should continue
     /// @exception Guarantee Strong
     /// @throws std::logic_error if the player could not call a matched bet
@@ -119,7 +119,7 @@ class Game {
     /// @note The player could be out or folded, the game or round could end
     /// @see OutEnum
     /// @see Player::turn
-    OutEnum playerTurnOnlyRaise();
+    OutEnum playerTurnBlindOption();
 
     /// @brief The current player bets the amount and the next player is selected
     /// @param amount The total amount that the player bets
