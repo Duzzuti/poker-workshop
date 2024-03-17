@@ -45,14 +45,14 @@ class Player {
 
     /// @brief Simulates one turn of the player
     /// @param data The data of the game
-    /// @param onlyRaise If true, the player can only raise or call
+    /// @param blindOption If true, the player has the blind option (can only call, raise or all-in)
     /// @return The Action of the player
     /// @exception Guarantee No-throw
     /// @note The method is const because it should not change the state of the player
     /// @note This method should be implemented by the child classes
     /// @see Data
     /// @see Action
-    virtual Action turn(const Data& data, const bool onlyRaise = false) const noexcept = 0;
+    virtual Action turn(const Data& data, const bool blindOption = false) const noexcept = 0;
 
     /// @brief Default destructor
     virtual ~Player() noexcept = default;

@@ -12,6 +12,8 @@ enum class Actions {
     CHECK,
     /// @brief The player wants to open the betting round with a bet
     BET,
+    /// @brief The player wants to go all-in
+    ALL_IN,
 };
 
 /// @brief Represents a card suit

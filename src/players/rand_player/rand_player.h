@@ -22,7 +22,7 @@ class RandPlayer : public Player {
 
     /// @brief Simulates one turn of the rand player
     /// @param data The data of the game
-    /// @param onlyRaise If true, the player can only raise or call
+    /// @param blindOption If true, the player has the blind option (can only call, raise or all-in)
     /// @return The Action of the player
     /// @exception Guarantee No-throw
     /// @note The method is const because it should not change the state of the player
@@ -30,5 +30,5 @@ class RandPlayer : public Player {
     /// @see Player::turn()
     /// @see Data
     /// @see Action
-    Action turn(const Data& data, const bool onlyRaise = false) const noexcept override;
+    Action turn(const Data& data, const bool blindOption = false) const noexcept override;
 };
