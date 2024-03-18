@@ -436,9 +436,9 @@ OutEnum Game::playerTurnBlindOption() {
 
 bool Game::bet(const u_int64_t amount, const bool isBlind) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
-    if (!isBlind && ((amount < this->data.betRoundData.currentBet) ||                                                                                            // call condition
-                     ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
-                     (amount < this->data.roundData.smallBlind))                                                                                                 // bet condition
+    if (((amount < this->data.betRoundData.currentBet) ||                                                                                            // call condition
+         ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
+         (amount < this->data.roundData.bigBlind))                                                                                                   // bet condition
     )
         return false;
     u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
