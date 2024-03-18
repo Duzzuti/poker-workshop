@@ -32,15 +32,16 @@ class Game {
     ~Game() { delete[] this->players; }
 
    private:
-    /// @brief Gets a string with the current player info in the format: "pos:name[chips <+/-> diff]"
+    /// @brief Gets a string with the current player info in the format: "pos:name[chips <+/-> diff]" (chips = player chips + baseChipsDiff)
     /// @param playerPos The player position or MAX_PLAYERS for the current player
     /// @param chipsDiff The chip difference which is shown in the string or 0 for not showing
+    /// @param baseChipDiff The amount of chips that is added/removed from the player´s base chips before showing the difference
     /// @return The string with the player info
     /// @exception Guarantee No-throw
     /// @note The difference is used to show how the player´s chips changed
     /// @note If chipsDiff is 0 then the output format is: "pos:name[chips]"
     /// @see MAX_GET_PLAYER_INFO_LENGTH for the maximum length of the returned string
-    const char* getPlayerInfo(u_int8_t playerPos = MAX_PLAYERS, const int64_t chipsDiff = 0) const noexcept;
+    const char* getPlayerInfo(u_int8_t playerPos = MAX_PLAYERS, const int64_t chipsDiff = 0, const int64_t baseChipsDiff = 0) const noexcept;
 
     /// @brief Shuffles the players, sets their positions and sets the winners array
     /// @exception Guarantee No-throw
@@ -56,12 +57,10 @@ class Game {
     void startRound(const bool firstRound);
 
     /// @brief Sets the blinds for the round by betting the small and big blind automatically
-    /// @return An OutEnum which indicates if the game or round should continue
     /// @exception Guarantee No-throw
     /// @note The heads up rule is considered
-    /// @note If there are players who are out due to the blinds, the game could end
-    /// @see OutEnum
-    OutEnum setBlinds() noexcept;
+    /// @note If the blinds cannot be matched, the player is all-in
+    void setBlinds() noexcept;
 
     /// @brief Sets up the data for a bet round (preflop, flop, turn, river)
     /// @exception Guarantee No-throw
@@ -121,15 +120,20 @@ class Game {
     /// @see Player::turn
     OutEnum playerTurnBlindOption();
 
+    /// @brief The current player bets a given blind amount
+    /// @param blind The blind amount that the player bets
+    /// @return Actual bet amount
+    /// @exception Guarantee No-throw
+    /// @note If the player cannot bet the blind amount, he is all-in (therefore the actual bet amount is returned)
+    u_int64_t betBlind(const u_int64_t blind) noexcept;
+
     /// @brief The current player bets the amount and the next player is selected
     /// @param amount The total amount that the player bets
-    /// @param isBlind True if the player is betting the small or big blind
     /// @return True if the bet was successful
     /// @exception Guarantee No-throw
     /// @note The amount is the total amount that the player bets (e.g. if the player has to call 200 but he already bet 100 => amount is still 200)
-    /// @note if the player is betting the small or big blind, the amount is not checked against the minimum bet
     /// @note If the betting is not successful, no data is changed
-    bool bet(const u_int64_t amount, const bool isBlind = false) noexcept;
+    bool bet(const u_int64_t amount) noexcept;
 
     /// @brief Marks the current player as out and selects the next player
     /// @param reason The reason why the player is out, is used for logging

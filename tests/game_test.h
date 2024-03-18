@@ -117,7 +117,7 @@ class GameTest : public Game {
     void startRound(const bool firstRound) { Game::startRound(firstRound); }
 
     /// @copydoc Game::setBlinds()
-    OutEnum setBlinds() noexcept { return Game::setBlinds(); }
+    void setBlinds() noexcept { Game::setBlinds(); }
 
     /// @copydoc Game::setupBetRound()
     void setupBetRound() noexcept { Game::setupBetRound(); }

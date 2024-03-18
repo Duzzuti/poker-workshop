@@ -153,17 +153,17 @@ void Game::run(const bool initPlayers) {
     PLOG_INFO << "\n";
 }
 
-const char* Game::getPlayerInfo(u_int8_t playerPos, const int64_t chipsDiff) const noexcept {
+const char* Game::getPlayerInfo(u_int8_t playerPos, const int64_t chipsDiff, const int64_t baseChipsDiff) const noexcept {
     // create player info string with MAX_GET_PLAYER_INFO_LENGTH
     static char playerInfo[MAX_GET_PLAYER_INFO_LENGTH];
     // if playerPos == MAX_PLAYERS, use the current player
     if (playerPos == MAX_PLAYERS) playerPos = this->data.betRoundData.playerPos;
     // if chipsDiff == 0, do not add chipsDiff
     if (chipsDiff == 0)
-        std::snprintf(playerInfo, sizeof(playerInfo), "%s%s[%lu]", STR_PLAYER, this->players[playerPos]->getName(), this->data.gameData.playerChips[playerPos]);
+        std::snprintf(playerInfo, sizeof(playerInfo), "%s%s[%lu]", STR_PLAYER, this->players[playerPos]->getName(), this->data.gameData.playerChips[playerPos] + baseChipsDiff);
     else
-        std::snprintf(playerInfo, sizeof(playerInfo), "%s%s[%lu%s%lu]", STR_PLAYER, this->players[playerPos]->getName(), this->data.gameData.playerChips[playerPos], chipsDiff > 0 ? " + " : " - ",
-                      std::abs(chipsDiff));
+        std::snprintf(playerInfo, sizeof(playerInfo), "%s%s[%lu%s%lu]", STR_PLAYER, this->players[playerPos]->getName(), this->data.gameData.playerChips[playerPos] + baseChipsDiff,
+                      chipsDiff > 0 ? " + " : " - ", std::abs(chipsDiff));
     return playerInfo;
 }
 
@@ -188,7 +188,7 @@ void Game::initPlayerOrder() noexcept {
     }
 }
 
-OutEnum Game::setBlinds() noexcept {
+void Game::setBlinds() noexcept {
     // blinds
     if (this->data.gameData.numNonOutPlayers == 2) {
         // heads up rule (small blind is the dealer)
@@ -196,35 +196,25 @@ OutEnum Game::setBlinds() noexcept {
         this->data.roundData.dealerPos = this->data.roundData.bigBlindPos;
         this->data.betRoundData.playerPos = this->data.roundData.dealerPos;
     }
-    OutEnum res = OutEnum::ROUND_CONTINUE;
-
-    // try to set the blinds
-    const char* playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.smallBlind);
+    // if the player can not bet the small blind, he is all-in
     this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
-    // if the player can not bet the small blind, he is out of the game and a error message is printed
-    char str[MAX_BLIND_ERROR_LENGTH];
-    while (!this->bet(this->data.roundData.smallBlind, true)) {
-        std::snprintf(str, sizeof(str), "%s%lu", STR_SMALL_BLIND_ERROR, this->data.roundData.smallBlind);
-        res = this->playerOut(str);
-        if (res != OutEnum::ROUND_CONTINUE) return res;
-        // try the next player
-        playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.smallBlind);
-        this->data.roundData.smallBlindPos = this->data.betRoundData.playerPos;
-    }
-    PLOG_DEBUG << playerInfo << " bets small blind " << this->data.roundData.smallBlind;
+    const u_int64_t smallBlindBet = this->betBlind(this->data.roundData.smallBlind);
+    if (this->data.getChips() == 0)
+        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -smallBlindBet, smallBlindBet) << " is all-in with small blind " << this->data.roundData.smallBlind;
+    else
+        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -smallBlindBet, smallBlindBet) << " bets small blind " << this->data.roundData.smallBlind;
+
+    this->data.nextPlayer();
 
     // big blind analog to small blind
-    playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.bigBlind);
     this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
-    while (!this->bet(this->data.roundData.bigBlind, true)) {
-        std::snprintf(str, sizeof(str), "%s%lu", STR_BIG_BLIND_ERROR, this->data.roundData.bigBlind);
-        res = this->playerOut(str);
-        if (res != OutEnum::ROUND_CONTINUE) return res;
-        playerInfo = this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.bigBlind);
-        this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
-    }
-    PLOG_DEBUG << playerInfo << " bets big blind " << this->data.roundData.bigBlind;
-    return OutEnum::ROUND_CONTINUE;
+    const u_int64_t bigBlindBet = this->betBlind(this->data.roundData.bigBlind);
+    if (this->data.getChips() == 0)
+        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -bigBlindBet, bigBlindBet) << " is all-in with big blind " << this->data.roundData.bigBlind;
+    else
+        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -bigBlindBet, bigBlindBet) << " bets big blind " << this->data.roundData.bigBlind;
+
+    this->data.nextPlayer();
 }
 
 void Game::setupBetRound() noexcept {
@@ -262,7 +252,7 @@ void Game::startRound(const bool firstRound) {
     }
     // first action is setting the blinds
     if (firstRound) this->data.roundData.bigBlindPos = 0;  // fix first round heads up
-    this->data.roundData.result = this->setBlinds();
+    this->setBlinds();
 }
 
 OutEnum Game::betRound() {
@@ -434,7 +424,24 @@ OutEnum Game::playerTurnBlindOption() {
     return OutEnum::ROUND_CONTINUE;
 }
 
-bool Game::bet(const u_int64_t amount, const bool isBlind) noexcept {
+u_int64_t Game::betBlind(const u_int64_t blind) noexcept {
+    // bet the blind, if the player can not bet the blind, he is all-in
+    bool success = this->data.removeChips(blind);
+    this->data.betRoundData.currentBet = blind;
+    if (!success) {
+        // TODO player is all-in
+        u_int64_t allInAmount = this->data.getChips();
+        this->data.removeChipsAllIn();
+        this->data.roundData.pot += allInAmount;
+        this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = allInAmount;
+        return allInAmount;
+    }
+    this->data.roundData.pot += blind;
+    this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = blind;
+    return blind;
+}
+
+bool Game::bet(const u_int64_t amount) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
     if (((amount < this->data.betRoundData.currentBet) ||                                                                                            // call condition
          ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
