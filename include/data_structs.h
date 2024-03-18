@@ -94,22 +94,12 @@ struct Data {
         return playerPos;
     }
 
-    /// @brief Skips to the next player who is not out of the game
-    /// @exception Guarantee No-throw
-    /// @see If you want to skip folded players use nextActivePlayer()
-    void nextPlayer() noexcept {
-        do {
-            this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
-        } while (this->gameData.playerOut[this->betRoundData.playerPos]);
-    }
-
     /// @brief Skips to the next active player
     /// @exception Guarantee No-throw
-    /// @see If you want to skip only players who are out of the game use nextPlayer()
     void nextActivePlayer() noexcept {
         do {
             this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
-        } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos]);
+        } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos] || this->getChips() == 0);
     }
 
     /** @brief Selects the dealer position for the next round

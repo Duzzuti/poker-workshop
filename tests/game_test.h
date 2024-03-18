@@ -125,9 +125,6 @@ class GameTest : public Game {
     /// @copydoc Game::betRound()
     OutEnum betRound() { return Game::betRound(); }
 
-    /// @copydoc Game::betRoundContinue()
-    bool betRoundContinue(const u_int8_t firstChecker) const noexcept { return Game::betRoundContinue(firstChecker); }
-
     /// @copydoc Game::bet()
     bool bet(const u_int64_t amount) noexcept { return Game::bet(amount); }
 

@@ -77,24 +77,11 @@ class Game {
     /// @see OutEnum
     OutEnum betRound();
 
-    /// @brief Checks if the bet round should continue
-    /// @param firstChecker The first player who checked in this bet round
-    /// @return True if the bet round should continue
-    /// @exception Guarantee No-throw
-    /// @note The bet round should continue if the current player has not checked or called the current bet
-    /// @note The live big blind rule is considered
-    bool betRoundContinue(const u_int8_t firstChecker) const noexcept;
-
-    /// @brief Checks if the current player is active (not out or folded)
-    /// @return True if the current player is active
-    /// @exception Guarantee No-throw
-    bool currentPlayerActive() const noexcept;
-
     /// @brief Checks if the current player has the blind option (can only raise, call or all-in)
     /// @return True if the current player can only raise, call or all-in
     /// @exception Guarantee No-throw
     /// @note This is used to consider the live big blind rule (blind option)
-    bool currentPlayerBlindOption() const noexcept;
+    inline bool currentPlayerBlindOption() const noexcept;
 
     /// @brief Simulates a single non out player turn
     /// @param firstChecker The first player who checked in this bet round
@@ -127,7 +114,7 @@ class Game {
     /// @note If the player cannot bet the blind amount, he is all-in (therefore the actual bet amount is returned)
     u_int64_t betBlind(const u_int64_t blind) noexcept;
 
-    /// @brief The current player bets the amount and the next player is selected
+    /// @brief The current player bets the amount
     /// @param amount The total amount that the player bets
     /// @return True if the bet was successful
     /// @exception Guarantee No-throw
