@@ -145,9 +145,12 @@ P2: c
 
 P1: b20
 P2: a   // 30
+P3: c   // 30
 P0: c   // 30
 P1: a   // 25
-P3: c   // 30
+
+P3: f 
+P0: f   // should not be considered
 
 END_MOVES
 
@@ -172,9 +175,12 @@ P2: c
 
 P1: b20
 P2: a   // 30
+P3: c   // 30
 P0: c   // 30
 P1: a   // 25
-P3: c   // 30
+
+P3: f 
+P0: f   // should not be considered
 
 END_MOVES
 
@@ -199,9 +205,12 @@ P2: c
 
 P1: b20
 P2: a   // 30
+P3: c   // 30
 P0: c   // 30
 P1: a   // 25
-P3: c   // 30
+
+P3: f 
+P0: f   // should not be considered
 
 END_MOVES
 
@@ -226,9 +235,12 @@ P2: c
 
 P1: b20
 P2: a   // 30
+P3: c   // 30
 P0: c   // 30
 P1: a   // 25
-P3: c   // 30
+
+P3: f 
+P0: f   // should not be considered
 
 END_MOVES
 
@@ -237,6 +249,291 @@ PLAYER_CHIPS: 950 0 0 1145
 PLAYER_OUT: fttf
 PLAYER_FOLD: ffff
 WINNER: ffft
+GAME_STAGE: r
+
+
+TEST: AllInTest AllIn10
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 25 26 1000
+PLAYER_CARDS: HASA RR RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a   // 5
+P2: a   // 6
+P3: r26
+P0: r46
+P3: c
+
+P3: f
+P0: f   // should not be considered
+
+
+END_MOVES
+
+POT: 100 3 80
+PLAYER_CHIPS: 1117 0 0 934
+PLAYER_OUT: fttf
+PLAYER_FOLD: ffft
+WINNER: tfff
+GAME_STAGE: r
+
+TEST: AllInTest AllIn11
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 25 26 1000
+PLAYER_CARDS: RR HASA RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a   // 5
+P2: a   // 6
+P3: r25 // illegal
+P0: b100 // illegal
+
+
+END_MOVES
+
+POT: 90 1
+PLAYER_CHIPS: 0 90 1 0
+PLAYER_OUT: tfft
+PLAYER_FOLD: ffff
+WINNER: ftff
+GAME_STAGE: r
+
+
+TEST: AllInTest AllIn12
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 25 26 1000
+PLAYER_CARDS: RR RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a   // 5
+P2: a   // 6
+P3: c
+P0: c
+
+P3: f
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 100 3
+PLAYER_CHIPS: 974 0 103 974
+PLAYER_OUT: ftff
+PLAYER_FOLD: ffft
+WINNER: fftf
+GAME_STAGE: r
+
+
+TEST: AllInTest AllIn13
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 25 26 1000
+PLAYER_CARDS: RR RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a   // 5
+P2: a   // 6
+P3: c
+P0: r26
+P3: f
+
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 100 3 20
+PLAYER_CHIPS: 974 0 103 974
+PLAYER_OUT: ftff
+PLAYER_FOLD: ffft
+WINNER: fftf
+GAME_STAGE: r
+
+TEST: AllInTest AllIn14
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 25 26 1000
+PLAYER_CARDS: RR RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a   // 5
+P2: a   // 6
+P3: c
+P0: r25 // illegal
+
+P3: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 100 2
+PLAYER_CHIPS: 0 0 103 974
+PLAYER_OUT: ttff
+PLAYER_FOLD: ffft
+WINNER: fftf
+GAME_STAGE: r
+
+// TODO: Add tests where P1: checks and tries to raise after a small all-in
+// TODO: Add tests where P1: all-in with small amount and P2: all-in with above big blind amount
+
+TEST: AllInTest AllIn15
+PLAYER_NUM: 3
+PLAYER_CHIPS: 1000 26 1000
+PLAYER_CARDS: HASA RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c
+P1: c
+P2: c
+
+P1: a   // 6
+P2: r26
+P0: r46
+P2: c
+
+P2: f
+P0: f   // should not be considered
+
+
+END_MOVES
+
+POT: 78 80
+PLAYER_CHIPS: 1092 0 934
+PLAYER_OUT: ftf
+PLAYER_FOLD: fft
+WINNER: tff
+GAME_STAGE: r
+
+TEST: AllInTest AllIn16
+PLAYER_NUM: 3
+PLAYER_CHIPS: 1000 26 1000
+PLAYER_CARDS: HASA RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c
+P1: c
+P2: c
+
+P1: a   // 6
+P2: r25 // illegal
+P0: b100 // illegal
+
+END_MOVES
+
+POT: 66
+PLAYER_CHIPS: 0 66 0
+PLAYER_OUT: tft
+PLAYER_FOLD: fff
+WINNER: ftf
+GAME_STAGE: r
+
+TEST: AllInTest AllIn17
+PLAYER_NUM: 3
+PLAYER_CHIPS: 1000 26 1000
+PLAYER_CARDS: HASA RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c
+P1: c
+P2: c
+
+P1: a   // 6
+P2: c
+P0: c
+
+P2: f
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 78
+PLAYER_CHIPS: 1052 0 974
+PLAYER_OUT: ftf
+PLAYER_FOLD: fft
+WINNER: tff
+GAME_STAGE: r
+
+TEST: AllInTest AllIn18
+PLAYER_NUM: 3
+PLAYER_CHIPS: 1000 26 1000
+PLAYER_CARDS: RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c
+P1: c
+P2: c
+
+P1: a   // 6
+P2: c
+P0: r26
+P2: f
+
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 78 20
+PLAYER_CHIPS: 974 78 974
+PLAYER_OUT: fff
+PLAYER_FOLD: fft
+WINNER: ftf
+GAME_STAGE: r
+
+TEST: AllInTest AllIn19
+PLAYER_NUM: 3
+PLAYER_CHIPS: 1000 26 1000
+PLAYER_CARDS: RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c
+P1: c
+P2: c
+
+P1: a   // 6
+P2: c
+P0: r25 // illegal
+
+P2: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 72
+PLAYER_CHIPS: 0 72 974
+PLAYER_OUT: tff
+PLAYER_FOLD: fff
+WINNER: ftf
 GAME_STAGE: r
 
 
