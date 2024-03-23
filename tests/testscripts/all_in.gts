@@ -399,9 +399,6 @@ PLAYER_FOLD: ffft
 WINNER: fftf
 GAME_STAGE: r
 
-// TODO: Add tests where P1: checks and tries to raise after a small all-in
-// TODO: Add tests where P1: all-in with small amount and P2: all-in with above big blind amount
-
 TEST: AllInTest AllIn15
 PLAYER_NUM: 3
 PLAYER_CHIPS: 1000 26 1000
@@ -534,6 +531,172 @@ PLAYER_CHIPS: 0 72 974
 PLAYER_OUT: tff
 PLAYER_FOLD: fff
 WINNER: ftf
+GAME_STAGE: r
+
+TEST: AllInTest AllIn20
+PLAYER_NUM: 3
+PLAYER_CHIPS: 1000 1000 26
+PLAYER_CARDS: HASA RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c
+P1: c
+P2: c
+
+P1: chk
+P2: a       // 6
+P0: c       // 6
+P1: c
+
+P1: f
+P0: f   // should not be considered
+
+
+END_MOVES
+
+POT: 78
+PLAYER_CHIPS: 1052 974 0
+PLAYER_OUT: fft
+PLAYER_FOLD: ftf
+WINNER: tff
+GAME_STAGE: r
+
+TEST: AllInTest AllIn21
+PLAYER_NUM: 3
+PLAYER_CHIPS: 1000 1000 26
+PLAYER_CARDS: HASA RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c
+P1: c
+P2: c
+
+P1: chk
+P2: a       // 6
+P0: c       // 6
+P1: r100   // illegal
+
+END_MOVES
+
+POT: 72
+PLAYER_CHIPS: 1046 0 0
+PLAYER_OUT: ftt
+PLAYER_FOLD: fff
+WINNER: tff
+GAME_STAGE: r
+
+
+TEST: AllInTest AllIn22
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 26 45 1000
+PLAYER_CARDS: RR RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a       // 6
+P2: a       // 25 (not a full raise) double full bet rule
+P3: r50     // min raise
+P0: f
+
+
+END_MOVES
+
+POT: 98 38 25
+PLAYER_CHIPS: 980 0 136 955
+PLAYER_OUT: ftff
+PLAYER_FOLD: tfff
+WINNER: fftf
+GAME_STAGE: r
+
+
+TEST: AllInTest AllIn23
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 26 45 1000
+PLAYER_CARDS: RR RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a       // 6
+P2: a       // 25 (not a full raise) double full bet rule
+P3: r49     // illegal
+P0: f       // should not be considered
+
+
+END_MOVES
+
+POT: 92 19
+PLAYER_CHIPS: 980 0 111 0
+PLAYER_OUT: ftft
+PLAYER_FOLD: tfff
+WINNER: fftf
+GAME_STAGE: r
+
+
+TEST: AllInTest AllIn24
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 25 45 1000
+PLAYER_CARDS: RR RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a       // 5
+P2: a       // 25 (a full raise)
+P3: r45     // min raise
+P0: f
+
+
+END_MOVES
+
+POT: 95 40 20
+PLAYER_CHIPS: 980 0 135 955
+PLAYER_OUT: ftff
+PLAYER_FOLD: tfff
+WINNER: fftf
+GAME_STAGE: r
+
+
+TEST: AllInTest AllIn25
+PLAYER_NUM: 4
+PLAYER_CHIPS: 1000 25 45 1000
+PLAYER_CARDS: RR RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: c
+P1: c
+P2: c
+
+P1: a       // 5
+P2: a       // 25 (a full raise)
+P3: r44     // illegal
+P0: f       // should not be considered
+
+
+END_MOVES
+
+POT: 90 20
+PLAYER_CHIPS: 980 0 100 0
+PLAYER_OUT: ftft
+PLAYER_FOLD: tfff
+WINNER: fftf
 GAME_STAGE: r
 
 
