@@ -1,9 +1,11 @@
 #include "rand_player.h"
 
-Action RandPlayer::turn(const Data& data, const bool blindOption) const noexcept {
+Action RandPlayer::turn(const Data& data, const bool blindOption, const bool equalize) const noexcept {
     Action action;
     // control the possible actions with randMod
     u_int8_t randMod = 100;
+    // if the player has the equalize option, the only possible actions are call, fold and all-in (not higher than last bet)
+    if (equalize) randMod = 56;
     // if the player has the blind option, the only possible actions are call, raise and all-in
     if (blindOption) randMod = 41;
     // choose random actions until a valid one is found
@@ -11,6 +13,7 @@ Action RandPlayer::turn(const Data& data, const bool blindOption) const noexcept
     while (!done) {
         switch (std::rand() % randMod) {
             case 0:  // All-in
+                if(equalize && data.getCallAdd() < data.getChips()) continue;
                 action.action = Actions::ALL_IN;
                 done = true;
                 break;
@@ -21,6 +24,7 @@ Action RandPlayer::turn(const Data& data, const bool blindOption) const noexcept
                 break;
 
             case 32 ... 40:  // Raise
+                if(equalize) continue;
                 // if the player has enough chips to raise and the bet round is open, raise
                 action.action = Actions::RAISE;
                 // the bet is a random number between the minimum raise + current bet and the current bet + 4 * minimum raise

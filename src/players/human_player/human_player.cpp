@@ -1,6 +1,6 @@
 #include "human_player.h"
 
-Action HumanPlayer::turn(const Data& data, const bool blindOption) const noexcept {
+Action HumanPlayer::turn(const Data& data, const bool blindOption, const bool equalize) const noexcept {
     // prints the current state of the game
     std::cout << "Your hand: " << this->getHand().first.toString() << " " << this->getHand().second.toString();
     // prints the community cards
@@ -23,6 +23,10 @@ Action HumanPlayer::turn(const Data& data, const bool blindOption) const noexcep
         // if the user is the has the blind option, the user can only call, raise or all-in
         if (blindOption)
             std::cout << "Please enter an action ('c' for call, 'r <bet>' for raise, 'a' for all-in): ";
+        else if (equalize && data.getCallAdd() < data.getChips())
+            std::cout << "Please enter an action ('c' for call (equalize), 'f' for fold): ";
+        else if (equalize)
+            std::cout << "Please enter an action ('c' for call (equalize), 'f' for fold, 'a' for all-in): ";
         else
             std::cout << "Please enter an action ('f' for fold, 'c' for call, 'chk' for check, 'r <bet>' for raise, 'b <bet>' for bet, 'a' for all-in): ";
         std::string input;
@@ -33,11 +37,11 @@ Action HumanPlayer::turn(const Data& data, const bool blindOption) const noexcep
             return {Actions::FOLD};
         else if (input == "c")
             return {Actions::CALL};
-        else if (input == "chk" && !blindOption)
+        else if (input == "chk" && !blindOption && !equalize)
             return {Actions::CHECK};
-        else if (input == "a")
+        else if (input == "a" && !(equalize && data.getCallAdd() < data.getChips()))
             return {Actions::ALL_IN};
-        else if (input[0] == 'r') {
+        else if (input[0] == 'r' && !equalize) {
             try {
                 u_int64_t bet = std::stoull(input.substr(2));
                 return {Actions::RAISE, bet};
@@ -45,7 +49,7 @@ Action HumanPlayer::turn(const Data& data, const bool blindOption) const noexcep
                 std::cout << "Invalid input! Try again" << std::endl;
                 continue;
             }
-        } else if (input[0] == 'b' && !blindOption) {
+        } else if (input[0] == 'b' && !blindOption && !equalize) {
             try {
                 u_int64_t bet = std::stoull(input.substr(2));
                 return {Actions::BET, bet};

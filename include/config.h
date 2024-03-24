@@ -63,6 +63,8 @@ const constexpr char STR_CALL_ERROR[] = "illegally tried to call current bet of 
 const constexpr char STR_RAISE_ERROR[] = "illegally tried to raise to ";
 /// @brief Bet error string constant
 const constexpr char STR_BET_ERROR[] = "illegally tried to bet ";
+/// @brief All in error string constant
+const constexpr char STR_ALL_IN_ERROR[] = "illegally tried to go all in to ";
 /// @brief Action error string constant
 const constexpr char STR_ACTION_ERROR[] = "illegally tried to do action: ";
 /// @brief The maximum character length for the string that represents an error of type check, call, raise or bet

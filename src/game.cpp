@@ -419,6 +419,70 @@ OutEnum Game::playerTurnBlindOption() {
     return OutEnum::ROUND_CONTINUE;
 }
 
+OutEnum Game::playerTurnEqualize() noexcept { 
+    // get equalize action from player
+    Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data, false, true);
+    OutEnum res;
+    u_int64_t callAdd;
+    u_int64_t allInAmount;
+    // store the error message if the action is illegal
+    char str[MAX_ACTION_ERROR_LENGTH_ONLY_RAISE];
+    switch (action.action) {
+        case Actions::CALL:
+            // player called or bet to equalize the all-in bet
+            callAdd = this->data.getCallAdd();
+            if (!this->bet(this->data.betRoundData.currentBet)) {
+                // illegal move leads to loss of the game
+                // set up error message
+                std::snprintf(str, sizeof(str), "%s%lu", STR_CALL_ERROR, this->data.betRoundData.currentBet);
+                res = playerOut(str);
+                if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
+            }
+            PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -callAdd, callAdd) << " called";
+            this->data.nextActivePlayer();
+            break;
+
+        case Actions::FOLD:
+            // player folded
+            PLOG_DEBUG << this->getPlayerInfo() << " folded";
+            res = playerFolded();
+            if (res != OutEnum::ROUND_CONTINUE) return res;
+            break;
+
+        case Actions::ALL_IN:
+            // player is all-in, needs to be at maximum the all-in amount
+            allInAmount = this->data.getChips();
+            if(this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] + allInAmount > this->data.betRoundData.currentBet){
+                // illegal move leads to loss of the game
+                // set up error message
+                std::snprintf(str, sizeof(str), "%s%lu", STR_ALL_IN_ERROR, this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] + allInAmount);
+                res = playerOut(str);
+                if (res != OutEnum::ROUND_CONTINUE) return res;
+                break;
+            }
+            PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in";
+            this->data.removeChipsAllIn();
+            this->data.roundData.numAllInPlayers++;
+            this->data.roundData.pot += allInAmount;
+            this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] += allInAmount;
+            // TODO raise all-in
+            // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
+            this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
+
+            this->data.nextActivePlayer();
+            return this->checkRoundSkip();
+
+        default:
+            // illegal move leads to loss of the game
+            // set up error message
+            std::snprintf(str, sizeof(str), "%s%i", STR_ACTION_ERROR, static_cast<int>(action.action));
+            res = playerOut(str);
+            if (res != OutEnum::ROUND_CONTINUE) return res;
+    }
+    return OutEnum::ROUND_CONTINUE;
+}
+
 u_int64_t Game::betBlind(const u_int64_t blind) noexcept {
     // bet the blind, if the player can not bet the blind, he is all-in
     bool success = this->data.removeChips(blind);

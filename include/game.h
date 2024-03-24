@@ -107,6 +107,16 @@ class Game {
     /// @see Player::turn
     OutEnum playerTurnBlindOption();
 
+    /// @brief Simulates a single non out player turn where the player has to equalize a previous all-in bet
+    /// @return An OutEnum which indicates if the game or round should continue
+    /// @exception Guarantee No-throw
+    /// @note The player`s turn is called to get the action
+    /// @note The action is checked and executed. Only call (bet), fold and a non raise all-in are allowed
+    /// @note The player could be out or folded, the game or round could end
+    /// @see OutEnum
+    /// @see Player::turn
+    OutEnum playerTurnEqualize() noexcept;
+
     /// @brief The current player bets a given blind amount
     /// @param blind The blind amount that the player bets
     /// @return Actual bet amount
