@@ -843,3 +843,5 @@ PLAYER_OUT: fttfffffff
 PLAYER_FOLD: tfftfttttt
 WINNER: fffftfffff
 GAME_STAGE: r
+
+// TODO: add equalizer tests (with blinds and without blinds)

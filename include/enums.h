@@ -74,6 +74,8 @@ enum class OutEnum {
     GAME_WON,
     /// @brief The ROUND and pot is won by a player
     ROUND_WON,
+    /// @brief Thr round should be skipped to the showdown phase
+    ROUND_SHOWDOWN,
 };
 
 /// @brief This class is used to convert the enum values to strings for logging purposes
@@ -93,6 +95,9 @@ class EnumToString {
 
             case OutEnum::ROUND_WON:
                 return "ROUND WON";
+            
+            case OutEnum::ROUND_SHOWDOWN:
+                return "ROUND SHOWDOWN";
 
             default:
                 return "INVALID OutEnum value";

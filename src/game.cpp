@@ -215,6 +215,7 @@ void Game::setBlinds() noexcept {
         PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -bigBlindBet, bigBlindBet) << " bets big blind " << this->data.roundData.bigBlind;
 
     this->data.nextActivePlayer();
+    this->data.roundData.result = this->checkRoundSkip();
 }
 
 void Game::setupBetRound() noexcept {
@@ -241,6 +242,7 @@ void Game::startRound(const bool firstRound) {
     // big blind is always double the small blind
     this->data.roundData.bigBlind = this->data.roundData.smallBlind * 2;
     this->data.roundData.pot = 0;
+    this->data.roundData.numAllInPlayers = 0;
     // reset player folded
     std::memset(this->data.roundData.playerFolded, 0, sizeof(this->data.roundData.playerFolded));
     this->setupBetRound();
@@ -279,6 +281,16 @@ OutEnum Game::betRound() {
 
     // TODO bet round result
     return OutEnum::ROUND_CONTINUE;
+}
+
+OutEnum Game::checkRoundSkip() const noexcept {
+    // checks if one player is not all-in. That will cause a skip to the showdown
+    if (this->data.roundData.numActivePlayers == this->data.roundData.numAllInPlayers + 1) {
+        // all players, except one, are all-in, skip to showdown
+        return OutEnum::ROUND_SHOWDOWN;
+    }
+    return OutEnum::ROUND_CONTINUE;
+    // TODO: add playerTurnEqualize with options fold, call (bet equalizer), all-in (max equalizer bet) for the last active player who has to equalize the all-in bet
 }
 
 bool Game::currentPlayerBlindOption() const noexcept {
@@ -363,7 +375,22 @@ OutEnum Game::playerTurn(u_int8_t& firstChecker) {
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -action.bet, action.bet) << " bet " << action.bet;
             this->data.nextActivePlayer();
             break;
-            break;
+
+        case Actions::ALL_IN:
+            // player is all-in
+            this->data.roundData.numAllInPlayers++;
+            allInAmount = this->data.getChips();
+            this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] += allInAmount;
+            PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
+            this->data.removeChipsAllIn();
+            this->data.roundData.pot += allInAmount;
+            if (this->data.betRoundData.currentBet < this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]) {
+                // TODO raise all-in
+                // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
+                this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
+            }
+            this->data.nextActivePlayer();
+            return this->checkRoundSkip();
 
         default:
             // some action is not handled by the switch statement
@@ -401,13 +428,26 @@ OutEnum Game::playerTurnBlindOption() {
                 // illegal move leads to loss of the game
                 // set up error message
                 std::snprintf(str, sizeof(str), "%s%lu", STR_RAISE_ERROR, action.bet);
-                res = playerOut(str);
-                if (res != OutEnum::ROUND_CONTINUE) return res;
-                break;
+                return playerOut(str);
             }
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -raiseAdd, raiseAdd) << " raised to " << action.bet;
             this->data.nextActivePlayer();
-            break;
+            return OutEnum::ROUND_CONTINUE;
+
+        case Actions::ALL_IN:
+            // player is all-in
+            this->data.roundData.numAllInPlayers++;
+            allInAmount = this->data.getChips();
+            this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] += allInAmount;
+            PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
+            this->data.removeChipsAllIn();
+            this->data.roundData.pot += allInAmount;
+            // TODO raise all-in
+            // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
+            this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
+
+            this->data.nextActivePlayer();
+            return this->checkRoundSkip();
 
         default:
             // illegal move leads to loss of the game
@@ -489,6 +529,7 @@ u_int64_t Game::betBlind(const u_int64_t blind) noexcept {
     this->data.betRoundData.currentBet = blind;
     if (!success) {
         // TODO player is all-in
+        this->data.roundData.numAllInPlayers++;
         u_int64_t allInAmount = this->data.getChips();
         this->data.removeChipsAllIn();
         this->data.roundData.pot += allInAmount;
@@ -547,7 +588,20 @@ OutEnum Game::getOutEnum() const noexcept {
         // only one player is left in the round, he wins the pot
         return OutEnum::ROUND_WON;
     } else {
-        return OutEnum::ROUND_CONTINUE;
+        return this->checkRoundSkip();
+    }
+}
+
+void Game::equalizeMove() noexcept {
+    if(this->data.roundData.result == OutEnum::ROUND_SHOWDOWN){
+        // check if the current bet is equalized by the last player
+        this->data.nextActivePlayer();
+        if(this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]){
+            // the last player has to equalize the all-in bet
+            const OutEnum res = this->playerTurnEqualize();
+            // if only one player is all-in and the last one folds or is out the game or round could be won
+            if (res != OutEnum::ROUND_CONTINUE) this->data.roundData.result = res;
+        }
     }
 }
 
@@ -556,6 +610,7 @@ void Game::preflop() {
     this->data.roundData.betRoundState = BetRoundState::PREFLOP;
     PLOG_DEBUG << "Starting PREFLOP bet round";
     this->data.roundData.result = this->betRound();
+    this->equalizeMove();
 }
 
 void Game::flop() {
@@ -567,6 +622,7 @@ void Game::flop() {
         this->data.roundData.communityCards[i] = this->deck.draw();  // draw flop cards
     }
     this->data.roundData.result = this->betRound();
+    this->equalizeMove();
 }
 
 void Game::turn() {
@@ -576,6 +632,7 @@ void Game::turn() {
     PLOG_DEBUG << "Starting TURN bet round";
     this->data.roundData.communityCards[3] = this->deck.draw();  // draw turn card
     this->data.roundData.result = this->betRound();
+    this->equalizeMove();
 }
 
 void Game::river() {
@@ -585,4 +642,5 @@ void Game::river() {
     PLOG_DEBUG << "Starting RIVER bet round";
     this->data.roundData.communityCards[4] = this->deck.draw();  // draw river card
     this->data.roundData.result = this->betRound();
+    this->equalizeMove();
 }

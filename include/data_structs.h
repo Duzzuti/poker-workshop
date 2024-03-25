@@ -41,6 +41,8 @@ struct RoundData {
     u_int64_t pot;
     /// @brief The number of players that are still in the round
     u_int8_t numActivePlayers;
+    /// @brief The number of players that are all-in in the round
+    u_int8_t numAllInPlayers;
     /// @brief True if the player folded
     bool playerFolded[MAX_PLAYERS];
     /// @brief The community cards, betRoundState needs to be checked to know how many of them are valid

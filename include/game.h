@@ -77,6 +77,12 @@ class Game {
     /// @see OutEnum
     OutEnum betRound();
 
+    /// @brief Check if the round should be skipped to the showdown
+    /// @return An OutEnum which indicates if the round should be skipped
+    /// @exception Guarantee No-throw
+    /// @note The round should be skipped if only one active player is not all-in
+    OutEnum checkRoundSkip() const noexcept;
+
     /// @brief Checks if the current player has the blind option (can only raise, call or all-in)
     /// @return True if the current player can only raise, call or all-in
     /// @exception Guarantee No-throw
@@ -154,6 +160,12 @@ class Game {
     /// @note The round should continue if there are at least two players who are not out and have not folded
     /// @see OutEnum
     OutEnum getOutEnum() const noexcept;
+
+    /// @brief Checks if the all-in bet has to be equalized by a player
+    /// @exception Guarantee No-throw
+    /// @note If the all-in bet has to be equalized, the playerTurnEqualize() method is called
+    /// @see playerTurnEqualize()
+    void equalizeMove() noexcept;
 
     /// @brief Simulates the preflop betting round
     /// @exception Guarantee Basic
