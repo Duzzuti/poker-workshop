@@ -143,7 +143,7 @@ void Game::run(const bool initPlayers) {
             }
             PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << winnerString << ". Starting new round";
             // check if one player has 0 chips and is out
-            if (this->data.roundData.numAllInPlayers != 0){
+            if (this->data.roundData.numAllInPlayers != 0) {
                 for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
                     if (this->data.gameData.playerChips[i] == 0 && !this->data.gameData.playerOut[i]) {
                         this->data.gameData.numNonOutPlayers--;
@@ -151,7 +151,7 @@ void Game::run(const bool initPlayers) {
                         PLOG_WARNING << this->getPlayerInfo(i) << " is out of chips and is out";
                     }
                 }
-                if(this->data.gameData.numNonOutPlayers == 1){
+                if (this->data.gameData.numNonOutPlayers == 1) {
                     // only one player is left in the game, he wins the game
                     this->data.gameData.gameWins[winners[0]]++;
                     this->data.roundData.result = OutEnum::GAME_WON;
@@ -462,7 +462,7 @@ OutEnum Game::playerTurnBlindOption() {
     }
 }
 
-OutEnum Game::playerTurnEqualize() noexcept { 
+OutEnum Game::playerTurnEqualize() noexcept {
     // get equalize action from player
     Action action = this->players[this->data.betRoundData.playerPos]->turn(this->data, false, true);
     u_int64_t callAdd;
@@ -490,7 +490,7 @@ OutEnum Game::playerTurnEqualize() noexcept {
         case Actions::ALL_IN:
             // player is all-in, needs to be at maximum the all-in amount
             allInAmount = this->data.getChips();
-            if(this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] + allInAmount > this->data.betRoundData.currentBet){
+            if (this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] + allInAmount > this->data.betRoundData.currentBet) {
                 // illegal move leads to loss of the game
                 // set up error message
                 std::snprintf(str, sizeof(str), "%s%lu", STR_ALL_IN_ERROR, this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] + allInAmount);
@@ -534,7 +534,7 @@ bool Game::bet(const u_int64_t amount) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
     if (((amount < this->data.betRoundData.currentBet) ||                                                                                            // call condition
          ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
-         (amount < this->data.roundData.bigBlind && this->data.betRoundData.currentBet >= this->data.roundData.bigBlind))                                                                                                   // bet condition
+         (amount < this->data.roundData.bigBlind && this->data.betRoundData.currentBet >= this->data.roundData.bigBlind))                            // bet condition
     )
         return false;
     u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
@@ -582,10 +582,10 @@ OutEnum Game::getOutEnum() const noexcept {
 }
 
 void Game::equalizeMove() noexcept {
-    if(this->data.roundData.result == OutEnum::ROUND_SHOWDOWN){
+    if (this->data.roundData.result == OutEnum::ROUND_SHOWDOWN) {
         // check if the current bet is equalized by the last player
         this->data.nextActivePlayer();
-        if(this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]){
+        if (this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]) {
             // the last player has to equalize the all-in bet
             const OutEnum res = this->playerTurnEqualize();
             // if only one player is all-in and the last one folds or is out the game or round could be won

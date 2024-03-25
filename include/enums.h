@@ -95,7 +95,7 @@ class EnumToString {
 
             case OutEnum::ROUND_WON:
                 return "ROUND WON";
-            
+
             case OutEnum::ROUND_SHOWDOWN:
                 return "ROUND SHOWDOWN";
 

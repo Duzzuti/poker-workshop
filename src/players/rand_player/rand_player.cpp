@@ -13,7 +13,7 @@ Action RandPlayer::turn(const Data& data, const bool blindOption, const bool equ
     while (!done) {
         switch (std::rand() % randMod) {
             case 0:  // All-in
-                if(equalize && data.getCallAdd() < data.getChips()) continue;
+                if (equalize && data.getCallAdd() < data.getChips()) continue;
                 action.action = Actions::ALL_IN;
                 done = true;
                 break;
@@ -24,7 +24,7 @@ Action RandPlayer::turn(const Data& data, const bool blindOption, const bool equ
                 break;
 
             case 32 ... 40:  // Raise
-                if(equalize) continue;
+                if (equalize) continue;
                 // if the player has enough chips to raise and the bet round is open, raise
                 action.action = Actions::RAISE;
                 // the bet is a random number between the minimum raise + current bet and the current bet + 4 * minimum raise

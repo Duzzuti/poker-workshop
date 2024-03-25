@@ -110,7 +110,8 @@ struct Data {
         const u_int8_t playerPos = this->betRoundData.playerPos;
         do {
             this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
-        } while (playerPos != this->betRoundData.playerPos && (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos] || this->getChips() == 0));
+        } while (playerPos != this->betRoundData.playerPos &&
+                 (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos] || this->getChips() == 0));
     }
 
     /// @brief Skips to the next active or all-in player

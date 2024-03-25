@@ -14,7 +14,7 @@ struct ResultData {
     /// @brief The number of active players in the game (not out and not folded)
     u_int8_t numActivePlayers = 0;
     /// @brief The number of players that are all in
-    u_int8_t numAllInPlayers = 0;   // TODO
+    u_int8_t numAllInPlayers = 0;  // TODO
     /// @brief The amount of wins for each player
     u_int32_t gameWins[MAX_PLAYERS];
     /// @brief The pot at the end of the game
