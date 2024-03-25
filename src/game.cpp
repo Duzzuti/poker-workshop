@@ -88,7 +88,7 @@ void Game::run(const bool initPlayers) {
 
             if (this->data.roundData.result == OutEnum::ROUND_WON) {
                 // switch to the winner
-                this->data.nextActivePlayer();
+                this->data.nextActiveOrAllInPlayer();
                 PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->getPlayerInfo(MAX_PLAYERS, this->data.roundData.pot) << ". Starting new round";
                 this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 this->data.gameData.chipWins[this->data.betRoundData.playerPos]++;
@@ -96,7 +96,7 @@ void Game::run(const bool initPlayers) {
                 continue;
             } else if (this->data.roundData.result == OutEnum::GAME_WON) {
                 // switch to the winner
-                this->data.nextActivePlayer();
+                this->data.nextActiveOrAllInPlayer();
                 this->data.gameData.playerChips[this->data.betRoundData.playerPos] += this->data.roundData.pot;
                 this->data.gameData.gameWins[this->data.betRoundData.playerPos]++;
                 this->data.gameData.chipWins[this->data.betRoundData.playerPos]++;
@@ -534,7 +534,7 @@ bool Game::bet(const u_int64_t amount) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
     if (((amount < this->data.betRoundData.currentBet) ||                                                                                            // call condition
          ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
-         (amount < this->data.roundData.bigBlind))                                                                                                   // bet condition
+         (amount < this->data.roundData.bigBlind && this->data.betRoundData.currentBet >= this->data.roundData.bigBlind))                                                                                                   // bet condition
     )
         return false;
     u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
@@ -556,7 +556,7 @@ OutEnum Game::playerOut(const char* reason) noexcept {
     this->data.roundData.numActivePlayers--;
     this->data.gameData.playerOut[this->data.betRoundData.playerPos] = true;
     this->data.gameData.playerChips[this->data.betRoundData.playerPos] = 0;
-    this->data.nextActivePlayer();
+    this->data.tryNextActivePlayer();
 
     return this->getOutEnum();
 }
@@ -564,7 +564,7 @@ OutEnum Game::playerOut(const char* reason) noexcept {
 OutEnum Game::playerFolded() noexcept {
     this->data.roundData.numActivePlayers--;
     this->data.roundData.playerFolded[this->data.betRoundData.playerPos] = true;
-    this->data.nextActivePlayer();
+    this->data.tryNextActivePlayer();
     // if only one player is left, he wins the pot
     return this->getOutEnum();
 }

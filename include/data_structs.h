@@ -104,6 +104,23 @@ struct Data {
         } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos] || this->getChips() == 0);
     }
 
+    /// @brief Tries to skip to the next active player. If no active player is found, the method does nothing
+    /// @exception Guarantee No-throw
+    void tryNextActivePlayer() noexcept {
+        const u_int8_t playerPos = this->betRoundData.playerPos;
+        do {
+            this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
+        } while (playerPos != this->betRoundData.playerPos && (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos] || this->getChips() == 0));
+    }
+
+    /// @brief Skips to the next active or all-in player
+    /// @exception Guarantee No-throw
+    void nextActiveOrAllInPlayer() noexcept {
+        do {
+            this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
+        } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos]);
+    }
+
     /** @brief Selects the dealer position for the next round
      * @param firstRound True if the next round is the first round of the game
      * @exception Guarantee No-throw
