@@ -142,6 +142,23 @@ void Game::run(const bool initPlayers) {
                 if (i != numWinners - 1) std::strcat(winnerString, ", ");
             }
             PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << winnerString << ". Starting new round";
+            // check if one player has 0 chips and is out
+            if (this->data.roundData.numAllInPlayers != 0){
+                for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
+                    if (this->data.gameData.playerChips[i] == 0 && !this->data.gameData.playerOut[i]) {
+                        this->data.gameData.numNonOutPlayers--;
+                        this->data.gameData.playerOut[i] = true;
+                        PLOG_WARNING << this->getPlayerInfo(i) << " is out of chips and is out";
+                    }
+                }
+                if(this->data.gameData.numNonOutPlayers == 1){
+                    // only one player is left in the game, he wins the game
+                    this->data.gameData.gameWins[winners[0]]++;
+                    this->data.roundData.result = OutEnum::GAME_WON;
+                    PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo(winners[0]) << "\n\n";
+                    break;
+                }
+            }
         }
     }
     PLOG_INFO << "Statistics: \n";
