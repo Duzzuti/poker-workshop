@@ -51,6 +51,8 @@ struct RoundData {
     OutEnum result;
     /// @brief Whats the state of the bet round (preflop, flop, turn, river)
     BetRoundState betRoundState;
+    /// @brief Total number of chips betted for each player in the current round
+    u_int64_t playerBetsTotal[MAX_PLAYERS];
 };
 
 /// @brief Contains the data for a single game (until only one player is left)
@@ -120,6 +122,14 @@ struct Data {
         do {
             this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
         } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos]);
+    }
+
+    /// @brief Adds amount to the current player bets and the total pot
+    /// @param bet The number of chips to add to the player bets
+    constexpr void addPlayerBet(const u_int64_t bet) noexcept {
+        this->betRoundData.playerBets[this->betRoundData.playerPos] += bet;
+        this->roundData.playerBetsTotal[this->betRoundData.playerPos] += bet;
+        this->roundData.pot += bet;
     }
 
     /** @brief Selects the dealer position for the next round
@@ -216,6 +226,9 @@ struct Data {
         std::cout << std::endl;
         std::cout << "result: " << EnumToString::enumToString(this->roundData.result) << std::endl;
         std::cout << "betRoundState: " << EnumToString::enumToString(this->roundData.betRoundState) << std::endl;
+        std::cout << "playerBetsTotal: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->roundData.playerBetsTotal[i] << " ";
+        std::cout << std::endl;
         std::cout << "********************** BET ROUND DATA ******************" << std::endl;
         std::cout << "playerPos: " << +this->betRoundData.playerPos << std::endl;
         std::cout << "currentBet: " << this->betRoundData.currentBet << std::endl;

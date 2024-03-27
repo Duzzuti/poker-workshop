@@ -262,6 +262,7 @@ void Game::startRound(const bool firstRound) {
     this->data.roundData.numAllInPlayers = 0;
     // reset player folded
     std::memset(this->data.roundData.playerFolded, 0, sizeof(this->data.roundData.playerFolded));
+    std::memset(this->data.roundData.playerBetsTotal, 0, sizeof(this->data.roundData.playerBetsTotal));
     this->setupBetRound();
 
     // deal cards
@@ -386,10 +387,9 @@ OutEnum Game::playerTurn(u_int8_t& firstChecker) {
             // player is all-in
             this->data.roundData.numAllInPlayers++;
             allInAmount = this->data.getChips();
-            this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] += allInAmount;
+            this->data.addPlayerBet(allInAmount);
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
             this->data.removeChipsAllIn();
-            this->data.roundData.pot += allInAmount;
             if (this->data.betRoundData.currentBet < this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]) {
                 // TODO raise all-in
                 // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
@@ -443,10 +443,9 @@ OutEnum Game::playerTurnBlindOption() {
             // player is all-in
             this->data.roundData.numAllInPlayers++;
             allInAmount = this->data.getChips();
-            this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] += allInAmount;
+            this->data.addPlayerBet(allInAmount);
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
             this->data.removeChipsAllIn();
-            this->data.roundData.pot += allInAmount;
             // TODO raise all-in
             // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
             this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
@@ -496,12 +495,10 @@ OutEnum Game::playerTurnEqualize() noexcept {
                 std::snprintf(str, sizeof(str), "%s%lu", STR_ALL_IN_ERROR, this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] + allInAmount);
                 return playerOut(str);
             }
-            this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] += allInAmount;
+            this->data.addPlayerBet(allInAmount);
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
             this->data.removeChipsAllIn();
             this->data.roundData.numAllInPlayers++;
-            this->data.roundData.pot += allInAmount;
-
             return OutEnum::ROUND_SHOWDOWN;
 
         default:
@@ -514,19 +511,17 @@ OutEnum Game::playerTurnEqualize() noexcept {
 
 u_int64_t Game::betBlind(const u_int64_t blind) noexcept {
     // bet the blind, if the player can not bet the blind, he is all-in
-    bool success = this->data.removeChips(blind);
+    const bool success = this->data.removeChips(blind);
     this->data.betRoundData.currentBet = blind;
     if (!success) {
         // TODO player is all-in
         this->data.roundData.numAllInPlayers++;
-        u_int64_t allInAmount = this->data.getChips();
+        const u_int64_t allInAmount = this->data.getChips();
         this->data.removeChipsAllIn();
-        this->data.roundData.pot += allInAmount;
-        this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = allInAmount;
+        this->data.addPlayerBet(allInAmount);
         return allInAmount;
     }
-    this->data.roundData.pot += blind;
-    this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = blind;
+    this->data.addPlayerBet(blind);
     return blind;
 }
 
@@ -537,15 +532,14 @@ bool Game::bet(const u_int64_t amount) noexcept {
          (amount < this->data.roundData.bigBlind && this->data.betRoundData.currentBet >= this->data.roundData.bigBlind))                            // bet condition
     )
         return false;
-    u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
-    bool success = this->data.removeChips(addAmount);
+    const u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
+    const bool success = this->data.removeChips(addAmount);
     if (!success) return false;
     // minimum raise is the difference between the current bet and the new bet but at least the big blind
     if (amount > this->data.betRoundData.currentBet) this->data.betRoundData.minimumRaise = amount - this->data.betRoundData.currentBet;
     if (this->data.betRoundData.minimumRaise < this->data.roundData.bigBlind) this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
     this->data.betRoundData.currentBet = amount;
-    this->data.roundData.pot += addAmount;
-    this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] = amount;
+    this->data.addPlayerBet(addAmount);
     return true;
 }
 
