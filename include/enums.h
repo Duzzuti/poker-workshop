@@ -12,6 +12,8 @@ enum class Actions {
     CHECK,
     /// @brief The player wants to open the betting round with a bet
     BET,
+    /// @brief The player wants to go all-in
+    ALL_IN,
 };
 
 /// @brief Represents a card suit
@@ -72,6 +74,8 @@ enum class OutEnum {
     GAME_WON,
     /// @brief The ROUND and pot is won by a player
     ROUND_WON,
+    /// @brief Thr round should be skipped to the showdown phase
+    ROUND_SHOWDOWN,
 };
 
 /// @brief This class is used to convert the enum values to strings for logging purposes
@@ -91,6 +95,9 @@ class EnumToString {
 
             case OutEnum::ROUND_WON:
                 return "ROUND WON";
+
+            case OutEnum::ROUND_SHOWDOWN:
+                return "ROUND SHOWDOWN";
 
             default:
                 return "INVALID OutEnum value";
@@ -117,6 +124,9 @@ class EnumToString {
 
             case Actions::BET:
                 return "BET";
+
+            case Actions::ALL_IN:
+                return "ALL_IN";
 
             default:
                 return "INVALID Actions value";

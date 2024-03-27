@@ -142,6 +142,10 @@ void parseMoves(std::ifstream& file, u_int64_t& currentLine, const std::string& 
                         exit(1);
                     }
                     break;
+                case 'a':
+                    // all-in
+                    testConfig.playerActions[playerIndex].push_back(Action{Actions::ALL_IN});
+                    break;
                 case 'r':
                     // raise
                     testConfig.playerActions[playerIndex].push_back(Action{Actions::RAISE, findNumber(moveString, currentLine, 1, 1)});

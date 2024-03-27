@@ -32,15 +32,16 @@ class Game {
     ~Game() { delete[] this->players; }
 
    private:
-    /// @brief Gets a string with the current player info in the format: "pos:name[chips <+/-> diff]"
+    /// @brief Gets a string with the current player info in the format: "pos:name[chips <+/-> diff]" (chips = player chips + baseChipsDiff)
     /// @param playerPos The player position or MAX_PLAYERS for the current player
     /// @param chipsDiff The chip difference which is shown in the string or 0 for not showing
+    /// @param baseChipDiff The amount of chips that is added/removed from the player´s base chips before showing the difference
     /// @return The string with the player info
     /// @exception Guarantee No-throw
     /// @note The difference is used to show how the player´s chips changed
     /// @note If chipsDiff is 0 then the output format is: "pos:name[chips]"
     /// @see MAX_GET_PLAYER_INFO_LENGTH for the maximum length of the returned string
-    const char* getPlayerInfo(u_int8_t playerPos = MAX_PLAYERS, const int64_t chipsDiff = 0) const noexcept;
+    const char* getPlayerInfo(u_int8_t playerPos = MAX_PLAYERS, const int64_t chipsDiff = 0, const int64_t baseChipsDiff = 0) const noexcept;
 
     /// @brief Shuffles the players, sets their positions and sets the winners array
     /// @exception Guarantee No-throw
@@ -56,12 +57,10 @@ class Game {
     void startRound(const bool firstRound);
 
     /// @brief Sets the blinds for the round by betting the small and big blind automatically
-    /// @return An OutEnum which indicates if the game or round should continue
     /// @exception Guarantee No-throw
     /// @note The heads up rule is considered
-    /// @note If there are players who are out due to the blinds, the game could end
-    /// @see OutEnum
-    OutEnum setBlinds() noexcept;
+    /// @note If the blinds cannot be matched, the player is all-in
+    void setBlinds() noexcept;
 
     /// @brief Sets up the data for a bet round (preflop, flop, turn, river)
     /// @exception Guarantee No-throw
@@ -78,24 +77,17 @@ class Game {
     /// @see OutEnum
     OutEnum betRound();
 
-    /// @brief Checks if the bet round should continue
-    /// @param firstChecker The first player who checked in this bet round
-    /// @return True if the bet round should continue
+    /// @brief Check if the round should be skipped to the showdown
+    /// @return An OutEnum which indicates if the round should be skipped
     /// @exception Guarantee No-throw
-    /// @note The bet round should continue if the current player has not checked or called the current bet
-    /// @note The live big blind rule is considered
-    bool betRoundContinue(const u_int8_t firstChecker) const noexcept;
+    /// @note The round should be skipped if only one active player is not all-in
+    OutEnum checkRoundSkip() const noexcept;
 
-    /// @brief Checks if the current player is active (not out or folded)
-    /// @return True if the current player is active
+    /// @brief Checks if the current player has the blind option (can only raise, call or all-in)
+    /// @return True if the current player can only raise, call or all-in
     /// @exception Guarantee No-throw
-    bool currentPlayerActive() const noexcept;
-
-    /// @brief Checks if special condition is met that the current player can only raise or call
-    /// @return True if the current player can only raise or call
-    /// @exception Guarantee No-throw
-    /// @note This is used to consider the live big blind rule
-    bool currentPlayerCanOnlyRaiseOrCall() const noexcept;
+    /// @note This is used to consider the live big blind rule (blind option)
+    inline bool currentPlayerBlindOption() const noexcept;
 
     /// @brief Simulates a single non out player turn
     /// @param firstChecker The first player who checked in this bet round
@@ -109,7 +101,7 @@ class Game {
     /// @see Player::turn
     OutEnum playerTurn(u_int8_t& firstChecker);
 
-    /// @brief Simulates a single non out player turn where the player can only raise or call
+    /// @brief Simulates a single non out player turn where the player has the blind option (can only raise, call or all-in)
     /// @return An OutEnum which indicates if the game or round should continue
     /// @exception Guarantee Strong
     /// @throws std::logic_error if the player could not call a matched bet
@@ -119,17 +111,32 @@ class Game {
     /// @note The player could be out or folded, the game or round could end
     /// @see OutEnum
     /// @see Player::turn
-    OutEnum playerTurnOnlyRaise();
+    OutEnum playerTurnBlindOption();
 
-    /// @brief The current player bets the amount and the next player is selected
+    /// @brief Simulates a single non out player turn where the player has to equalize a previous all-in bet
+    /// @return An OutEnum which indicates if the game or round should continue
+    /// @exception Guarantee No-throw
+    /// @note The player`s turn is called to get the action
+    /// @note The action is checked and executed. Only call (bet), fold and a non raise all-in are allowed
+    /// @note The player could be out or folded, the game or round could end
+    /// @see OutEnum
+    /// @see Player::turn
+    OutEnum playerTurnEqualize() noexcept;
+
+    /// @brief The current player bets a given blind amount
+    /// @param blind The blind amount that the player bets
+    /// @return Actual bet amount
+    /// @exception Guarantee No-throw
+    /// @note If the player cannot bet the blind amount, he is all-in (therefore the actual bet amount is returned)
+    u_int64_t betBlind(const u_int64_t blind) noexcept;
+
+    /// @brief The current player bets the amount
     /// @param amount The total amount that the player bets
-    /// @param isBlind True if the player is betting the small or big blind
     /// @return True if the bet was successful
     /// @exception Guarantee No-throw
     /// @note The amount is the total amount that the player bets (e.g. if the player has to call 200 but he already bet 100 => amount is still 200)
-    /// @note if the player is betting the small or big blind, the amount is not checked against the minimum bet
     /// @note If the betting is not successful, no data is changed
-    bool bet(const u_int64_t amount, const bool isBlind = false) noexcept;
+    bool bet(const u_int64_t amount) noexcept;
 
     /// @brief Marks the current player as out and selects the next player
     /// @param reason The reason why the player is out, is used for logging
@@ -153,6 +160,12 @@ class Game {
     /// @note The round should continue if there are at least two players who are not out and have not folded
     /// @see OutEnum
     OutEnum getOutEnum() const noexcept;
+
+    /// @brief Checks if the all-in bet has to be equalized by a player
+    /// @exception Guarantee No-throw
+    /// @note If the all-in bet has to be equalized, the playerTurnEqualize() method is called
+    /// @see playerTurnEqualize()
+    void equalizeMove() noexcept;
 
     /// @brief Simulates the preflop betting round
     /// @exception Guarantee Basic

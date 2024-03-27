@@ -1,10 +1,14 @@
 #include "check_player.h"
 
-Action CheckPlayer::turn(const Data& data, const bool onlyRaise) const noexcept {
+Action CheckPlayer::turn(const Data& data, const bool blindOption, const bool equalize) const noexcept {
     Action action;
-    // calls if the player can only raise or call (match the bet, means bet 0 because the bet is already matched)
-    if (onlyRaise) {
+    // calls the blind option
+    if (blindOption) {
         action.action = Actions::CALL;
+        return action;
+    } else if (equalize) {
+        // calls the last bet
+        action.action = data.getCallAdd() < data.getChips() ? Actions::CALL : Actions::FOLD;
         return action;
     }
     // checks if possible, otherwise calls if possible, otherwise folds

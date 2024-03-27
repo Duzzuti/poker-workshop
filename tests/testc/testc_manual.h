@@ -148,7 +148,7 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
             std::cout << "Player " << playerInd << " turn after big blind (" << bigBlind << ") was set" << std::endl;
         else
             std::cout << "Player " << playerInd << " turn" << std::endl;
-        std::cout << "Please enter an action ('f' for fold, 'c' for call, 'chk' for check, 'r <bet>' for raise, 'b <bet>' for bet) or 'next' if the bet round is over: ";
+        std::cout << "Please enter an action ('f' for fold, 'c' for call, 'chk' for check, 'r <bet>' for raise, 'b <bet>' for bet, 'a' for all-in) or 'next' if the bet round is over: ";
         std::string input;
         std::getline(std::cin, input);
 
@@ -162,6 +162,8 @@ std::optional<Action> getMove(const int16_t playerInd, const bool first, const u
             return Action{Actions::CALL};
         else if (input == "chk")
             return Action{Actions::CHECK};
+        else if (input == "a")
+            return Action{Actions::ALL_IN};
         else if (input[0] == 'r') {
             try {
                 u_int64_t bet = std::stoull(input.substr(2));
@@ -236,6 +238,9 @@ void getMoves(const u_int8_t numPlayers, const u_int64_t bigBlind, Card communit
                     break;
                 case Actions::BET:
                     turns << "Player " << playerInd << " bet " << move.value().bet << std::endl;
+                    break;
+                case Actions::ALL_IN:
+                    turns << "Player " << playerInd << " went all-in" << std::endl;
                     break;
                 default:
                     throw std::invalid_argument("Invalid action");
