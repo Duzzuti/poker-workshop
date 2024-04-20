@@ -844,4 +844,394 @@ PLAYER_FOLD: tfftfttttt
 WINNER: fffftfffff
 GAME_STAGE: r
 
-// TODO: add equalizer tests (with blinds and without blinds)
+
+TEST: AllInTest AllInEqBlind1
+PLAYER_NUM: 2
+PLAYER_CHIPS: 10 1000
+PLAYER_CARDS: HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 20 10
+PLAYER_CHIPS: 20 990
+PLAYER_OUT: ff
+PLAYER_FOLD: ff
+WINNER: tf
+GAME_STAGE: r
+
+TEST: AllInTest AllInEqBlind2
+PLAYER_NUM: 2
+PLAYER_CHIPS: 1000 20
+PLAYER_CARDS: RR HASA
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: c  // equalizer
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 40
+PLAYER_CHIPS: 980 40
+PLAYER_OUT: ff
+PLAYER_FOLD: ff
+WINNER: ft
+GAME_STAGE: r
+
+TEST: AllInTest AllInEqBlind3
+PLAYER_NUM: 2
+PLAYER_CHIPS: 1000 20
+PLAYER_CARDS: RR HASA
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: a  // illegal
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 30
+PLAYER_CHIPS: 0 30
+PLAYER_OUT: tf
+PLAYER_FOLD: ff
+WINNER: ft
+GAME_STAGE: r
+
+TEST: AllInTest AllInEqBlind4
+PLAYER_NUM: 2
+PLAYER_CHIPS: 1000 20
+PLAYER_CARDS: RR HASA
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: r40  // illegal
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 30
+PLAYER_CHIPS: 0 30
+PLAYER_OUT: tf
+PLAYER_FOLD: ff
+WINNER: ft
+GAME_STAGE: r
+
+TEST: AllInTest AllInEqBlind5
+PLAYER_NUM: 2
+PLAYER_CHIPS: 1000 20
+PLAYER_CARDS: RR HASA
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: f
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 30
+PLAYER_CHIPS: 990 30
+PLAYER_OUT: ff
+PLAYER_FOLD: tf
+WINNER: ft
+GAME_STAGE: p
+
+TEST: AllInTest AllInEqBlind6
+PLAYER_NUM: 3
+PLAYER_CHIPS: 10 20 1000
+PLAYER_CARDS: RR HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P2: c   // equalizer
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 30 20
+PLAYER_CHIPS: 0 50 980
+PLAYER_OUT: tff
+PLAYER_FOLD: fff
+WINNER: ftf
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq1
+PLAYER_NUM: 2
+PLAYER_CHIPS: 20 1000
+PLAYER_CARDS: HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: a
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 40
+PLAYER_CHIPS: 40 980
+PLAYER_OUT: ff
+PLAYER_FOLD: ff
+WINNER: tf
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq2
+PLAYER_NUM: 2
+PLAYER_CHIPS: 40 1000
+PLAYER_CARDS: HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: a
+P1: c  // equalizer
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 80
+PLAYER_CHIPS: 80 960
+PLAYER_OUT: ff
+PLAYER_FOLD: ff
+WINNER: tf
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq3
+PLAYER_NUM: 2
+PLAYER_CHIPS: 40 1000
+PLAYER_CARDS: HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: a
+P1: f
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 60
+PLAYER_CHIPS: 60 980
+PLAYER_OUT: ff
+PLAYER_FOLD: ft
+WINNER: tf
+GAME_STAGE: p
+
+TEST: AllInTest AllInEq4
+PLAYER_NUM: 2
+PLAYER_CHIPS: 40 1000
+PLAYER_CARDS: HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: a
+P1: a // illegal
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 60
+PLAYER_CHIPS: 60 980
+PLAYER_OUT: ft
+PLAYER_FOLD: ff
+WINNER: tf
+GAME_STAGE: p
+
+TEST: AllInTest AllInEq5
+PLAYER_NUM: 2
+PLAYER_CHIPS: 40 1000
+PLAYER_CARDS: HASA RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P0: a
+P1: r100 // illegal
+
+P1: f   // should not be considered
+P0: f   // should not be considered
+
+END_MOVES
+
+POT: 60
+PLAYER_CHIPS: 60 980
+PLAYER_OUT: ft
+PLAYER_FOLD: ff
+WINNER: tf
+GAME_STAGE: p
+
+TEST: AllInTest AllInEq6
+PLAYER_NUM: 4
+PLAYER_CHIPS: 50 10 20 40
+PLAYER_CARDS: HASA RR RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: a
+P0: c  // equalizer
+
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30 40
+PLAYER_CHIPS: 120 0 0 0
+PLAYER_OUT: fttt
+PLAYER_FOLD: ffff
+WINNER: tfff
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq7
+PLAYER_NUM: 4
+PLAYER_CHIPS: 40 10 20 40
+PLAYER_CARDS: HASA RR RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: a
+P0: a  // equalizer
+
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30 40
+PLAYER_CHIPS: 110 0 0 0
+PLAYER_OUT: fttt
+PLAYER_FOLD: ffff
+WINNER: tfff
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq8
+PLAYER_NUM: 4
+PLAYER_CHIPS: 50 10 20 40
+PLAYER_CARDS: RR RR RR HASA
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: a
+P0: a  // illegal
+
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 30 20 20
+PLAYER_CHIPS: 0 0 0 70
+PLAYER_OUT: tttf
+PLAYER_FOLD: ffff
+WINNER: ffft
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq9
+PLAYER_NUM: 4
+PLAYER_CHIPS: 30 10 20 40
+PLAYER_CARDS: RR RR RR HASA
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: a
+P0: a  // equalizer
+
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30 20 10
+PLAYER_CHIPS: 0 0 0 100
+PLAYER_OUT: tttf
+PLAYER_FOLD: ffff
+WINNER: ffft
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq10
+PLAYER_NUM: 4
+PLAYER_CHIPS: 30 10 20 40
+PLAYER_CARDS: HASA RR RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: a
+P0: a  // equalizer
+
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30 20 10
+PLAYER_CHIPS: 90 0 0 10
+PLAYER_OUT: fttf
+PLAYER_FOLD: ffff
+WINNER: tfff
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq11
+PLAYER_NUM: 4
+PLAYER_CHIPS: 30 10 20 30
+PLAYER_CARDS: HASA RR RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: a
+P3: a   // equalizer
+
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30 20
+PLAYER_CHIPS: 90 0 0 0
+PLAYER_OUT: fttt
+PLAYER_FOLD: ffff
+WINNER: tfff
+GAME_STAGE: r
+
+TEST: AllInTest AllInEq12
+PLAYER_NUM: 4
+PLAYER_CHIPS: 30 10 20 30
+PLAYER_CARDS: HASA RR RR RR
+COMMUNITY_CARDS: CADACKDKH2
+SMALL_BLIND: 10
+
+P3: c
+P0: a
+P3: c   // illegal
+
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30 10
+PLAYER_CHIPS: 80 0 0 0
+PLAYER_OUT: fttt
+PLAYER_FOLD: ffff
+WINNER: tfff
+GAME_STAGE: r
+
+// TODO: add tests where two equivalent hands are involved (and main or side pots get split)
