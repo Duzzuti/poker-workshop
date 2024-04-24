@@ -1346,7 +1346,7 @@ TEST(EdgeCaseTest, CallLastChipClose) {
                 .foldedPlayers = {true, false},
                 .nonOutPlayers = 2,
                 .numActivePlayers = 1,
-                .gameWins = {0, 1},
+                .gameWins = {1, 0},
                 .pot = 1998,
                 .playerChips = {9001, 1999},
                 .betRoundState = BetRoundState::TURN,

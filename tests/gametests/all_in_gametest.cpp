@@ -21,7 +21,7 @@ TEST(AllInTest, AllIn1) {
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
                                   .gameWins = {1, 0, 0},
-                                  .pot = 90,
+                                  .pot = 130,
                                   .playerChips = {990, 90, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -98,7 +98,7 @@ TEST(AllInTest, AllIn2) {
                                   .foldedPlayers = {false, true, false},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1},
+                                  .gameWins = {1, 1, 0},
                                   .pot = 150,
                                   .playerChips = {950, 950, 150},
                                   .betRoundState = BetRoundState::RIVER,
@@ -176,7 +176,7 @@ TEST(AllInTest, AllIn3) {
                                   .foldedPlayers = {false, false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1},
+                                  .gameWins = {1, 0, 0},
                                   .pot = 140,
                                   .playerChips = {950, 0, 140},
                                   .betRoundState = BetRoundState::RIVER,
@@ -254,8 +254,8 @@ TEST(AllInTest, AllIn4) {
                                   .foldedPlayers = {false, false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1},
-                                  .pot = 135,
+                                  .gameWins = {1, 0, 0},
+                                  .pot = 145,
                                   .playerChips = {950, 0, 145},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -330,8 +330,8 @@ TEST(AllInTest, AllIn5) {
                                   .foldedPlayers = {false, false, false},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 3,
-                                  .gameWins = {0, 1, 0},
-                                  .pot = 135,
+                                  .gameWins = {1, 0, 0},
+                                  .pot = 145,
                                   .playerChips = {950, 135, 10},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -407,11 +407,11 @@ TEST(AllInTest, AllIn6) {
                                                 {Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
                               .resultData{
                                   .outPlayers = {false, true, false, false},
-                                  .foldedPlayers = {false, false, false, false},
+                                  .foldedPlayers = {false, false, false, true},
                                   .nonOutPlayers = 3,
-                                  .numActivePlayers = 3,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 180,
+                                  .numActivePlayers = 2,
+                                  .gameWins = {1, 0, 0, 1},
+                                  .pot = 195,
                                   .playerChips = {950, 0, 195, 950},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -487,11 +487,11 @@ TEST(AllInTest, AllIn7) {
                                                 {Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
                               .resultData{
                                   .outPlayers = {false, false, false, false},
-                                  .foldedPlayers = {false, false, false, false},
+                                  .foldedPlayers = {false, false, false, true},
                                   .nonOutPlayers = 4,
-                                  .numActivePlayers = 4,
-                                  .gameWins = {0, 1, 0, 0},
-                                  .pot = 180,
+                                  .numActivePlayers = 3,
+                                  .gameWins = {1, 0, 0, 1},
+                                  .pot = 195,
                                   .playerChips = {950, 180, 15, 950},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -564,14 +564,14 @@ TEST(AllInTest, AllIn8) {
                               .playerActions = {{Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::BET, 20}, Action{Actions::ALL_IN, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::ALL_IN, 0}},
-                                                {Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
+                                                {Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::CHECK, 0}}},
                               .resultData{
                                   .outPlayers = {false, false, true, false},
-                                  .foldedPlayers = {false, false, false, false},
+                                  .foldedPlayers = {true, false, false, false},
                                   .nonOutPlayers = 3,
-                                  .numActivePlayers = 3,
-                                  .gameWins = {0, 1, 0, 0},
-                                  .pot = 180,
+                                  .numActivePlayers = 2,
+                                  .gameWins = {0, 0, 0, 1},
+                                  .pot = 195,
                                   .playerChips = {950, 180, 0, 965},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -644,14 +644,14 @@ TEST(AllInTest, AllIn9) {
                               .playerActions = {{Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::BET, 20}, Action{Actions::ALL_IN, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::ALL_IN, 0}},
-                                                {Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
+                                                {Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::CHECK, 0}}},
                               .resultData{
                                   .outPlayers = {false, true, true, false},
-                                  .foldedPlayers = {false, false, false, false},
+                                  .foldedPlayers = {true, false, false, false},
                                   .nonOutPlayers = 2,
-                                  .numActivePlayers = 2,
+                                  .numActivePlayers = 1,
                                   .gameWins = {0, 0, 0, 1},
-                                  .pot = 180,
+                                  .pot = 195,
                                   .playerChips = {950, 0, 0, 1145},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -731,7 +731,7 @@ TEST(AllInTest, AllIn10) {
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0, 0, 0},
-                                  .pot = 100,
+                                  .pot = 183,
                                   .playerChips = {1117, 0, 0, 934},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -811,7 +811,7 @@ TEST(AllInTest, AllIn11) {
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
                                   .gameWins = {0, 1, 0, 0},
-                                  .pot = 90,
+                                  .pot = 91,
                                   .playerChips = {0, 90, 1, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -890,8 +890,8 @@ TEST(AllInTest, AllIn12) {
                                   .foldedPlayers = {false, false, false, true},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 100,
+                                  .gameWins = {1, 0, 0, 1},
+                                  .pot = 103,
                                   .playerChips = {974, 0, 103, 974},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -970,8 +970,8 @@ TEST(AllInTest, AllIn13) {
                                   .foldedPlayers = {false, false, false, true},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 100,
+                                  .gameWins = {1, 0, 0, 1},
+                                  .pot = 123,
                                   .playerChips = {974, 0, 103, 974},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -1047,12 +1047,12 @@ TEST(AllInTest, AllIn14) {
                                                 {Action{Actions::CALL, 0}, Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
                               .resultData{
                                   .outPlayers = {true, true, false, false},
-                                  .foldedPlayers = {false, false, false, true},
+                                  .foldedPlayers = {false, false, false, false},
                                   .nonOutPlayers = 2,
-                                  .numActivePlayers = 1,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 100,
-                                  .playerChips = {0, 0, 103, 974},
+                                  .numActivePlayers = 2,
+                                  .gameWins = {0, 0, 0, 1},
+                                  .pot = 97,
+                                  .playerChips = {0, 0, 97, 974},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -1129,7 +1129,7 @@ TEST(AllInTest, AllIn15) {
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0, 0},
-                                  .pot = 78,
+                                  .pot = 158,
                                   .playerChips = {1092, 0, 934},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -1208,7 +1208,7 @@ TEST(AllInTest, AllIn16) {
                 .gameWins = {0, 1, 0},
                 .pot = 66,
                 .playerChips = {0, 66, 0},
-                .betRoundState = BetRoundState::RIVER,
+                .betRoundState = BetRoundState::FLOP,
             }};
         // game should only last one round and not shuffle players or deck
         Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
@@ -1361,8 +1361,8 @@ TEST(AllInTest, AllIn18) {
                                   .foldedPlayers = {false, false, true},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 1, 0},
-                                  .pot = 78,
+                                  .gameWins = {1, 0, 1},
+                                  .pot = 98,
                                   .playerChips = {974, 78, 974},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -1439,7 +1439,7 @@ TEST(AllInTest, AllIn19) {
                                   .foldedPlayers = {false, false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 1, 0},
+                                  .gameWins = {0, 0, 1},
                                   .pot = 72,
                                   .playerChips = {0, 72, 974},
                                   .betRoundState = BetRoundState::RIVER,
@@ -1669,14 +1669,14 @@ TEST(AllInTest, AllIn22) {
                               .playerActions = {{Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::ALL_IN, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::ALL_IN, 0}},
-                                                {Action{Actions::CALL, 0}, Action{Actions::RAISE, 50}}},
+                                                {Action{Actions::CALL, 0}, Action{Actions::RAISE, 45}}},
                               .resultData{
                                   .outPlayers = {false, true, false, false},
                                   .foldedPlayers = {true, false, false, false},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 98,
+                                  .gameWins = {1, 0, 0, 0},
+                                  .pot = 156,
                                   .playerChips = {980, 0, 136, 955},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -1749,14 +1749,14 @@ TEST(AllInTest, AllIn23) {
                               .playerActions = {{Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::ALL_IN, 0}},
                                                 {Action{Actions::CALL, 0}, Action{Actions::ALL_IN, 0}},
-                                                {Action{Actions::CALL, 0}, Action{Actions::RAISE, 49}}},
+                                                {Action{Actions::CALL, 0}, Action{Actions::RAISE, 44}}},
                               .resultData{
                                   .outPlayers = {false, true, false, true},
                                   .foldedPlayers = {true, false, false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 1,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 92,
+                                  .gameWins = {1, 0, 0, 0},
+                                  .pot = 111,
                                   .playerChips = {980, 0, 111, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -1835,8 +1835,8 @@ TEST(AllInTest, AllIn24) {
                                   .foldedPlayers = {true, false, false, false},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 95,
+                                  .gameWins = {1, 0, 0, 0},
+                                  .pot = 155,
                                   .playerChips = {980, 0, 135, 955},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -1915,9 +1915,9 @@ TEST(AllInTest, AllIn25) {
                                   .foldedPlayers = {true, false, false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 1,
-                                  .gameWins = {0, 0, 1, 0},
-                                  .pot = 90,
-                                  .playerChips = {980, 0, 100, 0},
+                                  .gameWins = {1, 0, 0, 0},
+                                  .pot = 110,
+                                  .playerChips = {980, 0, 110, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -2007,8 +2007,8 @@ TEST(AllInTest, AllInBlind1) {
                                   .foldedPlayers = {true, true, false, true, false, true, true, true, true, true},
                                   .nonOutPlayers = 10,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-                                  .pot = 25,
+                                  .gameWins = {1, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+                                  .pot = 35,
                                   .playerChips = {1000, 996, 25, 992, 994, 1000, 1000, 1000, 1000, 1000},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -2099,8 +2099,8 @@ TEST(AllInTest, AllInBlind2) {
                                   .foldedPlayers = {true, false, true, true, false, true, true, true, true, true},
                                   .nonOutPlayers = 10,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-                                  .pot = 12,
+                                  .gameWins = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+                                  .pot = 35,
                                   .playerChips = {1000, 12, 992, 992, 1007, 1000, 1000, 1000, 1000, 1000},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -2191,8 +2191,8 @@ TEST(AllInTest, AllInBlind3) {
                                   .foldedPlayers = {true, false, false, true, false, true, true, true, true, true},
                                   .nonOutPlayers = 10,
                                   .numActivePlayers = 3,
-                                  .gameWins = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-                                  .pot = 12,
+                                  .gameWins = {1, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+                                  .pot = 34,
                                   .playerChips = {1000, 12, 12, 992, 994, 1000, 1000, 1000, 1000, 1000},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -2283,8 +2283,8 @@ TEST(AllInTest, AllInBlind4) {
                                   .foldedPlayers = {true, false, false, true, false, true, true, true, true, true},
                                   .nonOutPlayers = 9,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-                                  .pot = 12,
+                                  .gameWins = {1, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+                                  .pot = 34,
                                   .playerChips = {1000, 0, 24, 992, 994, 1000, 1000, 1000, 1000, 1000},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -2376,8 +2376,462 @@ TEST(AllInTest, AllInBlind5) {
                                   .nonOutPlayers = 8,
                                   .numActivePlayers = 1,
                                   .gameWins = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
-                                  .pot = 12,
+                                  .pot = 34,
                                   .playerChips = {1000, 0, 0, 992, 1018, 1000, 1000, 1000, 1000, 1000},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInBlind6) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}, Card{14, 1}, Card{14, 2}};
+        TestConfig testConfig{.numPlayers = 2,
+                              .smallBlind = 10,
+                              .playerChips = {10, 20},
+                              .playerHands = {{Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)}, {Card{14, 1}, Card{14, 2}}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}},
+                              .playerActions = {{Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {true, false},
+                                  .foldedPlayers = {false, false},
+                                  .nonOutPlayers = 1,
+                                  .numActivePlayers = 1,
+                                  .gameWins = {0, 1},
+                                  .pot = 30,
+                                  .playerChips = {0, 30},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInBlind7) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}, Card{14, 1}, Card{14, 2}};
+        TestConfig testConfig{.numPlayers = 3,
+                              .smallBlind = 10,
+                              .playerChips = {10, 20, 30},
+                              .playerHands = {{Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{14, 1}, Card{14, 2}}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::FOLD, 0}, Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {true, false, false},
+                                  .foldedPlayers = {false, true, false},
+                                  .nonOutPlayers = 2,
+                                  .numActivePlayers = 1,
+                                  .gameWins = {0, 0, 1},
+                                  .pot = 40,
+                                  .playerChips = {0, 10, 50},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInBlind8) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}, Card{14, 1}, Card{14, 2}};
+        TestConfig testConfig{.numPlayers = 3,
+                              .smallBlind = 10,
+                              .playerChips = {10, 15, 30},
+                              .playerHands = {{Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{14, 1}, Card{14, 2}}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::ALL_IN, 0}, Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {true, true, false},
+                                  .foldedPlayers = {false, false, false},
+                                  .nonOutPlayers = 1,
+                                  .numActivePlayers = 1,
+                                  .gameWins = {0, 0, 1},
+                                  .pot = 45,
+                                  .playerChips = {0, 0, 55},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInBlind9) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}, Card{14, 1}, Card{14, 2}};
+        TestConfig testConfig{.numPlayers = 3,
+                              .smallBlind = 11,
+                              .playerChips = {3, 21, 9},
+                              .playerHands = {{Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{14, 1}, Card{14, 2}}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {true, false, false},
+                                  .foldedPlayers = {false, false, false},
+                                  .nonOutPlayers = 2,
+                                  .numActivePlayers = 2,
+                                  .gameWins = {0, 0, 1},
+                                  .pot = 23,
+                                  .playerChips = {0, 12, 21},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInBlind10) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}, Card{14, 1}, Card{14, 2}};
+        TestConfig testConfig{.numPlayers = 3,
+                              .smallBlind = 11,
+                              .playerChips = {3, 11, 9},
+                              .playerHands = {{Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{14, 1}, Card{14, 2}}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {true, false, false},
+                                  .foldedPlayers = {false, false, false},
+                                  .nonOutPlayers = 2,
+                                  .numActivePlayers = 2,
+                                  .gameWins = {0, 0, 1},
+                                  .pot = 23,
+                                  .playerChips = {0, 2, 21},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInBlind11) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}, Card{14, 1}, Card{14, 2}};
+        TestConfig testConfig{.numPlayers = 3,
+                              .smallBlind = 10,
+                              .playerChips = {15, 5, 10},
+                              .playerHands = {{Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{14, 1}, Card{14, 2}}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}},
+                              .playerActions = {{Action{Actions::CALL, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {false, true, false},
+                                  .foldedPlayers = {false, false, false},
+                                  .nonOutPlayers = 2,
+                                  .numActivePlayers = 2,
+                                  .gameWins = {0, 0, 1},
+                                  .pot = 25,
+                                  .playerChips = {5, 0, 25},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -2449,8 +2903,8 @@ TEST(AllInTest, AllInEqBlind1) {
                                   .foldedPlayers = {false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {1, 0},
-                                  .pot = 20,
+                                  .gameWins = {0, 1},
+                                  .pot = 30,
                                   .playerChips = {20, 990},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -2523,7 +2977,7 @@ TEST(AllInTest, AllInEqBlind2) {
                                   .foldedPlayers = {false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 1},
+                                  .gameWins = {1, 0},
                                   .pot = 40,
                                   .playerChips = {980, 40},
                                   .betRoundState = BetRoundState::RIVER,
@@ -2600,7 +3054,7 @@ TEST(AllInTest, AllInEqBlind3) {
                                   .gameWins = {0, 1},
                                   .pot = 30,
                                   .playerChips = {0, 30},
-                                  .betRoundState = BetRoundState::RIVER,
+                                  .betRoundState = BetRoundState::PREFLOP,
                               }};
         // game should only last one round and not shuffle players or deck
         Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
@@ -2674,7 +3128,7 @@ TEST(AllInTest, AllInEqBlind4) {
                                   .gameWins = {0, 1},
                                   .pot = 30,
                                   .playerChips = {0, 30},
-                                  .betRoundState = BetRoundState::RIVER,
+                                  .betRoundState = BetRoundState::PREFLOP,
                               }};
         // game should only last one round and not shuffle players or deck
         Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
@@ -2745,7 +3199,7 @@ TEST(AllInTest, AllInEqBlind5) {
                                   .foldedPlayers = {true, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 1,
-                                  .gameWins = {0, 1},
+                                  .gameWins = {1, 0},
                                   .pot = 30,
                                   .playerChips = {990, 30},
                                   .betRoundState = BetRoundState::PREFLOP,
@@ -2809,21 +3263,21 @@ TEST(AllInTest, AllInEqBlind6) {
         std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}, Card{14, 1}, Card{14, 2}};
         TestConfig testConfig{.numPlayers = 3,
                               .smallBlind = 10,
-                              .playerChips = {10, 20, 1000},
+                              .playerChips = {1000, 10, 20},
                               .playerHands = {{Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
-                                              {Card{14, 1}, Card{14, 2}},
-                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)}},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{14, 1}, Card{14, 2}}},
                               .drawnCards = {},
                               .communityCards = {Card{14, 3}, Card{14, 0}, Card{13, 3}, Card{13, 0}, Card{2, 1}},
-                              .playerActions = {{Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::CALL, 0}}},
+                              .playerActions = {{Action{Actions::CALL, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}},
                               .resultData{
-                                  .outPlayers = {true, false, false},
+                                  .outPlayers = {false, true, false},
                                   .foldedPlayers = {false, false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {0, 1, 0},
-                                  .pot = 30,
-                                  .playerChips = {0, 50, 980},
+                                  .gameWins = {1, 0, 0},
+                                  .pot = 50,
+                                  .playerChips = {980, 0, 50},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -2895,7 +3349,7 @@ TEST(AllInTest, AllInEq1) {
                                   .foldedPlayers = {false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {1, 0},
+                                  .gameWins = {0, 1},
                                   .pot = 40,
                                   .playerChips = {40, 980},
                                   .betRoundState = BetRoundState::RIVER,
@@ -2969,7 +3423,7 @@ TEST(AllInTest, AllInEq2) {
                                   .foldedPlayers = {false, false},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
-                                  .gameWins = {1, 0},
+                                  .gameWins = {0, 1},
                                   .pot = 80,
                                   .playerChips = {80, 960},
                                   .betRoundState = BetRoundState::RIVER,
@@ -3043,7 +3497,7 @@ TEST(AllInTest, AllInEq3) {
                                   .foldedPlayers = {false, true},
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 1,
-                                  .gameWins = {1, 0},
+                                  .gameWins = {0, 1},
                                   .pot = 60,
                                   .playerChips = {60, 980},
                                   .betRoundState = BetRoundState::PREFLOP,
@@ -3119,7 +3573,7 @@ TEST(AllInTest, AllInEq4) {
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0},
                                   .pot = 60,
-                                  .playerChips = {60, 980},
+                                  .playerChips = {60, 0},
                                   .betRoundState = BetRoundState::PREFLOP,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -3193,7 +3647,7 @@ TEST(AllInTest, AllInEq5) {
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0},
                                   .pot = 60,
-                                  .playerChips = {60, 980},
+                                  .playerChips = {60, 0},
                                   .betRoundState = BetRoundState::PREFLOP,
                               }};
         // game should only last one round and not shuffle players or deck
@@ -3269,7 +3723,7 @@ TEST(AllInTest, AllInEq6) {
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0, 0, 0},
-                                  .pot = 40,
+                                  .pot = 110,
                                   .playerChips = {120, 0, 0, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3346,7 +3800,7 @@ TEST(AllInTest, AllInEq7) {
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0, 0, 0},
-                                  .pot = 40,
+                                  .pot = 110,
                                   .playerChips = {110, 0, 0, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3423,7 +3877,7 @@ TEST(AllInTest, AllInEq8) {
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
                                   .gameWins = {0, 0, 0, 1},
-                                  .pot = 30,
+                                  .pot = 70,
                                   .playerChips = {0, 0, 0, 70},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3500,7 +3954,7 @@ TEST(AllInTest, AllInEq9) {
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
                                   .gameWins = {0, 0, 0, 1},
-                                  .pot = 40,
+                                  .pot = 100,
                                   .playerChips = {0, 0, 0, 100},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3577,7 +4031,7 @@ TEST(AllInTest, AllInEq10) {
                                   .nonOutPlayers = 2,
                                   .numActivePlayers = 2,
                                   .gameWins = {1, 0, 0, 0},
-                                  .pot = 40,
+                                  .pot = 100,
                                   .playerChips = {90, 0, 0, 10},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3654,7 +4108,7 @@ TEST(AllInTest, AllInEq11) {
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0, 0, 0},
-                                  .pot = 40,
+                                  .pot = 90,
                                   .playerChips = {90, 0, 0, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3731,7 +4185,7 @@ TEST(AllInTest, AllInEq12) {
                                   .nonOutPlayers = 1,
                                   .numActivePlayers = 1,
                                   .gameWins = {1, 0, 0, 0},
-                                  .pot = 40,
+                                  .pot = 80,
                                   .playerChips = {80, 0, 0, 0},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3791,13 +4245,13 @@ TEST(AllInTest, AllInEq12) {
 
 TEST(AllInTest, AllInSplit1) {
     for (int iters = 0; iters < TEST_ITERS; iters++) {
-        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 2}};
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 0}, Card{13, 2}, Card{13, 1}};
         TestConfig testConfig{.numPlayers = 4,
                               .smallBlind = 10,
                               .playerChips = {20, 10, 20, 30},
-                              .playerHands = {{Card{13, 3}, Deck::getRandomCardExceptAdd(drawnCards)},
+                              .playerHands = {{Card{13, 3}, Card{13, 0}},
                                               {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
-                                              {Card{13, 2}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 2}, Card{13, 1}},
                                               {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)}},
                               .drawnCards = {},
                               .communityCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}},
@@ -3808,7 +4262,7 @@ TEST(AllInTest, AllInSplit1) {
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 3,
                                   .gameWins = {1, 0, 1, 0},
-                                  .pot = 40,
+                                  .pot = 70,
                                   .playerChips = {35, 0, 35, 10},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3868,12 +4322,12 @@ TEST(AllInTest, AllInSplit1) {
 
 TEST(AllInTest, AllInSplit2) {
     for (int iters = 0; iters < TEST_ITERS; iters++) {
-        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 2}};
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 0}, Card{13, 2}, Card{13, 1}};
         TestConfig testConfig{.numPlayers = 4,
                               .smallBlind = 10,
                               .playerChips = {20, 10, 20, 30},
-                              .playerHands = {{Card{13, 3}, Deck::getRandomCardExceptAdd(drawnCards)},
-                                              {Card{13, 2}, Deck::getRandomCardExceptAdd(drawnCards)},
+                              .playerHands = {{Card{13, 3}, Card{13, 0}},
+                                              {Card{13, 2}, Card{13, 1}},
                                               {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
                                               {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)}},
                               .drawnCards = {},
@@ -3884,8 +4338,8 @@ TEST(AllInTest, AllInSplit2) {
                                   .foldedPlayers = {false, false, false, false},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 3,
-                                  .gameWins = {1, 1, 0, 0},
-                                  .pot = 40,
+                                  .gameWins = {1, 0, 0, 0},
+                                  .pot = 70,
                                   .playerChips = {50, 20, 0, 10},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -3945,11 +4399,11 @@ TEST(AllInTest, AllInSplit2) {
 
 TEST(AllInTest, AllInSplit3) {
     for (int iters = 0; iters < TEST_ITERS; iters++) {
-        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 2}, Card{13, 1}};
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 0}, Card{13, 2}, Card{13, 1}};
         TestConfig testConfig{.numPlayers = 4,
                               .smallBlind = 10,
                               .playerChips = {20, 10, 20, 30},
-                              .playerHands = {{Card{13, 3}, Deck::getRandomCardExceptAdd(drawnCards)},
+                              .playerHands = {{Card{13, 3}, Card{13, 0}},
                                               {Card{13, 2}, Deck::getRandomCardExceptAdd(drawnCards)},
                                               {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
                                               {Card{13, 1}, Deck::getRandomCardExceptAdd(drawnCards)}},
@@ -3961,8 +4415,8 @@ TEST(AllInTest, AllInSplit3) {
                                   .foldedPlayers = {false, false, false, false},
                                   .nonOutPlayers = 3,
                                   .numActivePlayers = 3,
-                                  .gameWins = {1, 1, 0, 1},
-                                  .pot = 40,
+                                  .gameWins = {0, 0, 0, 1},
+                                  .pot = 70,
                                   .playerChips = {28, 13, 0, 38},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
@@ -4038,8 +4492,8 @@ TEST(AllInTest, AllInSplit4) {
                                   .foldedPlayers = {false, false, false, false},
                                   .nonOutPlayers = 4,
                                   .numActivePlayers = 4,
-                                  .gameWins = {1, 1, 1, 1},
-                                  .pot = 40,
+                                  .gameWins = {0, 0, 0, 1},
+                                  .pot = 70,
                                   .playerChips = {20, 10, 20, 30},
                                   .betRoundState = BetRoundState::RIVER,
                               }};
