@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "player.h"
+#include "hand_strengths.h"
 
 /// @brief Simulates a set of poker games
 /// @note Holds all required Data
@@ -202,6 +202,10 @@ class Game {
     /// @see betRound()
     void river();
 
+    void distributePotNoAllIn(const HandStrengths handStrengths[], u_int8_t winners[]) noexcept;
+    void distributePotAllIn(HandStrengths handStrengths[], u_int8_t winners[]) noexcept;
+    bool adaptRaiseAttributes(const u_int64_t amount) noexcept;
+
     /// @brief The Config object which holds all settings for the simulation
     /// @note This is passed to the constructor
     /// @see Config
@@ -222,4 +226,7 @@ class Game {
     Deck deck;
 
     char winnerString[MAX_POT_DIST_STRING_LENGTH];
+
+    // position of the last player that raised or MAX_PLAYERS if no player raised yet
+    u_int8_t lastRaiser = MAX_PLAYERS;
 };
