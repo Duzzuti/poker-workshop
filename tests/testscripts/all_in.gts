@@ -1234,4 +1234,95 @@ PLAYER_FOLD: ffff
 WINNER: tfff
 GAME_STAGE: r
 
-// TODO: add tests where two equivalent hands are involved (and main or side pots get split)
+
+TEST: AllInTest AllInSplit1
+PLAYER_NUM: 4
+PLAYER_CHIPS: 20 10 20 30
+PLAYER_CARDS: CKR RR SKR RR
+COMMUNITY_CARDS: CASAHADACQ
+SMALL_BLIND: 10
+
+P3: c
+P0: a
+
+P3: f  // should not be considered
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30
+PLAYER_CHIPS: 35 0 35 10
+PLAYER_OUT: ftff
+PLAYER_FOLD: ffff
+WINNER: tftf
+GAME_STAGE: r
+
+TEST: AllInTest AllInSplit2
+PLAYER_NUM: 4
+PLAYER_CHIPS: 20 10 20 30
+PLAYER_CARDS: CKR SKR RR RR
+COMMUNITY_CARDS: CASAHADACQ
+SMALL_BLIND: 10
+
+P3: c
+P0: a
+
+P3: f  // should not be considered
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30
+PLAYER_CHIPS: 50 20 0 10
+PLAYER_OUT: fftf
+PLAYER_FOLD: ffff
+WINNER: ttff
+GAME_STAGE: r
+
+TEST: AllInTest AllInSplit3
+PLAYER_NUM: 4
+PLAYER_CHIPS: 20 10 20 30
+PLAYER_CARDS: CKR SKR RR HKR
+COMMUNITY_CARDS: CASAHADACQ
+SMALL_BLIND: 10
+
+P3: c
+P0: a
+
+P3: f  // should not be considered
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30
+PLAYER_CHIPS: 28 13 0 38
+PLAYER_OUT: fftf
+PLAYER_FOLD: ffff
+WINNER: ttft
+GAME_STAGE: r
+
+TEST: AllInTest AllInSplit4
+PLAYER_NUM: 4
+PLAYER_CHIPS: 20 10 20 30
+PLAYER_CARDS: CKR SKR DKR HKR
+COMMUNITY_CARDS: CASAHADACQ
+SMALL_BLIND: 10
+
+P3: c
+P0: a
+
+P3: f  // should not be considered
+P1: f   // should not be considered
+P2: f   // should not be considered
+
+END_MOVES
+
+POT: 40 30
+PLAYER_CHIPS: 20 10 20 30
+PLAYER_OUT: ffff
+PLAYER_FOLD: ffff
+WINNER: tttt
+GAME_STAGE: r

@@ -3788,3 +3788,311 @@ TEST(AllInTest, AllInEq12) {
         EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
     }
 }
+
+TEST(AllInTest, AllInSplit1) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 2}};
+        TestConfig testConfig{.numPlayers = 4,
+                              .smallBlind = 10,
+                              .playerChips = {20, 10, 20, 30},
+                              .playerHands = {{Card{13, 3}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 2}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {false, true, false, false},
+                                  .foldedPlayers = {false, false, false, false},
+                                  .nonOutPlayers = 3,
+                                  .numActivePlayers = 3,
+                                  .gameWins = {1, 0, 1, 0},
+                                  .pot = 40,
+                                  .playerChips = {35, 0, 35, 10},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInSplit2) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 2}};
+        TestConfig testConfig{.numPlayers = 4,
+                              .smallBlind = 10,
+                              .playerChips = {20, 10, 20, 30},
+                              .playerHands = {{Card{13, 3}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 2}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {false, false, true, false},
+                                  .foldedPlayers = {false, false, false, false},
+                                  .nonOutPlayers = 3,
+                                  .numActivePlayers = 3,
+                                  .gameWins = {1, 1, 0, 0},
+                                  .pot = 40,
+                                  .playerChips = {50, 20, 0, 10},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInSplit3) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 2}, Card{13, 1}};
+        TestConfig testConfig{.numPlayers = 4,
+                              .smallBlind = 10,
+                              .playerChips = {20, 10, 20, 30},
+                              .playerHands = {{Card{13, 3}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 2}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Deck::getRandomCardExceptAdd(drawnCards), Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 1}, Deck::getRandomCardExceptAdd(drawnCards)}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {false, false, true, false},
+                                  .foldedPlayers = {false, false, false, false},
+                                  .nonOutPlayers = 3,
+                                  .numActivePlayers = 3,
+                                  .gameWins = {1, 1, 0, 1},
+                                  .pot = 40,
+                                  .playerChips = {28, 13, 0, 38},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
+
+TEST(AllInTest, AllInSplit4) {
+    for (int iters = 0; iters < TEST_ITERS; iters++) {
+        std::vector<Card> drawnCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}, Card{13, 3}, Card{13, 2}, Card{13, 0}, Card{13, 1}};
+        TestConfig testConfig{.numPlayers = 4,
+                              .smallBlind = 10,
+                              .playerChips = {20, 10, 20, 30},
+                              .playerHands = {{Card{13, 3}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 2}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 0}, Deck::getRandomCardExceptAdd(drawnCards)},
+                                              {Card{13, 1}, Deck::getRandomCardExceptAdd(drawnCards)}},
+                              .drawnCards = {},
+                              .communityCards = {Card{14, 3}, Card{14, 2}, Card{14, 1}, Card{14, 0}, Card{12, 3}},
+                              .playerActions = {{Action{Actions::ALL_IN, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::FOLD, 0}}, {Action{Actions::CALL, 0}, Action{Actions::FOLD, 0}}},
+                              .resultData{
+                                  .outPlayers = {false, false, false, false},
+                                  .foldedPlayers = {false, false, false, false},
+                                  .nonOutPlayers = 4,
+                                  .numActivePlayers = 4,
+                                  .gameWins = {1, 1, 1, 1},
+                                  .pot = 40,
+                                  .playerChips = {20, 10, 20, 30},
+                                  .betRoundState = BetRoundState::RIVER,
+                              }};
+        // game should only last one round and not shuffle players or deck
+        Config config{1, testConfig.numPlayers, testConfig.playerChips, testConfig.smallBlind, 0, false, false, 1};
+        GameTest game(config);
+        // build the deck for the game
+        game.buildDeck(testConfig.playerHands, testConfig.numPlayers, testConfig.communityCards);
+
+        // generate players and their actions for the game
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            std::unique_ptr<TestPlayer> testPlayer = std::make_unique<TestPlayer>(i);
+            if (testConfig.playerActions[i].size() > 0) testPlayer->setActions(&testConfig.playerActions[i][0], testConfig.playerActions[i].size());
+            game.getPlayers()[i] = std::move(testPlayer);
+        }
+
+        // run the game without setting new players
+        game.run(false);
+
+        // check if the game has run as expected
+        Data data = game.getData();
+        EXPECT_EQ(testConfig.numPlayers, data.numPlayers);
+
+        EXPECT_EQ(testConfig.resultData.nonOutPlayers, data.gameData.numNonOutPlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.outPlayers[i], data.gameData.playerOut[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.playerChips[i], data.gameData.playerChips[i]);
+        }
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.gameWins[i], data.gameData.gameWins[i]);
+        }
+
+        EXPECT_EQ(0, data.roundData.addBlind);
+        EXPECT_EQ(testConfig.resultData.betRoundState, data.roundData.betRoundState);
+        EXPECT_EQ(testConfig.smallBlind * 2, data.roundData.bigBlind);
+        EXPECT_EQ(testConfig.smallBlind, data.roundData.smallBlind);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 1 : 2, data.roundData.bigBlindPos);
+        EXPECT_EQ(testConfig.numPlayers == 2 ? 0 : 1, data.roundData.smallBlindPos);
+        EXPECT_EQ(0, data.roundData.dealerPos);
+        u_int8_t communityCardsCount = data.roundData.betRoundState == BetRoundState::PREFLOP ? 0
+                                       : data.roundData.betRoundState == BetRoundState::FLOP  ? 3
+                                       : data.roundData.betRoundState == BetRoundState::TURN  ? 4
+                                                                                              : 5;
+        for (int i = 0; i < communityCardsCount; i++) {
+            EXPECT_EQ(testConfig.communityCards[i], data.roundData.communityCards[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.numActivePlayers, data.roundData.numActivePlayers);
+        for (int i = 0; i < testConfig.numPlayers; i++) {
+            EXPECT_EQ(testConfig.resultData.foldedPlayers[i], data.roundData.playerFolded[i]);
+        }
+        EXPECT_EQ(testConfig.resultData.pot, data.roundData.pot);
+        EXPECT_EQ(OutEnum::GAME_WON, data.roundData.result);
+    }
+}
