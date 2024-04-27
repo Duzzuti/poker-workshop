@@ -98,6 +98,10 @@ struct Data {
         return playerPos;
     }
 
+    /// @brief Skips to the next player
+    /// @exception Guarantee No-throw
+    void nextPlayer() noexcept { this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers; }
+
     /// @brief Skips to the next active player
     /// @exception Guarantee No-throw
     void nextActivePlayer() noexcept {
