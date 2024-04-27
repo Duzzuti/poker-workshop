@@ -220,4 +220,6 @@ class Game {
     /// @note This is initialized every round
     /// @see Deck
     Deck deck;
+
+    char winnerString[MAX_POT_DIST_STRING_LENGTH];
 };

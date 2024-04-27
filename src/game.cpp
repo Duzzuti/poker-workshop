@@ -24,7 +24,7 @@ void Game::run(const bool initPlayers) {
     std::memset(this->data.gameData.chipWins, 0, sizeof(this->data.gameData.chipWins));
     std::memset(this->data.gameData.chipWinsAmount, 0, sizeof(this->data.gameData.chipWinsAmount));
 
-    char winnerString[MAX_POT_DIST_STRING_LENGTH];
+    this->winnerString[0] = '\0';
 
     // run for the number of games specified in the config
     for (u_int64_t game = 0; game < this->config.numGames; game++) {
