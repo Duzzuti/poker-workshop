@@ -50,11 +50,10 @@ class Game {
     void initPlayerOrder() noexcept;
 
     /// @brief Starts a round by shuffling the deck, setting the dealer and the blinds and dealing the cards
-    /// @param firstRound True if this is the first round of the game
     /// @exception Guarantee Basic
     /// @throws std::logic_error if the deck is empty
-    /// @note firstRound is used to determine if the dealer should be set to 0 or to the next player after the last dealer
-    void startRound(const bool firstRound);
+    /// @note uses first round to determine if the dealer should be set to 0 or to the next player after the last dealer
+    void startRound();
 
     /// @brief Sets the blinds for the round by betting the small and big blind automatically
     /// @exception Guarantee No-throw
@@ -225,8 +224,15 @@ class Game {
     /// @see Deck
     Deck deck;
 
+    /// @brief The string that is constructed to show the pot winner(s) of the round
     char winnerString[MAX_POT_DIST_STRING_LENGTH];
 
-    // position of the last player that raised or MAX_PLAYERS if no player raised yet
+    /// @brief The game counter
+    u_int64_t game;
+
+    /// @brief The round counter
+    int16_t round;
+    
+    /// @brief Position of the last player that raised or MAX_PLAYERS if no player raised yet
     u_int8_t lastRaiser = MAX_PLAYERS;
 };

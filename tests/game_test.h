@@ -116,7 +116,7 @@ class GameTest : public Game {
     void initPlayerOrder() noexcept { Game::initPlayerOrder(); }
 
     /// @copydoc Game::startRound()
-    void startRound(const bool firstRound) { Game::startRound(firstRound); }
+    void startRound() noexcept { Game::startRound(); }
 
     /// @copydoc Game::setBlinds()
     void setBlinds() noexcept { Game::setBlinds(); }

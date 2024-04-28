@@ -27,19 +27,19 @@ void Game::run(const bool initPlayers) {
     this->winnerString[0] = '\0';
 
     // run for the number of games specified in the config
-    for (u_int64_t game = 0; game < this->config.numGames; game++) {
+    for (this->game = 0; this->game < this->config.numGames; this->game++) {
         // ONE GAME
         // shuffle players
-        PLOG_DEBUG << "Starting game " << game;
+        PLOG_DEBUG << "Starting game " << this->game;
         this->initPlayerOrder();
         this->data.gameData.numNonOutPlayers = this->config.numPlayers;
         // reset player out
         std::memset(this->data.gameData.playerOut, 0, sizeof(this->data.gameData.playerOut));
         for (u_int8_t i = 0; i < this->config.numPlayers; i++) this->data.gameData.playerChips[i] = this->config.startingChips[i];
-        int16_t round = -1;
+        this->round = -1;
 
         while (this->data.gameData.numNonOutPlayers > 1) {
-            if (this->config.maxRounds >= 0 && round >= this->config.maxRounds - 1) {
+            if (this->config.maxRounds >= 0 && this->round >= this->config.maxRounds - 1) {
                 // find the player with the most chips
                 u_int8_t maxChipsPlayers[MAX_PLAYERS] = {0};
                 u_int8_t maxChipsPlayersCount = 1;
@@ -60,19 +60,19 @@ void Game::run(const bool initPlayers) {
                     std::strncat(this->winnerString, this->getPlayerInfo(maxChipsPlayers[i]), MAX_GET_PLAYER_INFO_LENGTH);
                     if (i != maxChipsPlayersCount - 1) std::strcat(this->winnerString, ", ");
                 }
-                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->winnerString << "\n\n";
+                PLOG_INFO << "Game " << this->game << " ended in round " << this->round << "\nWINNER IS " << this->winnerString << "\n\n";
                 break;
             }
             // ONE ROUND
-            round++;
+            this->round++;
             if (this->config.shuffleDeck)
                 this->deck = Deck();
             else
                 this->deck.reset();
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
             this->data.roundData.numActivePlayers = this->data.gameData.numNonOutPlayers;
-            PLOG_DEBUG << "Starting round " << round;
-            this->startRound(round == 0);
+            PLOG_DEBUG << "Starting round " << this->round;
+            this->startRound();
             // PREFLOP
             this->preflop();
             // FLOP
@@ -97,7 +97,7 @@ void Game::run(const bool initPlayers) {
                 this->data.gameData.gameWins[this->data.betRoundData.playerPos]++;
                 this->data.gameData.chipWins[this->data.betRoundData.playerPos]++;
                 this->data.gameData.chipWinsAmount[this->data.betRoundData.playerPos] += this->data.roundData.pot;
-                PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo() << "\n\n";
+                PLOG_INFO << "Game " << this->game << " ended in round " << this->round << "\nWINNER IS " << this->getPlayerInfo() << "\n\n";
                 break;
             }
 
@@ -240,7 +240,8 @@ void Game::setupBetRound() noexcept {
     this->data.betRoundData.currentBet = 0;
 }
 
-void Game::startRound(const bool firstRound) {
+void Game::startRound() {
+    const bool firstRound = this->round == 0;
     // reset deck and round data
     if (this->config.shuffleDeck) this->deck.shuffle();
     // select new dealer
