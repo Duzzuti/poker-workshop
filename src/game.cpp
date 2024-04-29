@@ -594,33 +594,51 @@ void Game::preflop() {
 }
 
 void Game::flop() {
-    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
-    this->data.roundData.betRoundState = BetRoundState::FLOP;
-    this->setupBetRound();
-    PLOG_DEBUG << "Starting FLOP bet round";
+    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) {
+        if (this->data.roundData.result == OutEnum::ROUND_SHOWDOWN) {
+            for (u_int8_t i = 0; i < 3; i++) {
+                this->data.roundData.communityCards[i] = this->deck.draw();  // draw flop cards
+            }
+        }
+        return;
+    }
     for (u_int8_t i = 0; i < 3; i++) {
         this->data.roundData.communityCards[i] = this->deck.draw();  // draw flop cards
     }
+    this->data.roundData.betRoundState = BetRoundState::FLOP;
+    this->setupBetRound();
+    PLOG_DEBUG << "Starting FLOP bet round";
     this->data.roundData.result = this->betRound();
     this->equalizeMove();
 }
 
 void Game::turn() {
-    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
+    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) {
+        if (this->data.roundData.result == OutEnum::ROUND_SHOWDOWN) {
+            this->data.roundData.communityCards[3] = this->deck.draw();  // draw turn card
+        }
+        return;
+    }
+    this->data.roundData.communityCards[3] = this->deck.draw();  // draw turn card
     this->data.roundData.betRoundState = BetRoundState::TURN;
     this->setupBetRound();
     PLOG_DEBUG << "Starting TURN bet round";
-    this->data.roundData.communityCards[3] = this->deck.draw();  // draw turn card
     this->data.roundData.result = this->betRound();
     this->equalizeMove();
 }
 
 void Game::river() {
-    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) return;
+    if (this->data.roundData.result != OutEnum::ROUND_CONTINUE) {
+        if (this->data.roundData.result == OutEnum::ROUND_SHOWDOWN) {
+            this->data.roundData.communityCards[4] = this->deck.draw();  // draw river card
+            this->data.roundData.betRoundState = BetRoundState::RIVER;
+        }
+        return;
+    }
+    this->data.roundData.communityCards[4] = this->deck.draw();  // draw river card
     this->data.roundData.betRoundState = BetRoundState::RIVER;
     this->setupBetRound();
     PLOG_DEBUG << "Starting RIVER bet round";
-    this->data.roundData.communityCards[4] = this->deck.draw();  // draw river card
     this->data.roundData.result = this->betRound();
     this->equalizeMove();
 }
