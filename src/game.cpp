@@ -476,6 +476,7 @@ OutEnum Game::playerTurnEqualize() noexcept {
                 return playerOut(str);
             }
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -callAdd, callAdd) << " called";
+            this->data.tryNextActivePlayer();
             return OutEnum::ROUND_CONTINUE;
 
         case Actions::FOLD:
@@ -496,7 +497,8 @@ OutEnum Game::playerTurnEqualize() noexcept {
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
             this->data.removeChipsAllIn();
             this->data.roundData.numAllInPlayers++;
-            return OutEnum::ROUND_SHOWDOWN;
+            this->data.tryNextActivePlayer();
+            return this->checkRoundSkip();
 
         default:
             // illegal move leads to loss of the game
