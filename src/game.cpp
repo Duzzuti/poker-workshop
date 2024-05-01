@@ -275,7 +275,10 @@ void Game::startRound() {
 OutEnum Game::betRound() {
     // position of the first player that checked or MAX_PLAYERS if no player checked yet
     u_int8_t firstChecker = MAX_PLAYERS;
-    this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
+    // TODO last Raiser
+    // TODO edge case where the big blind is all in with less chips than the big blind, therefore currentBet is not actually the current bet
+    this->lastRaiser = MAX_PLAYERS;
+    this->data.betRoundData.minimumRaise = this->data.betRoundData.currentBet < this->data.roundData.bigBlind ? this->data.roundData.bigBlind : this->data.betRoundData.currentBet * 2;
     // this loop will run until all players have either folded, checked or called
     // we can only exit if it is a players turn and he is in the game, has the same bet as the current bet and all players have checked if the bet is 0
     // we need to consider the case where every player folds except one, then the last player wins the pot
@@ -286,8 +289,17 @@ OutEnum Game::betRound() {
             if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
         } else if (this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos] ||  // current bet is not called by the player
                    (this->data.betRoundData.currentBet == 0 && firstChecker != this->data.betRoundData.playerPos)) {               // current bet is 0 and the current player is not the first checker
-            const OutEnum turnRes = this->playerTurn(firstChecker);
-            if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
+            if (this->lastRaiser == this->data.betRoundData.playerPos) {
+                // last raiser has to equalize the all-in bet
+                const OutEnum turnRes = this->playerTurnEqualize();
+                if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
+            } else {
+                // first player is used as the first raiser (to cover the case where no player raises)
+                if (this->lastRaiser == MAX_PLAYERS) this->lastRaiser = this->data.betRoundData.playerPos;
+                // player has to make a turn (fold, check, call, raise, bet)
+                const OutEnum turnRes = this->playerTurn(firstChecker);
+                if (turnRes != OutEnum::ROUND_CONTINUE) return turnRes;
+            }
         } else
             break;
     }
@@ -390,6 +402,7 @@ OutEnum Game::playerTurn(u_int8_t& firstChecker) {
             if (this->data.betRoundData.currentBet < this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]) {
                 // TODO raise all-in
                 // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
+                this->adaptRaiseAttributes(allInAmount);
                 this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
             }
             this->data.nextActivePlayer();
@@ -445,6 +458,7 @@ OutEnum Game::playerTurnBlindOption() {
             this->data.removeChipsAllIn();
             // TODO raise all-in
             // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
+            this->adaptRaiseAttributes(this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]);
             this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
 
             this->data.nextActivePlayer();
@@ -526,17 +540,15 @@ u_int64_t Game::betBlind(const u_int64_t blind) noexcept {
 
 bool Game::bet(const u_int64_t amount) noexcept {
     // amount is the whole bet, not the amount that is added to the pot
-    if (((amount < this->data.betRoundData.currentBet) ||                                                                                            // call condition
-         ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.currentBet + this->data.betRoundData.minimumRaise)) ||  // raise condition
-         (amount < this->data.roundData.bigBlind && this->data.betRoundData.currentBet >= this->data.roundData.bigBlind))                            // bet condition
+    if (((amount == this->data.betRoundData.currentBet && this->data.betRoundData.currentBet == 0) || (amount < this->data.betRoundData.currentBet) ||  // call condition
+         ((amount > this->data.betRoundData.currentBet) && (amount < this->data.betRoundData.minimumRaise)) ||                                          // raise condition
+         (amount < this->data.roundData.bigBlind && this->data.betRoundData.currentBet >= this->data.roundData.bigBlind))                               // bet condition
     )
         return false;
     const u_int64_t addAmount = amount - this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
     const bool success = this->data.removeChips(addAmount);
     if (!success) return false;
-    // minimum raise is the difference between the current bet and the new bet but at least the big blind
-    if (amount > this->data.betRoundData.currentBet) this->data.betRoundData.minimumRaise = amount - this->data.betRoundData.currentBet;
-    if (this->data.betRoundData.minimumRaise < this->data.roundData.bigBlind) this->data.betRoundData.minimumRaise = this->data.roundData.bigBlind;
+    this->adaptRaiseAttributes(amount);
     this->data.betRoundData.currentBet = amount;
     this->data.addPlayerBet(addAmount);
     return true;
@@ -643,4 +655,18 @@ void Game::river() {
     PLOG_DEBUG << "Starting RIVER bet round";
     this->data.roundData.result = this->betRound();
     this->equalizeMove();
+}
+
+bool Game::adaptRaiseAttributes(const u_int64_t amount) noexcept {
+    // returns whether the raise was a full bet
+    // minimum raise is the difference between the current bet and the new bet but at least the big blind plus the new bet
+    const u_int64_t maxNextRaise = std::max(2 * amount - this->data.betRoundData.currentBet, amount + this->data.roundData.bigBlind);
+    if (amount >= this->data.betRoundData.minimumRaise) {
+        this->data.betRoundData.minimumRaise = maxNextRaise;
+        this->lastRaiser = this->data.betRoundData.playerPos;
+        return true;
+    }
+    // adjust the minimum raise if necessary
+    this->data.betRoundData.minimumRaise = std::max(this->data.betRoundData.minimumRaise, maxNextRaise);
+    return false;
 }

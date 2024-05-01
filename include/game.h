@@ -201,8 +201,12 @@ class Game {
     /// @see betRound()
     void river();
 
-    void distributePotNoAllIn(const HandStrengths handStrengths[], u_int8_t winners[]) noexcept;
-    void distributePotAllIn(HandStrengths handStrengths[], u_int8_t winners[]) noexcept;
+    /// @brief Adapts the minimum raise and last raiser attributes
+    /// @param amount The amount that the player raised (or all-in´d or bet)
+    /// @return True if the raise was valid
+    /// @exception Guarantee No-throw
+    /// @note The minimum raise is adapted if the new minimum raise is higher than the current minimum raise
+    /// @note The last raiser is set to the current player if the player raised valid (above the minimum raise)
     bool adaptRaiseAttributes(const u_int64_t amount) noexcept;
 
     /// @brief The Config object which holds all settings for the simulation

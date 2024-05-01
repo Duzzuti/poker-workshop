@@ -17,7 +17,7 @@ Action HumanPlayer::turn(const Data& data, const bool blindOption, const bool eq
     }
     // prints the pot, current bet, your chips and the minimum raise/bet
     std::cout << "| Pot: " << data.roundData.pot << " | Current bet: " << data.betRoundData.currentBet;
-    std::cout << " | Your chips: " << data.getChips() << " | Minimum raise/bet: " << data.betRoundData.minimumRaise + data.betRoundData.currentBet << std::endl;
+    std::cout << " | Your chips: " << data.getChips() << " | Minimum raise/bet: " << data.betRoundData.minimumRaise << std::endl;
     while (true) {
         // asks the user what to do
         // if the user is the has the blind option, the user can only call, raise or all-in
