@@ -69,6 +69,7 @@ void Game::run(const bool initPlayers) {
                 this->deck = Deck();
             else
                 this->deck.reset();
+            this->data.roundData.betRoundState = BetRoundState::PREFLOP;
             this->data.roundData.result = OutEnum::ROUND_CONTINUE;
             this->data.roundData.numActivePlayers = this->data.gameData.numNonOutPlayers;
             PLOG_DEBUG << "Starting round " << this->round;
