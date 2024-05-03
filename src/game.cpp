@@ -222,14 +222,20 @@ void Game::setBlinds() noexcept {
 
     // big blind analog to small blind
     this->data.roundData.bigBlindPos = this->data.betRoundData.playerPos;
-    const u_int64_t bigBlindBet = this->betBlind(this->data.roundData.bigBlind);
+    this->data.roundData.bigBlindBet = this->betBlind(this->data.roundData.bigBlind);
     if (this->data.getChips() == 0)
-        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -bigBlindBet, bigBlindBet) << " is all-in with big blind " << this->data.roundData.bigBlind;
+        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.bigBlindBet, this->data.roundData.bigBlindBet) << " is all-in with big blind " << this->data.roundData.bigBlind;
     else
-        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -bigBlindBet, bigBlindBet) << " bets big blind " << this->data.roundData.bigBlind;
+        PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -this->data.roundData.bigBlindBet, this->data.roundData.bigBlindBet) << " bets big blind " << this->data.roundData.bigBlind;
 
+    if (this->data.roundData.numActivePlayers == this->data.roundData.numAllInPlayers) {
+        // all players are all-in, skip to showdown
+        this->data.roundData.result = OutEnum::ROUND_SHOWDOWN;
+        return;
+    }
     this->data.nextActivePlayer();
     this->data.roundData.result = this->checkRoundSkip();
+    this->equalizeMove();
 }
 
 void Game::setupBetRound() noexcept {
@@ -592,6 +598,25 @@ void Game::equalizeMove() noexcept {
         // check if the current bet is equalized by the last player
         this->data.nextActivePlayer();
         if (this->data.betRoundData.currentBet != this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]) {
+            if (this->data.roundData.betRoundState == BetRoundState::PREFLOP && this->data.roundData.bigBlindBet != this->data.roundData.bigBlind &&
+                this->data.roundData.bigBlind == this->data.betRoundData.currentBet) {
+                // attention for the edge cases where the big blind is all-in with less chips than the big blind, therefore currentBet is not actually the current bet
+                // look for the highest bet in the preflop round
+                u_int64_t highestBet = 0;
+                u_int8_t highestBetPlayer = MAX_PLAYERS;
+                for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
+                    if (this->data.betRoundData.playerBets[i] > highestBet) {
+                        highestBet = this->data.betRoundData.playerBets[i];
+                        highestBetPlayer = i;
+                    }
+                }
+                this->data.betRoundData.currentBet = highestBet;
+                if (highestBetPlayer == this->data.betRoundData.playerPos) {
+                    // the player is already the highest better
+                    this->data.roundData.result = OutEnum::ROUND_SHOWDOWN;
+                    return;
+                }
+            }
             // the last player has to equalize the all-in bet
             const OutEnum res = this->playerTurnEqualize();
             // if only one player is all-in and the last one folds or is out the game or round could be won

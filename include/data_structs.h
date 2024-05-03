@@ -29,6 +29,8 @@ struct RoundData {
     u_int64_t smallBlind;
     /// @brief The current big blind
     u_int64_t bigBlind;
+    /// @brief The actual big blind bet
+    u_int64_t bigBlindBet;
     /// @brief The amount of chips that are added to the small blind every time the dealer is again at position 0
     u_int64_t addBlind;
     /// @brief The position of the dealer
