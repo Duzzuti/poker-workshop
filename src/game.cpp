@@ -105,57 +105,11 @@ void Game::run(const bool initPlayers) {
             // SHOWDOWN
             PLOG_DEBUG << "SHOWDOWN!!! Community cards: " << this->data.roundData.communityCards[0].toString() << " " << this->data.roundData.communityCards[1].toString() << " "
                        << this->data.roundData.communityCards[2].toString() << " " << this->data.roundData.communityCards[3].toString() << " " << this->data.roundData.communityCards[4].toString();
-            // get hand strength for each player
-            HandStrengths handStrengths[data.numPlayers];
-            HandStrengths::getHandStrengths(this->players, this->data, handStrengths);
+        
             // get winner
-
-            HandStrengths strongestHand = HandStrengths(HandKinds::NO_HAND, 0);
-            u_int8_t winners[this->data.numPlayers];
-            u_int8_t numWinners = 0;
-
-            for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
-                if (this->data.roundData.playerFolded[i] || this->data.gameData.playerOut[i]) continue;
-                PLOG_DEBUG << this->getPlayerInfo(i) << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
-                           << EnumToString::enumToString(handStrengths[i].handkind) << " " << handStrengths[i].rankStrength;
-                if (handStrengths[i] > strongestHand) {
-                    strongestHand = handStrengths[i];
-                    numWinners = 1;
-                    winners[0] = i;
-                } else if (handStrengths[i] == strongestHand) {
-                    winners[numWinners++] = i;
-                }
-            }
-
-            // distribute pot
-            u_int64_t potPerWinner = this->data.roundData.pot / numWinners;
-            winnerString[0] = '\0';
-            for (u_int8_t i = 0; i < numWinners; i++) {
-                // depending MAX_POT_DIST_STRING_LENGTH
-                std::strncat(winnerString, this->getPlayerInfo(winners[i], potPerWinner), MAX_GET_PLAYER_INFO_LENGTH);
-                this->data.gameData.playerChips[winners[i]] += potPerWinner;
-                this->data.gameData.chipWins[winners[i]]++;
-                this->data.gameData.chipWinsAmount[winners[i]] += potPerWinner;
-                if (i != numWinners - 1) std::strcat(winnerString, ", ");
-            }
-            PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << winnerString << ". Starting new round";
-            // check if one player has 0 chips and is out
-            if (this->data.roundData.numAllInPlayers != 0) {
-                for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
-                    if (this->data.gameData.playerChips[i] == 0 && !this->data.gameData.playerOut[i]) {
-                        this->data.gameData.numNonOutPlayers--;
-                        this->data.gameData.playerOut[i] = true;
-                        PLOG_WARNING << this->getPlayerInfo(i) << " is out of chips and is out";
-                    }
-                }
-                if (this->data.gameData.numNonOutPlayers == 1) {
-                    // only one player is left in the game, he wins the game
-                    this->data.gameData.gameWins[winners[0]]++;
-                    this->data.roundData.result = OutEnum::GAME_WON;
-                    PLOG_INFO << "Game " << game << " ended in round " << round << "\nWINNER IS " << this->getPlayerInfo(winners[0]) << "\n\n";
-                    break;
-                }
-            }
+            if (this->data.roundData.numAllInPlayers != 0){
+                if(this->distributePotAllIn()) break;
+            } else this->distributePotNoAllIn();
         }
     }
     PLOG_INFO << "Statistics: \n";
@@ -681,6 +635,178 @@ void Game::river() {
     PLOG_DEBUG << "Starting RIVER bet round";
     this->data.roundData.result = this->betRound();
     this->equalizeMove();
+}
+
+void Game::distributePotNoAllIn() noexcept {
+    // get hand strength for each player
+    HandStrengths handStrengths[data.numPlayers];
+    HandStrengths::getHandStrengths(this->players, this->data, handStrengths);
+    u_int8_t winners[this->data.numPlayers];
+    HandStrengths strongestHand = HandStrengths(HandKinds::NO_HAND, 0);
+    u_int8_t numWinners = 0;
+
+    // find the strongest hand players and log their hands
+    for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
+        if (this->data.roundData.playerFolded[i] || this->data.gameData.playerOut[i]) continue;
+        PLOG_DEBUG << this->getPlayerInfo(i) << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
+                   << EnumToString::enumToString(handStrengths[i].handkind) << " " << handStrengths[i].rankStrength;
+        if (handStrengths[i] > strongestHand) {
+            strongestHand = handStrengths[i];
+            numWinners = 1;
+            winners[0] = i;
+        } else if (handStrengths[i] == strongestHand) {
+            winners[numWinners++] = i;
+        }
+    }
+
+    // distribute pot, round down on integer division ("bank win")
+    const u_int64_t potPerWinner = this->data.roundData.pot / numWinners;
+    this->winnerString[0] = '\0';   // reset winner string
+    for (u_int8_t i = 0; i < numWinners; i++) {
+        // depending MAX_POT_DIST_STRING_LENGTH
+        std::strncat(this->winnerString, this->getPlayerInfo(winners[i], potPerWinner), MAX_GET_PLAYER_INFO_LENGTH);
+        // add the win stats
+        this->data.gameData.playerChips[winners[i]] += potPerWinner;
+        this->data.gameData.chipWins[winners[i]]++;
+        this->data.gameData.chipWinsAmount[winners[i]] += potPerWinner;
+        if (i != numWinners - 1) std::strcat(this->winnerString, ", ");
+    }
+    PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->winnerString << ". Starting new round";
+}
+
+bool Game::distributePotAllIn() noexcept {
+    // The algorithm searches the players with the strongest hand and iterates over them
+    // The algorithm finds the minimum betting player and calculates the pot that results from the minimum bet
+    // Then the pot is split between the players and all players with minimum bet are removed from the winners list
+    // The algorithm continues until all players have been removed from the winners list
+    // Then it searches for the second strongest hand and repeats the process if the minimum bet there is higher than the previous minimum bet
+    // It continues until the player with the maximum bet is reached and processed
+    // get hand strength for each player
+    HandStrengths handStrengths[data.numPlayers];
+    HandStrengths::getHandStrengths(this->players, this->data, handStrengths);
+    u_int8_t winners[this->data.numPlayers];
+    HandStrengths strongestHand;
+    u_int8_t numWinners = 0;
+    // stores the minimum bet of the last winner list (same hands)
+    u_int64_t lastMinBet = 0;
+    // stores the minimum bet of the current winner list
+    u_int64_t minBet;
+    // stores the maximum bet of the round
+    const u_int64_t maxBet = *std::max_element(this->data.roundData.playerBetsTotal + 0, this->data.roundData.playerBetsTotal + MAX_PLAYERS);
+    // stores the amount of chips that are processed from the pot
+    u_int64_t usedPot = 0;
+    // stores the size of the current distribution pot
+    u_int64_t usingPot;
+    bool active = true;
+    // flag for the first iteration over all players (to log the hands of the players only once)
+    bool first = true;
+    // flag for the first pot distribution per winner list (to process the multiple pot wins as one win)
+    bool firstWinner = true;
+    this->winnerString[0] = '\0';
+    // store the chips of the players before the pot distribution
+    u_int64_t playerChipsBefore[MAX_PLAYERS];
+    std::memcpy(playerChipsBefore, this->data.gameData.playerChips, sizeof(playerChipsBefore));
+    // outer loop
+    while (active) {
+        // find the strongest hand players and log their hands
+        strongestHand = HandStrengths(HandKinds::NO_HAND, 0);
+        for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
+            if (this->data.roundData.playerFolded[i] || this->data.gameData.playerOut[i]) continue;
+            if (first) {
+                PLOG_DEBUG << this->getPlayerInfo(i) << " has hand " << this->players[i]->getHand().first.toString() << " " << this->players[i]->getHand().second.toString() << " and hand strength "
+                           << EnumToString::enumToString(handStrengths[i].handkind) << " " << handStrengths[i].rankStrength;
+            }
+            if (handStrengths[i] > strongestHand) {
+                strongestHand = handStrengths[i];
+                numWinners = 1;
+                winners[0] = i;
+            } else if (handStrengths[i] == strongestHand) {
+                winners[numWinners++] = i;
+            }
+        }
+        first = false;
+        firstWinner = true;
+        // inner loop
+        while (active) {
+            // find the minimum bet of the current winner list
+            minBet = -1;
+            for (u_int8_t i = 0; i < numWinners; i++) {
+                handStrengths[winners[i]] = HandStrengths(HandKinds::NO_HAND, 0);
+                if (this->data.roundData.playerBetsTotal[winners[i]] < minBet) {
+                    minBet = this->data.roundData.playerBetsTotal[winners[i]];
+                }
+            }
+            // only consider if the new minimum bet is higher than the last minimum bet (the last minimum bet is already processed)
+            if (minBet >= lastMinBet) {
+                // calculate the distribution pot that results from the minimum bet
+                if (minBet == maxBet)
+                    usingPot = this->data.roundData.pot - usedPot;
+                else {
+                    usingPot = 0;
+                    for (u_int8_t i = 0; i < this->data.numPlayers; i++) usingPot += std::max<int64_t>(0, std::min(this->data.roundData.playerBetsTotal[i], minBet) - (int64_t)lastMinBet);
+                }
+                // distribute the pot to the winners
+                usedPot += usingPot;
+                lastMinBet = minBet;
+                const u_int64_t potPerWinner = usingPot / numWinners;
+                for (u_int8_t i = 0; i < numWinners; i++) {
+                    this->data.gameData.playerChips[winners[i]] += potPerWinner;
+                    if (firstWinner) this->data.gameData.chipWins[winners[i]]++;
+                    this->data.gameData.chipWinsAmount[winners[i]] += potPerWinner;
+                }
+                firstWinner = false;
+                // stop the algorithm if the maximum bet is reached
+                if (lastMinBet == maxBet) {
+                    active = false;
+                    break;
+                }
+            }
+            // remove the players with the minimum bet from the winners list
+            u_int8_t i = 0;
+            while (i < numWinners) {
+                if (this->data.roundData.playerBetsTotal[winners[i]] == minBet) {
+                    for (int j = i; j < numWinners - 1; ++j) winners[j] = winners[j + 1];
+                    numWinners--;
+                } else
+                    i++;
+            }
+            // go to outer loop if no winners are left
+            if (numWinners == 0) break;
+        }
+    }
+    // construct the winner string and log it
+    bool commaReq = false;
+    for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
+        // depending MAX_POT_DIST_STRING_LENGTH
+        const u_int64_t chipsDiff = this->data.gameData.playerChips[i] - playerChipsBefore[i];
+        if (chipsDiff == 0) continue;
+        if (commaReq) std::strcat(this->winnerString, ", ");
+        commaReq = true;
+        std::strncat(this->winnerString, this->getPlayerInfo(i, chipsDiff, -chipsDiff), MAX_GET_PLAYER_INFO_LENGTH);
+    }
+    PLOG_DEBUG << "Pot of " << this->data.roundData.pot << " won by " << this->winnerString << ". Starting new round" << std::endl;
+    // remove players with 0 chips from the game
+    return this->handleZeroChipPlayers(winners);
+}
+
+bool Game::handleZeroChipPlayers(const u_int8_t winners[]) noexcept {
+    // check if one player has 0 chips and is out of the game
+    for (u_int8_t i = 0; i < this->data.numPlayers; i++) {
+        if (this->data.gameData.playerChips[i] == 0 && !this->data.gameData.playerOut[i]) {
+            this->data.gameData.numNonOutPlayers--;
+            this->data.roundData.numActivePlayers--;
+            this->data.gameData.playerOut[i] = true;
+            PLOG_WARNING << this->getPlayerInfo(i) << " is out of chips and is out";
+        }
+    }
+    if (this->data.gameData.numNonOutPlayers == 1) {
+        // only one player is left in the game, he wins the game
+        this->data.gameData.gameWins[winners[0]]++;
+        this->data.roundData.result = OutEnum::GAME_WON;
+        PLOG_INFO << "Game " << this->game << " ended in round " << this->round << "\nWINNER IS " << this->getPlayerInfo(winners[0]) << "\n\n";
+        return true;
+    }
+    return false;
 }
 
 bool Game::adaptRaiseAttributes(const u_int64_t amount) noexcept {

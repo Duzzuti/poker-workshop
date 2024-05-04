@@ -201,6 +201,34 @@ class Game {
     /// @see betRound()
     void river();
 
+    /// @brief Distributes the pot to the winners where no player is all-in
+    /// @exception Guarantee No-throw
+    /// @note The pot is distributed to the winners based on their hand strength
+    /// @note The pot is split if there are multiple winners
+    /// @note The hands and winners are logged
+    /// @see HandStrengths
+    /// @see distributePotAllIn() for the all-in case
+    void distributePotNoAllIn() noexcept;
+
+    /// @brief Distributes the pot to the winners where at least one player is all-in
+    /// @return True if the game ends after the pot distribution
+    /// @exception Guarantee No-throw
+    /// @note The pot is distributed to the winners based on their hand strength
+    /// @note The pot is split if there are multiple winners
+    /// @note Side pots are considered
+    /// @note The hands and winners are logged
+    /// @see HandStrengths
+    /// @see distributePotNoAllIn() for the no all-in case
+    bool distributePotAllIn() noexcept;
+
+    /// @brief Handles the players who lost all their chips
+    /// @param winners The winners array which holds at least one winner at index 0
+    /// @return True if the game ends after the pot distribution
+    /// @exception Guarantee No-throw
+    /// @note The players who lost all their chips are marked as out
+    /// @note The game ends if there is only one player remaining (the winner)
+    bool handleZeroChipPlayers(const u_int8_t winners[]) noexcept;
+    
     /// @brief Adapts the minimum raise and last raiser attributes
     /// @param amount The amount that the player raised (or all-in´d or bet)
     /// @return True if the raise was valid
