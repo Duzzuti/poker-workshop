@@ -237,8 +237,6 @@ void Game::startRound() {
 OutEnum Game::betRound() {
     // position of the first player that checked or MAX_PLAYERS if no player checked yet
     u_int8_t firstChecker = MAX_PLAYERS;
-    // TODO last Raiser
-    // TODO edge case where the big blind is all in with less chips than the big blind, therefore currentBet is not actually the current bet
     this->lastRaiser = MAX_PLAYERS;
     this->data.betRoundData.minimumRaise = this->data.betRoundData.currentBet < this->data.roundData.bigBlind ? this->data.roundData.bigBlind : this->data.betRoundData.currentBet * 2;
     // this loop will run until all players have either folded, checked or called
@@ -267,8 +265,6 @@ OutEnum Game::betRound() {
     }
 
     PLOG_DEBUG << "Bet round finished with bet " << this->data.betRoundData.currentBet << " and pot " << this->data.roundData.pot;
-
-    // TODO bet round result
     return OutEnum::ROUND_CONTINUE;
 }
 
@@ -279,7 +275,6 @@ OutEnum Game::checkRoundSkip() const noexcept {
         return OutEnum::ROUND_SHOWDOWN;
     }
     return OutEnum::ROUND_CONTINUE;
-    // TODO: add playerTurnEqualize with options fold, call (bet equalizer), all-in (max equalizer bet) for the last active player who has to equalize the all-in bet
 }
 
 bool Game::currentPlayerBlindOption() const noexcept {
@@ -362,7 +357,6 @@ OutEnum Game::playerTurn(u_int8_t& firstChecker) {
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
             this->data.removeChipsAllIn();
             if (this->data.betRoundData.currentBet < this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]) {
-                // TODO raise all-in
                 // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
                 this->adaptRaiseAttributes(allInAmount);
                 this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
@@ -418,7 +412,6 @@ OutEnum Game::playerTurnBlindOption() {
             this->data.addPlayerBet(allInAmount);
             PLOG_DEBUG << this->getPlayerInfo(MAX_PLAYERS, -allInAmount) << " is all-in with " << this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
             this->data.removeChipsAllIn();
-            // TODO raise all-in
             // set the current bet to the all-in amount, while also leaving the minimum raise unchanged if the all-in amount is not a raise
             this->adaptRaiseAttributes(this->data.betRoundData.playerBets[this->data.betRoundData.playerPos]);
             this->data.betRoundData.currentBet = this->data.betRoundData.playerBets[this->data.betRoundData.playerPos];
@@ -489,7 +482,6 @@ u_int64_t Game::betBlind(const u_int64_t blind) noexcept {
     const bool success = this->data.removeChips(blind);
     this->data.betRoundData.currentBet = blind;
     if (!success) {
-        // TODO player is all-in
         this->data.roundData.numAllInPlayers++;
         const u_int64_t allInAmount = this->data.getChips();
         this->data.removeChipsAllIn();
