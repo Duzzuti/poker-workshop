@@ -13,6 +13,8 @@ struct ResultData {
     u_int8_t nonOutPlayers = 0;
     /// @brief The number of active players in the game (not out and not folded)
     u_int8_t numActivePlayers = 0;
+    /// @brief The number of players that are all in
+    u_int8_t numAllInPlayers = 0;
     /// @brief The amount of wins for each player
     u_int32_t gameWins[MAX_PLAYERS];
     /// @brief The pot at the end of the game
@@ -114,19 +116,16 @@ class GameTest : public Game {
     void initPlayerOrder() noexcept { Game::initPlayerOrder(); }
 
     /// @copydoc Game::startRound()
-    void startRound(const bool firstRound) { Game::startRound(firstRound); }
+    void startRound() noexcept { Game::startRound(); }
 
     /// @copydoc Game::setBlinds()
-    OutEnum setBlinds() noexcept { return Game::setBlinds(); }
+    void setBlinds() noexcept { Game::setBlinds(); }
 
     /// @copydoc Game::setupBetRound()
     void setupBetRound() noexcept { Game::setupBetRound(); }
 
     /// @copydoc Game::betRound()
     OutEnum betRound() { return Game::betRound(); }
-
-    /// @copydoc Game::betRoundContinue()
-    bool betRoundContinue(const u_int8_t firstChecker) const noexcept { return Game::betRoundContinue(firstChecker); }
 
     /// @copydoc Game::bet()
     bool bet(const u_int64_t amount) noexcept { return Game::bet(amount); }

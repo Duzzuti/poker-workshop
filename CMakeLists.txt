@@ -5,7 +5,7 @@ project(PokerWorkshop)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
 
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)

@@ -29,6 +29,8 @@ struct RoundData {
     u_int64_t smallBlind;
     /// @brief The current big blind
     u_int64_t bigBlind;
+    /// @brief The actual big blind bet
+    u_int64_t bigBlindBet;
     /// @brief The amount of chips that are added to the small blind every time the dealer is again at position 0
     u_int64_t addBlind;
     /// @brief The position of the dealer
@@ -41,6 +43,8 @@ struct RoundData {
     u_int64_t pot;
     /// @brief The number of players that are still in the round
     u_int8_t numActivePlayers;
+    /// @brief The number of players that are all-in in the round
+    u_int8_t numAllInPlayers;
     /// @brief True if the player folded
     bool playerFolded[MAX_PLAYERS];
     /// @brief The community cards, betRoundState needs to be checked to know how many of them are valid
@@ -49,6 +53,8 @@ struct RoundData {
     OutEnum result;
     /// @brief Whats the state of the bet round (preflop, flop, turn, river)
     BetRoundState betRoundState;
+    /// @brief Total number of chips betted for each player in the current round
+    u_int64_t playerBetsTotal[MAX_PLAYERS];
 };
 
 /// @brief Contains the data for a single game (until only one player is left)
@@ -94,22 +100,42 @@ struct Data {
         return playerPos;
     }
 
-    /// @brief Skips to the next player who is not out of the game
+    /// @brief Skips to the next player
     /// @exception Guarantee No-throw
-    /// @see If you want to skip folded players use nextActivePlayer()
-    void nextPlayer() noexcept {
-        do {
-            this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
-        } while (this->gameData.playerOut[this->betRoundData.playerPos]);
-    }
+    void nextPlayer() noexcept { this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers; }
 
     /// @brief Skips to the next active player
     /// @exception Guarantee No-throw
-    /// @see If you want to skip only players who are out of the game use nextPlayer()
     void nextActivePlayer() noexcept {
         do {
             this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
+        } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos] || this->getChips() == 0);
+    }
+
+    /// @brief Tries to skip to the next active player. If no active player is found, the method does nothing
+    /// @exception Guarantee No-throw
+    void tryNextActivePlayer() noexcept {
+        const u_int8_t playerPos = this->betRoundData.playerPos;
+        do {
+            this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
+        } while (playerPos != this->betRoundData.playerPos &&
+                 (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos] || this->getChips() == 0));
+    }
+
+    /// @brief Skips to the next active or all-in player
+    /// @exception Guarantee No-throw
+    void nextActiveOrAllInPlayer() noexcept {
+        do {
+            this->betRoundData.playerPos = (this->betRoundData.playerPos + 1) % this->numPlayers;
         } while (this->gameData.playerOut[this->betRoundData.playerPos] || this->roundData.playerFolded[this->betRoundData.playerPos]);
+    }
+
+    /// @brief Adds amount to the current player bets and the total pot
+    /// @param bet The number of chips to add to the player bets
+    constexpr void addPlayerBet(const u_int64_t bet) noexcept {
+        this->betRoundData.playerBets[this->betRoundData.playerPos] += bet;
+        this->roundData.playerBetsTotal[this->betRoundData.playerPos] += bet;
+        this->roundData.pot += bet;
     }
 
     /** @brief Selects the dealer position for the next round
@@ -206,6 +232,9 @@ struct Data {
         std::cout << std::endl;
         std::cout << "result: " << EnumToString::enumToString(this->roundData.result) << std::endl;
         std::cout << "betRoundState: " << EnumToString::enumToString(this->roundData.betRoundState) << std::endl;
+        std::cout << "playerBetsTotal: ";
+        for (u_int8_t i = 0; i < this->numPlayers; i++) std::cout << +i << "::" << this->roundData.playerBetsTotal[i] << " ";
+        std::cout << std::endl;
         std::cout << "********************** BET ROUND DATA ******************" << std::endl;
         std::cout << "playerPos: " << +this->betRoundData.playerPos << std::endl;
         std::cout << "currentBet: " << this->betRoundData.currentBet << std::endl;

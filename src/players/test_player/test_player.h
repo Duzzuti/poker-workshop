@@ -25,7 +25,8 @@ class TestPlayer : public Player {
 
     /// @brief Simulates one turn of the rand player
     /// @param data The data of the game
-    /// @param onlyRaise If true, the player can only raise or call
+    /// @param blindOption If true, the player has the blind option (can only call, raise or all-in)
+    /// @param equalize If true, the player has to equalize the last bet (can only call (bet), fold or all-in (not higher than last bet))
     /// @return The Action of the player
     /// @exception Guarantee No-throw
     /// @note The method is const because it should not change the state of the player
@@ -34,7 +35,7 @@ class TestPlayer : public Player {
     /// @see Player::turn()
     /// @see Data
     /// @see Action
-    Action turn(const Data& data, const bool onlyRaise = false) const noexcept override;
+    Action turn(const Data& data, const bool blindOption = false, const bool equalize = false) const noexcept override;
 
     /// @brief Sets the sequence of actions that will be returned by the turn method
     /// @param actions sequence of actions

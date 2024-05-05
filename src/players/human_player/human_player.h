@@ -23,7 +23,8 @@ class HumanPlayer : public Player {
 
     /// @brief Ask the user what to do
     /// @param data The data of the game
-    /// @param onlyRaise If true, the player can only raise or call
+    /// @param blindOption If true, the player has the blind option (can only call, raise or all-in)
+    /// @param equalize If true, the player has to equalize the last bet (can only call (bet), fold or all-in (not higher than last bet))
     /// @return The choosen Action of the player
     /// @exception Guarantee No-throw
     /// @note The method waits for user input
@@ -32,5 +33,5 @@ class HumanPlayer : public Player {
     /// @see Player::turn()
     /// @see Data
     /// @see Action
-    Action turn(const Data& data, const bool onlyRaise = false) const noexcept override;
+    Action turn(const Data& data, const bool blindOption = false, const bool equalize = false) const noexcept override;
 };

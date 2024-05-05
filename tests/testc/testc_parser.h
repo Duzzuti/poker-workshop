@@ -142,6 +142,10 @@ void parseMoves(std::ifstream& file, u_int64_t& currentLine, const std::string& 
                         exit(1);
                     }
                     break;
+                case 'a':
+                    // all-in
+                    testConfig.playerActions[playerIndex].push_back(Action{Actions::ALL_IN});
+                    break;
                 case 'r':
                     // raise
                     testConfig.playerActions[playerIndex].push_back(Action{Actions::RAISE, findNumber(moveString, currentLine, 1, 1)});
@@ -260,7 +264,12 @@ std::string parseResultData(std::ifstream& file, u_int64_t& currentLine, TestCon
             }
         } else if (potLine.empty() && line.rfind("POT:", 0) == 0) {
             potLine = line;  // mark it as found
-            testConfig.resultData.pot = findNumber(line, currentLine, 4);
+            u_int16_t index = 4;
+            u_int64_t potNum = 1;
+            while (potNum != 0) {
+                findNumber(line, potNum, currentLine, index);
+                testConfig.resultData.pot += potNum;
+            }
         } else if (line.rfind("TEST:", 0) == 0) {
             break;
         } else if (!isLineEmpty(line)) {
