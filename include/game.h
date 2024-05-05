@@ -228,7 +228,7 @@ class Game {
     /// @note The players who lost all their chips are marked as out
     /// @note The game ends if there is only one player remaining (the winner)
     bool handleZeroChipPlayers(const u_int8_t winners[]) noexcept;
-    
+
     /// @brief Adapts the minimum raise and last raiser attributes
     /// @param amount The amount that the player raised (or all-in´d or bet)
     /// @return True if the raise was valid
@@ -264,7 +264,7 @@ class Game {
 
     /// @brief The round counter
     int16_t round;
-    
+
     /// @brief Position of the last player that raised or MAX_PLAYERS if no player raised yet
     u_int8_t lastRaiser = MAX_PLAYERS;
 };

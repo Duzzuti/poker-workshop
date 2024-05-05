@@ -105,11 +105,12 @@ void Game::run(const bool initPlayers) {
             // SHOWDOWN
             PLOG_DEBUG << "SHOWDOWN!!! Community cards: " << this->data.roundData.communityCards[0].toString() << " " << this->data.roundData.communityCards[1].toString() << " "
                        << this->data.roundData.communityCards[2].toString() << " " << this->data.roundData.communityCards[3].toString() << " " << this->data.roundData.communityCards[4].toString();
-        
+
             // get winner
-            if (this->data.roundData.numAllInPlayers != 0){
-                if(this->distributePotAllIn()) break;
-            } else this->distributePotNoAllIn();
+            if (this->data.roundData.numAllInPlayers != 0) {
+                if (this->distributePotAllIn()) break;
+            } else
+                this->distributePotNoAllIn();
         }
     }
     PLOG_INFO << "Statistics: \n";
@@ -661,7 +662,7 @@ void Game::distributePotNoAllIn() noexcept {
 
     // distribute pot, round down on integer division ("bank win")
     const u_int64_t potPerWinner = this->data.roundData.pot / numWinners;
-    this->winnerString[0] = '\0';   // reset winner string
+    this->winnerString[0] = '\0';  // reset winner string
     for (u_int8_t i = 0; i < numWinners; i++) {
         // depending MAX_POT_DIST_STRING_LENGTH
         std::strncat(this->winnerString, this->getPlayerInfo(winners[i], potPerWinner), MAX_GET_PLAYER_INFO_LENGTH);
