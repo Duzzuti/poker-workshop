@@ -2,7 +2,7 @@
 
 #include "hand_strengths.h"
 
-class HandUtils{
+class HandUtils {
    public:
     /// @brief Constructor clears all arrays
     /// @param winnerAdd The amount to add to the win stat if the hand is the only winner
@@ -25,12 +25,12 @@ class HandUtils{
     /// @exception Guarantee No-throw
     /// @note The index is calculated as r1+r2-4+(r1-2)*(r1-3)/2 with r1 >= r2
     /// @note The index is needed to map the player hands to the internal arrays (91 different options) (save memory and time)
-    /// @note There are hands that are "equal" like 2,3 and 3,2 
+    /// @note There are hands that are "equal" like 2,3 and 3,2
     /// @note The suit is ignored for the index, the caller has to check if the hand is suited or not
     /// @note With this in mind, there are 91 different hands (13+12+11+...+1)
     /// @see getHandName() to get the name of a hand by its index
     static constexpr u_int8_t getHandIndex(const std::pair<Card, Card> playerCards) noexcept;
-    
+
     /// @brief Get the name of a hand by its index
     /// @param handIndex The (array) index of the hand
     /// @return The name of the hand as a string in the format "XY" where X and Y are the ranks of the cards (X >= Y)
@@ -40,7 +40,7 @@ class HandUtils{
     /// @note The caller has to know if the hand is suited or not (and add the suit to the name if needed)
     /// @see getHandIndex() to get the index of a hand by its cards
     static constexpr unsigned char* getHandName(int8_t handIndex) noexcept;
-    
+
     /// @brief Evaluate the hands of the players and update the internal arrays
     /// @param communityCards The community cards on the table (5 cards)
     /// @param playerCards The players hand cards (number of players = array length with 2 cards each)
@@ -53,7 +53,7 @@ class HandUtils{
     /// @see The hands are mapped to the internal arrays with the getHandIndex() function
     /// @see The function addWinners() is used to update the internal arrays
     void evaluateHands(const Card communityCards[], const std::pair<Card, Card> playerCards[], const u_int8_t players) noexcept;
-    
+
     /// @brief Write the results to a file in csv format
     /// @param filename The name (path) of the file to write to
     /// @param players The number of players
@@ -76,7 +76,6 @@ class HandUtils{
     /// @note The function uses the winnerAdd and splitAdd values to balance the effects of winning and splitting
     /// @note The function uses the totalAdd value to add to the total count for each occurring hand
     void addWinners(const std::pair<Card, Card> playerCards[], const u_int8_t winners[], const u_int8_t numWinners, const u_int8_t players) noexcept;
-
 
     /// @brief The amount to add to the win stat if the hand is the only winner
     const u_int8_t winnerAdd;
@@ -104,8 +103,8 @@ class HandUtils{
     u_int32_t handsUnsuitedTotal[91];
 
     /// @brief The array for the ranks of the cards (lookup array)
-    static constexpr unsigned char ranks[14] = "23456789TJQKA";     // + null terminator
-    
+    static constexpr unsigned char ranks[14] = "23456789TJQKA";  // + null terminator
+
     /// @brief Static member that is used to return the hand name
     static unsigned char name[4];
 };

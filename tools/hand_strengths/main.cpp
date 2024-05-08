@@ -12,14 +12,11 @@ int main(int argc, char** argv) {
     for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-v") == 0) {
             plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
-        }
-        else if (strcmp(argv[i], "-i") == 0) {
+        } else if (strcmp(argv[i], "-i") == 0) {
             plog::init(plog::info, &consoleAppender).addAppender(&fileAppender);
-        }
-        else if (strcmp(argv[i], "--iters") == 0) {
+        } else if (strcmp(argv[i], "--iters") == 0) {
             iters = std::stoull(argv[i + 1]);
-        }
-        else if (strcmp(argv[i], "-o") == 0) {
+        } else if (strcmp(argv[i], "-o") == 0) {
             std::cout << "Output file: " << argv[i + 1] << std::endl;
             filename = argv[i + 1];
         }
@@ -34,11 +31,11 @@ int main(int argc, char** argv) {
         // set up HandUtils // TODO: set custom (main-)options
         HandUtils handUtils(1, 1, 1);
         // simulate for an amount of iterations
-        for(u_int64_t i = 0; i < iters; i++){
+        for (u_int64_t i = 0; i < iters; i++) {
             // shuffle deck and draw cards
             deck.shuffle();
-            for(u_int8_t j = 0; j < 5; j++) communityCards[j] = deck.draw();
-            for(u_int8_t j = 0; j < players; j++) {
+            for (u_int8_t j = 0; j < 5; j++) communityCards[j] = deck.draw();
+            for (u_int8_t j = 0; j < players; j++) {
                 playerCards[j].first = deck.draw();
                 playerCards[j].second = deck.draw();
             }
