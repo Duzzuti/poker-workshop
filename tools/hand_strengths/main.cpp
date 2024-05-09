@@ -7,8 +7,11 @@ int main(int argc, char** argv) {
     // add file logger
     static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("log_tool.txt", 1024 * 1024 * 10, 5);
     // options
+    u_int8_t winnerAdd = 1;
+    u_int8_t splitAdd = 1;
+    u_int8_t totalAdd = 1;
     u_int64_t iters = 10000000;
-    std::string filename = "hand_strengths.csv";
+    std::string filename = "";
     for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-v") == 0) {
             plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
@@ -19,8 +22,16 @@ int main(int argc, char** argv) {
         } else if (strcmp(argv[i], "-o") == 0) {
             std::cout << "Output file: " << argv[i + 1] << std::endl;
             filename = argv[i + 1];
+        } else if (strcmp(argv[i], "--options") == 0) {
+            winnerAdd = std::stoi(argv[i + 1]);
+            splitAdd = std::stoi(argv[i + 2]);
+            totalAdd = std::stoi(argv[i + 3]);
         }
     }
+    if (filename == "") {
+        filename = "hand_strengths" + std::to_string(+winnerAdd) + std::to_string(+splitAdd) + std::to_string(+totalAdd) + ".csv";
+    }
+
     PLOG_INFO << "Starting Handstrengths Tool";
 
     Deck deck;
@@ -28,8 +39,8 @@ int main(int argc, char** argv) {
     std::pair<Card, Card> playerCards[MAX_PLAYERS];
     // iterate over any meaningful number of players
     for (u_int8_t players = 2; players <= MAX_PLAYERS; players++) {
-        // set up HandUtils // TODO: set custom (main-)options
-        HandUtils handUtils(1, 1, 1);
+        // set up HandUtils
+        HandUtils handUtils(winnerAdd, splitAdd, totalAdd);
         // simulate for an amount of iterations
         for (u_int64_t i = 0; i < iters; i++) {
             // shuffle deck and draw cards

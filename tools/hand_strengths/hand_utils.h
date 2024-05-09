@@ -1,7 +1,7 @@
 #pragma once
 
 #include "hand_strengths.h"
-//TODO: unittests
+// TODO: unittests
 class HandUtils {
    public:
     /// @brief Constructor clears all arrays

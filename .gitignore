@@ -14,7 +14,7 @@ model
 issues.txt
 log.*txt
 log_tool.*txt
-hand_strengths.csv
+hand_strengths*.csv
 
 # Prerequisites
 *.d
