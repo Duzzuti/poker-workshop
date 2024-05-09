@@ -8,24 +8,23 @@ constexpr u_int8_t HandUtils::getHandIndex(const std::pair<Card, Card> playerCar
     return r1 + r2 - 4 + (r1 - 2) * (r1 - 3) / 2;
 }
 
-constexpr unsigned char* HandUtils::getHandName(int8_t handIndex) noexcept {
+const std::string HandUtils::getHandName(int8_t handIndex) noexcept {
     // remove the possible ranks until the index is negative or 0. r1 is now the last removed rank + 1
     // r2 is r1 if the index is 0, otherwise the index + rank
     u_int8_t r1 = 0;
     u_int8_t r2 = 0;
-    for (u_int8_t i = 2; i < 14; i++) {
-        handIndex -= i;
+    for (u_int8_t i = 1; i < 14; i++) {
+        if (i != 1) handIndex -= i;
         if (handIndex <= 0) {
             r1 = i + 1;
-            r2 = handIndex == 0 ? i + 1 : handIndex + i;
+            r2 = handIndex == 0 ? i + 1 : handIndex + i + 1;
             break;
         }
     }
-    // fill the name array with the ranks and the null terminator
-    HandUtils::name[0] = HandUtils::ranks[r1 - 2];
-    HandUtils::name[1] = HandUtils::ranks[r2 - 2];
-    HandUtils::name[2] = '\0';
-    return HandUtils::name;
+    std::string name = "";
+    name += HandUtils::ranks[r1 - 2];
+    name += HandUtils::ranks[r2 - 2];
+    return name;
 }
 
 void HandUtils::evaluateHands(const Card communityCards[], const std::pair<Card, Card> playerCards[], const u_int8_t players) noexcept {
@@ -53,13 +52,12 @@ void HandUtils::evaluateHands(const Card communityCards[], const std::pair<Card,
 void HandUtils::writeResults(const std::string& filename, const u_int8_t players, const bool newFile) const noexcept {
     // write hand + total + hand/total in csv file
     std::ofstream file(filename, newFile ? std::ios::trunc : std::ios::app);
-    if (newFile) file << "Players, Hand, Suited, Wins, Total, Wins/Total, Wins/Total*Players\n";
+    if (newFile) file << "Players, Hand, Suited, Name, Wins, Total, Wins/Total, Wins/Total*Players\n";
     for (u_int8_t i = 0; i < 91; i++) {
-        // TODO: add hand names
-        file << +players << ", " << +i << ", true, " << this->handsSuited[i] << ", " << this->handsSuitedTotal[i] << ", " << (double)this->handsSuited[i] / this->handsSuitedTotal[i] << ", "
-             << (double)this->handsSuited[i] / this->handsSuitedTotal[i] * players << ",\n";
-        file << +players << ", " << +i << ", false, " << this->handsUnsuited[i] << ", " << this->handsUnsuitedTotal[i] << ", " << (double)this->handsUnsuited[i] / this->handsUnsuitedTotal[i] << ", "
-             << (double)this->handsUnsuited[i] / this->handsUnsuitedTotal[i] * players << ",\n";
+        file << +players << ", " << +i << ", true, " << this->getHandName(i) << "s, " << this->handsSuited[i] << ", " << this->handsSuitedTotal[i] << ", "
+             << (double)this->handsSuited[i] / this->handsSuitedTotal[i] << ", " << (double)this->handsSuited[i] / this->handsSuitedTotal[i] * players << ",\n";
+        file << +players << ", " << +i << ", false, " << this->getHandName(i) << "o, " << this->handsUnsuited[i] << ", " << this->handsUnsuitedTotal[i] << ", "
+             << (double)this->handsUnsuited[i] / this->handsUnsuitedTotal[i] << ", " << (double)this->handsUnsuited[i] / this->handsUnsuitedTotal[i] * players << ",\n";
     }
     file.close();
 }

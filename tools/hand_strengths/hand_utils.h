@@ -1,7 +1,7 @@
 #pragma once
 
 #include "hand_strengths.h"
-
+//TODO: unittests
 class HandUtils {
    public:
     /// @brief Constructor clears all arrays
@@ -36,10 +36,10 @@ class HandUtils {
     /// @return The name of the hand as a string in the format "XY" where X and Y are the ranks of the cards (X >= Y)
     /// @exception Guarantee No-throw
     /// @note The name is calculated by inverting r1+r2-4+(r1-2)*(r1-3)/2 with r1 >= r2 and r1, r2 in [2, 14]
-    /// @note The return array has 4 elements, the first two are the ranks + you can add a "s" or "o" to indicate suited or offsuited + null terminator
+    /// @note The return array does not include the suit. You can add a "s" or "o" to indicate suited or offsuited
     /// @note The caller has to know if the hand is suited or not (and add the suit to the name if needed)
     /// @see getHandIndex() to get the index of a hand by its cards
-    static constexpr unsigned char* getHandName(int8_t handIndex) noexcept;
+    static const std::string getHandName(int8_t handIndex) noexcept;
 
     /// @brief Evaluate the hands of the players and update the internal arrays
     /// @param communityCards The community cards on the table (5 cards)
@@ -60,10 +60,13 @@ class HandUtils {
     /// @param newFile If true, the file is created or overwritten, otherwise the results are appended
     /// @exception Guarantee No-throw
     /// @note The function writes the results for each hand in the internal arrays to the file
-    /// @note It writes Player number, Hand index, Suited (true, false), Wins and Split count, Total, Wins/Total, Wins/Total*Players
+    /// @note It writes Player number, Hand index, Suited (true, false), Hand Name, Wins and Split count, Total, Wins/Total, Wins/Total*Players
     /// @note The last two are used to rank the hands by their strength
     /// @note Wins/Total is the win rate of the hand and Wins/Total*Players is the normalized win rate (1 is average win rate, <1 is under average, >1 is above average)
     void writeResults(const std::string& filename, const u_int8_t players, const bool newFile = true) const noexcept;
+
+    /// @brief The array for the ranks of the cards (lookup array)
+    static constexpr char ranks[14] = "23456789TJQKA";  // + null terminator
 
    private:
     /// @brief Add the data to the internal arrays
@@ -101,10 +104,4 @@ class HandUtils {
     /// @brief The array for total stats of each unsuited hand
     /// @note The index is calculated with getHandIndex()
     u_int32_t handsUnsuitedTotal[91];
-
-    /// @brief The array for the ranks of the cards (lookup array)
-    static constexpr unsigned char ranks[14] = "23456789TJQKA";  // + null terminator
-
-    /// @brief Static member that is used to return the hand name
-    static unsigned char name[4];
 };
