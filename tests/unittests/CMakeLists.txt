@@ -33,6 +33,10 @@ add_executable(poker_test_gametest main_test.cpp gametest_unittest.cpp ${SRC_DIR
 target_link_libraries(poker_test_gametest gtest_main)
 target_include_directories(poker_test_gametest PUBLIC ${INCLUDE_DIR} ${PLAYER_DIR} ${TEST_DIR})
 
+add_executable(poker_test_thandstrengths main_test.cpp thandutils_unittest.cpp ${THAND_STRENGTHS_DIR}/hand_utils.cpp)
+target_link_libraries(poker_test_thandstrengths gtest_main)
+target_include_directories(poker_test_thandstrengths PUBLIC ${INCLUDE_DIR} ${THAND_STRENGTHS_DIR})
+
 add_executable(test main_test.cpp test_test.cpp)
 target_link_libraries(test gtest_main)
 target_include_directories(test PUBLIC ${INCLUDE_DIR})
@@ -43,4 +47,5 @@ add_test(POT_TEST poker_test_pot)
 add_test(UTILS_TEST poker_test_utils)
 add_test(CONST_TEST poker_test_const)
 add_test(GAME_TEST poker_test_gametest)
+add_test(THANDSTRENGTHS_TEST poker_test_thandstrengths)
 add_test(TEST_TEST test)

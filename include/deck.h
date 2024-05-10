@@ -39,7 +39,7 @@ class Deck {
     /// @brief Generates a new deck of 52 cards
     /// @exception Guarantee No-throw
     constexpr Deck() noexcept {
-        // generate a 53 cards poker deck
+        // generate a 52 cards poker deck
         u_int8_t i = 0;
         for (u_int8_t suit = 0; suit < 4; suit++) {
             for (u_int8_t rank = 2; rank < 15; rank++) {
