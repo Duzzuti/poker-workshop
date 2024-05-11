@@ -7,6 +7,7 @@
 #include "testc/testc_compiler.h"
 #include "testc/testc_manual.h"
 #include "testc/testc_parser.h"
+#include "working_dir.h"
 
 /// @brief Gets the test configuration parameters from the user
 /// @param testConfig The configuration for the test, where the user input will be stored
@@ -184,10 +185,13 @@ void simulateTest(const TestConfig& testConfig, const bool printData = true) {
 /// with the given name in the testscripts directory and the n-th test will be simulated (does not compile)
 int main(int argc, char* argv[]) {
     srand(time(NULL));  // init random seed
+
+    WorkingDir workingDir{argv[0], "log_test_gen.txt"};
+
     // init logger
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     // add file logger
-    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("data/log_test_gen.txt", 1024 * 1024 * 10, 3);
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(workingDir.getLogPath().c_str(), 1024 * 1024 * 10, 3);
     plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
 
     PLOG_INFO << "Test generator started";

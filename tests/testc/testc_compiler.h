@@ -219,14 +219,16 @@ void compileMainTest(std::ofstream& mainTest) noexcept {
     mainTest << "#include <gtest/gtest.h>" << std::endl;
     mainTest << "" << std::endl;
     mainTest << "#include \"logger.h\"" << std::endl;
+    mainTest << "#include \"working_dir.h\"" << std::endl;
     mainTest << "" << std::endl;
     mainTest << "int main(int argc, char** argv) {" << std::endl;
     mainTest << "    srand(time(NULL));  // init random seed" << std::endl;
-    mainTest << "    // the main function that is running the tests" << std::endl;
+    mainTest << "    // the main function that is running the tests" << std::endl << std::endl;
+    mainTest << "    WorkingDir workingDir{argv[0], \"log_gametest.txt\"};" << std::endl << std::endl;
     mainTest << "    // init logger" << std::endl;
     mainTest << "    static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;" << std::endl;
     mainTest << "    // add file logger" << std::endl;
-    mainTest << "    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(\"data/log_gametest.txt\", 1024 * 1024 * 10, 3);" << std::endl;
+    mainTest << "    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(workingDir.getLogPath().c_str(), 1024 * 1024 * 10, 3);" << std::endl;
     mainTest << "    plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);" << std::endl;
     mainTest << "    // plog::init(plog::verbose, &fileAppender);" << std::endl;
     mainTest << "    testing::InitGoogleTest(&argc, argv);" << std::endl;
