@@ -7,6 +7,7 @@
 #include "testc/testc_compiler.h"
 #include "testc/testc_manual.h"
 #include "testc/testc_parser.h"
+#include "working_dir.h"
 
 /// @brief Gets the test configuration parameters from the user
 /// @param testConfig The configuration for the test, where the user input will be stored
@@ -53,10 +54,12 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
     // check the file configurations
     for (const FileConfig& fileConfig : fileConfigs) {
         if (std::find(fileNames.begin(), fileNames.end(), fileConfig.fileName) != fileNames.end()) {
+            PLOG_ERROR << "Duplicate file name found: " << fileConfig.fileName;
             std::cerr << "Duplicate file name found: " << fileConfig.fileName << std::endl;
             return false;
         }
         if (std::find(cmakeTestNames.begin(), cmakeTestNames.end(), fileConfig.cmakeTestName) != cmakeTestNames.end()) {
+            PLOG_ERROR << "Duplicate cmake test name found: " << fileConfig.cmakeTestName;
             std::cerr << "Duplicate cmake test name found: " << fileConfig.cmakeTestName << std::endl;
             return false;
         }
@@ -65,6 +68,7 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
         if (fileConfig.fileName.empty()) throw std::logic_error("File name not provided in file configuration");
         if (fileConfig.cmakeTestName.empty()) throw std::logic_error("CMake test name not provided in file configuration");
         if (fileConfig.config.empty()) {
+            PLOG_ERROR << "No tests found in file " << fileConfig.fileName;
             std::cerr << "No tests found in file " << fileConfig.fileName << std::endl;
             return false;
         }
@@ -78,23 +82,25 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
                 fileClassNames.push_back(testConfig.className);
             }
             if (std::find(fileClassTestNames.begin(), fileClassTestNames.end(), testConfig.className + testConfig.testName) != fileClassTestNames.end()) {
+                PLOG_ERROR << "Duplicate class + test name found: " << testConfig.className + "_" + testConfig.testName;
                 std::cerr << "Duplicate class + test name found: " << testConfig.className + "_" + testConfig.testName << errorLocation << std::endl;
                 return false;
             }
             fileClassTestNames.push_back(testConfig.className + testConfig.testName);
-            if (testConfig.className.empty()) throw std::logic_error("Class name not provided in test configuration" + errorLocation);
-            if (testConfig.testName.empty()) throw std::logic_error("Test name not provided in test configuration" + errorLocation);
-            if (testConfig.numPlayers < 2 || testConfig.numPlayers > MAX_PLAYERS) throw std::logic_error("Invalid number of players (" + std::to_string(testConfig.numPlayers) + ")" + errorLocation);
-            if (testConfig.smallBlind < 1) throw std::logic_error("Invalid small blind (" + std::to_string(testConfig.smallBlind) + ")" + errorLocation);
+            if (testConfig.className.empty()) logFatalAndThrow("Class name not provided in test configuration" + errorLocation);
+            if (testConfig.testName.empty()) logFatalAndThrow("Test name not provided in test configuration" + errorLocation);
+            if (testConfig.numPlayers < 2 || testConfig.numPlayers > MAX_PLAYERS) logFatalAndThrow("Invalid number of players (" + std::to_string(testConfig.numPlayers) + ")" + errorLocation);
+            if (testConfig.smallBlind < 1) logFatalAndThrow("Invalid small blind (" + std::to_string(testConfig.smallBlind) + ")" + errorLocation);
             // check for invalid player chips
             for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
                 if (testConfig.playerChips[i] < 1) {
-                    throw std::logic_error("Invalid player chips (" + std::to_string(testConfig.playerChips[i]) + ")" + errorLocation);
+                    logFatalAndThrow("Invalid player chips (" + std::to_string(testConfig.playerChips[i]) + ")" + errorLocation);
                 }
             }
             // check for empty player actions
             for (u_int8_t i = 0; i < testConfig.numPlayers; i++) {
                 if (testConfig.playerActions[i].empty()) {
+                    PLOG_ERROR << "No moves found for player " << +i;
                     std::cerr << "No moves found for player " << +i << errorLocation << std::endl;
                     return false;
                 }
@@ -104,8 +110,7 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
             for (u_int8_t i = 0; i < 5; i++) {
                 drawnCards.push_back(testConfig.communityCards[i]);
                 if (testConfig.communityCards[i] != Card{0, 0} && (testConfig.communityCards[i].rank < 2 || testConfig.communityCards[i].rank > 14 || testConfig.communityCards[i].suit > 3)) {
-                    throw std::logic_error("Invalid community card (" + std::to_string(testConfig.communityCards[i].suit) + " " + std::to_string(testConfig.communityCards[i].rank) + ")" +
-                                           errorLocation);
+                    logFatalAndThrow("Invalid community card (" + std::to_string(testConfig.communityCards[i].suit) + " " + std::to_string(testConfig.communityCards[i].rank) + ")" + errorLocation);
                 }
             }
             // check for invalid player hand cards
@@ -114,25 +119,26 @@ bool checkFileConfigs(const std::vector<FileConfig>& fileConfigs) {
                 drawnCards.push_back(testConfig.playerHands[i].second);
                 if (testConfig.playerHands[i].first != Card{0, 0} &&
                     (testConfig.playerHands[i].first.rank < 2 || testConfig.playerHands[i].first.rank > 14 || testConfig.playerHands[i].first.suit > 3)) {
-                    throw std::logic_error("Invalid player hand card (" + std::to_string(testConfig.playerHands[i].first.suit) + " " + std::to_string(testConfig.playerHands[i].first.rank) + ")" +
-                                           errorLocation);
+                    logFatalAndThrow("Invalid player hand card (" + std::to_string(testConfig.playerHands[i].first.suit) + " " + std::to_string(testConfig.playerHands[i].first.rank) + ")" +
+                                     errorLocation);
                 }
                 if (testConfig.playerHands[i].second != Card{0, 0} &&
                     (testConfig.playerHands[i].second.rank < 2 || testConfig.playerHands[i].second.rank > 14 || testConfig.playerHands[i].second.suit > 3)) {
-                    throw std::logic_error("Invalid player hand card (" + std::to_string(testConfig.playerHands[i].second.suit) + " " + std::to_string(testConfig.playerHands[i].second.rank) + ")" +
-                                           errorLocation);
+                    logFatalAndThrow("Invalid player hand card (" + std::to_string(testConfig.playerHands[i].second.suit) + " " + std::to_string(testConfig.playerHands[i].second.rank) + ")" +
+                                     errorLocation);
                 }
             }
             // check for duplicate cards
             for (u_int8_t i = 0; i < drawnCards.size(); i++) {
                 for (u_int8_t j = i + 1; j < drawnCards.size(); j++) {
-                    if (drawnCards[i] == drawnCards[j] && drawnCards[i] != Card{0, 0}) throw std::logic_error("Duplicate card (" + std::string(drawnCards[i].toString()) + ")" + errorLocation);
+                    if (drawnCards[i] == drawnCards[j] && drawnCards[i] != Card{0, 0}) logFatalAndThrow("Duplicate card (" + std::string(drawnCards[i].toString()) + ")" + errorLocation);
                 }
             }
         }
         // check for duplicate class names in different files
         for (const std::string& className : fileClassNames) {
             if (std::find(classNames.begin(), classNames.end(), className) != classNames.end()) {
+                PLOG_ERROR << "Duplicate class name in different files found: " << className;
                 std::cerr << "Duplicate class name in different files found: " << className << std::endl;
                 return false;
             }
@@ -179,20 +185,27 @@ void simulateTest(const TestConfig& testConfig, const bool printData = true) {
 /// with the given name in the testscripts directory and the n-th test will be simulated (does not compile)
 int main(int argc, char* argv[]) {
     srand(time(NULL));  // init random seed
+
+    WorkingDir workingDir{argv[0], "log_test_gen.txt"};
+
     // init logger
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     // add file logger
-    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("data/log_test_gen.txt", 1024 * 1024 * 10, 3);
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(workingDir.getLogPath().c_str(), 1024 * 1024 * 10, 3);
     plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
+
+    PLOG_INFO << "Test generator started";
 
     // verify directory structure
     const std::filesystem::path testscriptsDir = "tests/testscripts/";
     const std::filesystem::path gametestsDir = "tests/gametests/";
     if (!std::filesystem::exists(testscriptsDir)) {
+        PLOG_ERROR << "The testscripts directory is missing. Please run the program from the root directory of the project.";
         std::cerr << "The testscripts directory is missing. Please run the program from the root directory of the project." << std::endl;
         return 1;
     }
     if (!std::filesystem::exists(gametestsDir)) {
+        PLOG_ERROR << "The gametests directory is missing.";
         std::cerr << "The gametests directory is missing." << std::endl;
         return 1;
     }
@@ -216,25 +229,32 @@ int main(int argc, char* argv[]) {
                 // file should be located in the testscripts directory
                 std::ifstream file(testscriptsDir / path, std::ios::in);
                 if (!file.is_open()) {
+                    PLOG_ERROR << "File not found (" << testscriptsDir / path << ")";
                     std::cerr << "File not found (" << testscriptsDir / path << ")" << std::endl;
                     return 1;
                 }
                 // get the test parameters from the file
                 fileConfigs.push_back(parseFile(file));
             } else {
+                PLOG_ERROR << "Invalid file extension, only compiles \".gts\" files (" << path << ")";
                 std::cerr << "Invalid file extension, only compiles \".gts\" files (" << path << ")" << std::endl;
                 return 1;
             }
         } else if (argc == 3) {
+            PLOG_ERROR << "Provided path is not a regular file (" << testscriptsDir / path << ")";
             std::cerr << "Provided path is not a regular file (" << testscriptsDir / path << ")" << std::endl;
             return 1;
         } else if (std::filesystem::is_directory(path)) {
             fileConfigs = parseFiles(path);
+        } else if (argv[1] == std::string("--all")) {
+            fileConfigs = parseFiles(testscriptsDir);
         } else {
+            PLOG_ERROR << "Provided path is not a regular file or directory (" << testscriptsDir / path << " or " << path << ")";
             std::cerr << "Provided path is not a regular file or directory (" << testscriptsDir / path << " or " << path << ")" << std::endl;
             return 1;
         }
     } else {
+        PLOG_ERROR << "Invalid number of arguments (" << argc << ")";
         std::cerr << "Invalid number of arguments (" << argc << ")" << std::endl;
         return 1;
     }
@@ -248,10 +268,12 @@ int main(int argc, char* argv[]) {
     if (argc != 3 && !fileConfigs.empty()) {
         // clear the gametests directory
         if (!std::filesystem::remove_all(gametestsDir)) {
+            PLOG_ERROR << "Could not clear the gametests directory. Please check for missing permissions.";
             std::cerr << "Could not clear the gametests directory. Please check for missing permissions." << std::endl;
             return 1;
         }
         if (!std::filesystem::create_directory(gametestsDir)) {
+            PLOG_ERROR << "The gametests directory could not be created. Please check for missing permissions.";
             std::cerr << "The gametests directory could not be created. Please check for missing permissions." << std::endl;
             return 1;
         }
@@ -274,6 +296,7 @@ int main(int argc, char* argv[]) {
 
         // format the files
         if (system("bash format.sh") != 0) {
+            PLOG_ERROR << "The files could not be formatted.";
             std::cerr << "The files could not be formatted." << std::endl;
             return 1;
         }
@@ -285,6 +308,7 @@ int main(int argc, char* argv[]) {
         // get the test index
         int64_t testIndex = std::stol(argv[2]);
         if (testIndex < 0 || testIndex >= (int64_t)fileConfigs[0].config.size()) {
+            PLOG_ERROR << "Invalid test index (" << testIndex << ") only " << fileConfigs[0].config.size() << " tests available for this file";
             std::cerr << "Invalid test index (" << testIndex << ") only " << fileConfigs[0].config.size() << " tests available for this file" << std::endl;
             return 1;
         }
@@ -295,6 +319,7 @@ int main(int argc, char* argv[]) {
     // build the new generated files
     if (argc != 3 && !fileConfigs.empty()) {
         if (system("cmake -B build") != 0) {
+            PLOG_ERROR << "The project could not be configured.";
             std::cerr << "The project could not be configured." << std::endl;
             return 1;
         }
@@ -304,10 +329,12 @@ int main(int argc, char* argv[]) {
         }
         buildCommand += "-j 20";
         if (system(buildCommand.c_str()) != 0) {
+            PLOG_ERROR << "The project could not be built.";
             std::cerr << "The project could not be built." << std::endl;
             return 1;
         }
     }
+    PLOG_INFO << "Test generator finished successfully";
 
     return 0;
 }

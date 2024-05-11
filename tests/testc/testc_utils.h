@@ -1,5 +1,16 @@
 #pragma once
 
+#include "logger.h"
+
+/// @brief Logs a fatal message and throws std::logic_error()
+/// @param message The message to log and throw
+/// @exception Guarantee Strong (throws every time)
+/// @throws std::logic_error every time with message as the what() string
+void logFatalAndThrow(const std::string& message) {
+    PLOG_FATAL << message;
+    throw std::logic_error(message);
+}
+
 /// @brief Converts a string to uppercase
 /// @param str The string to convert
 /// @return The uppercase string
@@ -33,6 +44,7 @@ bool isLineEmpty(const std::string& line) noexcept { return line.find_first_not_
 /// @exception Guarantee No-throw
 /// @note This function will exit the program
 void invalidCharFound(const u_int32_t line, const u_int16_t column, const char invChar) noexcept {
+    PLOG_ERROR << "Invalid character found in line " << line << " at position " << column << " (" << invChar << ")";
     std::cerr << "Invalid character found in line " << line << " at position " << column << " (" << invChar << ")" << std::endl;
     exit(1);
 }
@@ -142,6 +154,7 @@ void findNumber(const std::string& line, u_int64_t& result, const u_int32_t line
     }
     // check if the number is out of range
     if (result < min || result > max) {
+        PLOG_ERROR << "Number out of range (" << min << "-" << max << ") in line " << lineInd << " at position " << index << " (" << result << ")";
         std::cerr << "Number out of range (" << min << "-" << max << ") in line " << lineInd << " at position " << index << " (" << result << ")" << std::endl;
         exit(1);
     }
@@ -209,6 +222,7 @@ Card findCard(const std::string& line, const u_int32_t lineInd, u_int16_t& index
     Card card{.rank = rank, .suit = suit};
     // check if the card is already drawn
     if (std::find(drawnCards, &drawnCards[drawnCardCount], card) != &drawnCards[drawnCardCount]) {
+        PLOG_ERROR << "Card already drawn in line " << lineInd << " at position " << index;
         std::cerr << "Card already drawn in line " << lineInd << " at position " << index << std::endl;
         exit(1);
     }

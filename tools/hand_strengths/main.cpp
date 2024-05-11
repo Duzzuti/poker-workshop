@@ -1,11 +1,15 @@
 #include "hand_utils.h"
+#include "working_dir.h"
 
 int main(int argc, char** argv) {
     srand(time(NULL));  // init random seed
+
+    WorkingDir workingDir{argv[0], "log_tool.txt"};
+
     // init logger
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     // add file logger
-    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("log_tool.txt", 1024 * 1024 * 10, 5);
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(workingDir.getLogPath().c_str(), 1024 * 1024 * 10, 5);
     // options
     u_int8_t winnerAdd = 1;
     u_int8_t splitAdd = 1;
@@ -31,7 +35,6 @@ int main(int argc, char** argv) {
     if (filename == "") {
         filename = "hand_strengths" + std::to_string(+winnerAdd) + std::to_string(+splitAdd) + std::to_string(+totalAdd) + ".csv";
     }
-
     PLOG_INFO << "Starting Handstrengths Tool";
 
     Deck deck;
@@ -56,7 +59,7 @@ int main(int argc, char** argv) {
             deck.reset();
         }
         // write the results for each player count to a file
-        handUtils.writeResults(filename, players, players == 2);
+        handUtils.writeResults((workingDir.getDataPath() / filename).string(), players, players == 2);
         std::cout << "Wrote results for " << +players << " players\n";
     }
 

@@ -29,7 +29,11 @@ class HandUtils {
     /// @note The suit is ignored for the index, the caller has to check if the hand is suited or not
     /// @note With this in mind, there are 91 different hands (13+12+11+...+1)
     /// @see getHandName() to get the name of a hand by its index
-    static constexpr u_int8_t getHandIndex(const std::pair<Card, Card> playerCards) noexcept;
+    static constexpr u_int8_t getHandIndex(const std::pair<Card, Card> playerCards) noexcept {
+        const int16_t r1 = std::max(playerCards.first.rank, playerCards.second.rank);
+        const int16_t r2 = std::min(playerCards.first.rank, playerCards.second.rank);
+        return r1 + r2 - 4 + (r1 - 2) * (r1 - 3) / 2;
+    }
 
     /// @brief Get the name of a hand by its index
     /// @param handIndex The (array) index of the hand
