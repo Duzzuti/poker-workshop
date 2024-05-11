@@ -1,7 +1,6 @@
 #pragma once
 
 #include <filesystem>
-//  TODO add data directory tree if not already done
 
 /// @brief Provides functionalities for getting paths to the project directories
 class WorkingDir {
@@ -35,7 +34,7 @@ class WorkingDir {
 
         // add data directory if not already done
         if (!std::filesystem::exists(this->projectRootPath / "data")) {
-            if(std::filesystem::create_directory(this->projectRootPath / "data"))
+            if (std::filesystem::create_directory(this->projectRootPath / "data"))
                 PLOG_INFO << "Created data directory";
             else {
                 PLOG_FATAL << "Could not create data directory. Check permissions";
@@ -44,7 +43,7 @@ class WorkingDir {
         }
         // add logs directory if not already done
         if (!std::filesystem::exists(this->projectRootPath / "data" / "logs")) {
-            if(std::filesystem::create_directory(this->projectRootPath / "data" / "logs"))
+            if (std::filesystem::create_directory(this->projectRootPath / "data" / "logs"))
                 PLOG_INFO << "Created logs directory";
             else {
                 PLOG_FATAL << "Could not create logs directory. Check permissions";
