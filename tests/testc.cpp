@@ -242,6 +242,8 @@ int main(int argc, char* argv[]) {
             return 1;
         } else if (std::filesystem::is_directory(path)) {
             fileConfigs = parseFiles(path);
+        } else if (argv[1] == std::string("--all")) {
+            fileConfigs = parseFiles(testscriptsDir);
         } else {
             PLOG_ERROR << "Provided path is not a regular file or directory (" << testscriptsDir / path << " or " << path << ")";
             std::cerr << "Provided path is not a regular file or directory (" << testscriptsDir / path << " or " << path << ")" << std::endl;
