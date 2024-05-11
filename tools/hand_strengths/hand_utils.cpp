@@ -2,12 +2,6 @@
 
 #include <fstream>
 
-constexpr u_int8_t HandUtils::getHandIndex(const std::pair<Card, Card> playerCards) noexcept {
-    const int16_t r1 = std::max(playerCards.first.rank, playerCards.second.rank);
-    const int16_t r2 = std::min(playerCards.first.rank, playerCards.second.rank);
-    return r1 + r2 - 4 + (r1 - 2) * (r1 - 3) / 2;
-}
-
 const std::string HandUtils::getHandName(int8_t handIndex) noexcept {
     // remove the possible ranks until the index is negative or 0. r1 is now the last removed rank + 1
     // r2 is r1 if the index is 0, otherwise the index + rank
