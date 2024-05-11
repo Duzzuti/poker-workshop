@@ -11,6 +11,7 @@ class WorkingDir {
     /// @param logFileName the name of the log file for this main method
     /// @exception Guarantee Strong
     /// @throws std::runtime_error if the project root directory could not be found
+    /// @throws std::runtime_error if the data directory tree could not be created
     /// @note this constructor should be called in every main method of the project
     /// @note it will get the path to the executable and try to find the project root directory by going up the directory tree
     /// @note the project root directory is the directory containing the ".gitignore" file (might change this later)
@@ -30,6 +31,25 @@ class WorkingDir {
         if (jumps == 10) {
             PLOG_FATAL << "Could not find project root directory";
             throw std::runtime_error("Could not find project root directory");
+        }
+
+        // add data directory if not already done
+        if (!std::filesystem::exists(this->projectRootPath / "data")) {
+            if(std::filesystem::create_directory(this->projectRootPath / "data"))
+                PLOG_INFO << "Created data directory";
+            else {
+                PLOG_FATAL << "Could not create data directory. Check permissions";
+                throw std::runtime_error("Could not create data directory. Check permissions");
+            }
+        }
+        // add logs directory if not already done
+        if (!std::filesystem::exists(this->projectRootPath / "data" / "logs")) {
+            if(std::filesystem::create_directory(this->projectRootPath / "data" / "logs"))
+                PLOG_INFO << "Created logs directory";
+            else {
+                PLOG_FATAL << "Could not create logs directory. Check permissions";
+                throw std::runtime_error("Could not create logs directory. Check permissions");
+            }
         }
 
         this->logPath = this->projectRootPath / "data" / "logs" / logFileName;
