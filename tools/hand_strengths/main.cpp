@@ -16,11 +16,13 @@ int main(int argc, char** argv) {
     u_int8_t totalAdd = 1;
     u_int64_t iters = 10000000;
     std::string filename = "";
+    bool defaultLogger = true;
     for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-v") == 0) {
+            defaultLogger = false;
             plog::init(plog::verbose, &consoleAppender).addAppender(&fileAppender);
-        } else if (strcmp(argv[i], "-i") == 0) {
-            plog::init(plog::info, &consoleAppender).addAppender(&fileAppender);
+        } else if (strcmp(argv[i], "--silent") == 0) {
+            defaultLogger = false;
         } else if (strcmp(argv[i], "--iters") == 0) {
             iters = std::stoull(argv[i + 1]);
         } else if (strcmp(argv[i], "-o") == 0) {
@@ -31,6 +33,10 @@ int main(int argc, char** argv) {
             splitAdd = std::stoi(argv[i + 2]);
             totalAdd = std::stoi(argv[i + 3]);
         }
+    }
+    if(defaultLogger){
+        // default to info level
+        plog::init(plog::info, &consoleAppender).addAppender(&fileAppender);
     }
     if (filename == "") {
         filename = "hand_strengths" + std::to_string(+winnerAdd) + std::to_string(+splitAdd) + std::to_string(+totalAdd) + ".csv";

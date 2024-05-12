@@ -2,6 +2,8 @@
 
 #include <filesystem>
 
+#include "logger.h"
+
 /// @brief Provides functionalities for getting paths to the project directories
 class WorkingDir {
    public:
