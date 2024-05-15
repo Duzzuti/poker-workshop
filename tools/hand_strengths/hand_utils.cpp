@@ -47,7 +47,7 @@ void HandUtils::writeResults(const std::string& filename, const u_int8_t players
     // write hand + total + hand/total in csv file
     std::ofstream file(filename, newFile ? std::ios::trunc : std::ios::app);
     if (newFile) file << "Players, Hand, Suited, Name, Wins, Total, Wins/Total, Wins/Total*Players\n";
-    for (u_int8_t i = 0; i < 91; i++) {
+    for (u_int8_t i = 0; i < HAND_INDEX_COUNT; i++) {
         file << +players << ", " << +i << ", true, " << this->getHandName(i) << "s, " << this->handsSuited[i] << ", " << this->handsSuitedTotal[i] << ", "
              << (double)this->handsSuited[i] / this->handsSuitedTotal[i] << ", " << (double)this->handsSuited[i] / this->handsSuitedTotal[i] * players << ",\n";
         file << +players << ", " << +i << ", false, " << this->getHandName(i) << "o, " << this->handsUnsuited[i] << ", " << this->handsUnsuitedTotal[i] << ", "

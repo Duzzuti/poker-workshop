@@ -24,10 +24,10 @@ class HandUtils {
     /// @return The index of the hand in the internal arrays
     /// @exception Guarantee No-throw
     /// @note The index is calculated as r1+r2-4+(r1-2)*(r1-3)/2 with r1 >= r2
-    /// @note The index is needed to map the player hands to the internal arrays (91 different options) (save memory and time)
+    /// @note The index is needed to map the player hands to the internal arrays (HAND_INDEX_COUNT different options) (save memory and time)
     /// @note There are hands that are "equal" like 2,3 and 3,2
     /// @note The suit is ignored for the index, the caller has to check if the hand is suited or not
-    /// @note With this in mind, there are 91 different hands (13+12+11+...+1)
+    /// @note With this in mind, there are HAND_INDEX_COUNT different hands (13+12+11+...+1)
     /// @see getHandName() to get the name of a hand by its index
     static constexpr u_int8_t getHandIndex(const std::pair<Card, Card> playerCards) noexcept {
         const int16_t r1 = std::max(playerCards.first.rank, playerCards.second.rank);
@@ -95,17 +95,17 @@ class HandUtils {
 
     /// @brief The array for win stats of each suited hand
     /// @note The index is calculated with getHandIndex()
-    u_int32_t handsSuited[91];
+    u_int32_t handsSuited[HAND_INDEX_COUNT];
 
     /// @brief The array for win stats of each unsuited hand
     /// @note The index is calculated with getHandIndex()
-    u_int32_t handsUnsuited[91];
+    u_int32_t handsUnsuited[HAND_INDEX_COUNT];
 
     /// @brief The array for total stats of each suited hand
     /// @note The index is calculated with getHandIndex()
-    u_int32_t handsSuitedTotal[91];
+    u_int32_t handsSuitedTotal[HAND_INDEX_COUNT];
 
     /// @brief The array for total stats of each unsuited hand
     /// @note The index is calculated with getHandIndex()
-    u_int32_t handsUnsuitedTotal[91];
+    u_int32_t handsUnsuitedTotal[HAND_INDEX_COUNT];
 };

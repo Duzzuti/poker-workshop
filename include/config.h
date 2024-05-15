@@ -73,6 +73,8 @@ const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH =
     LEN_UINT64 + 1;
 /// @brief The maximum character length for the string that represents an error of type raise or action
 const constexpr u_int8_t MAX_ACTION_ERROR_LENGTH_ONLY_RAISE = std::max<size_t>(constexpr_strlen(STR_RAISE_ERROR), constexpr_strlen(STR_ACTION_ERROR)) + LEN_UINT64 + 1;
+/// @brief The number of hands (hole cards) that are differenciated (without suits)
+const constexpr unsigned char HAND_INDEX_COUNT = 91;
 
 /// @brief The iteration count per gametest
 const constexpr int TEST_ITERS = 1000;
