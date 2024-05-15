@@ -34,12 +34,12 @@ int main(int argc, char** argv) {
             totalAdd = std::stoi(argv[i + 3]);
         }
     }
-    if(defaultLogger){
+    if (defaultLogger) {
         // default to info level
         plog::init(plog::info, &consoleAppender).addAppender(&fileAppender);
     }
     if (filename == "") {
-        filename = "hand_strengths" + std::to_string(+winnerAdd) + std::to_string(+splitAdd) + std::to_string(+totalAdd) + ".csv";
+        filename = STR_TOOL_HANDSTRENGTHS_DEFAULT_FILE_NAME + std::to_string(+winnerAdd) + std::to_string(+splitAdd) + std::to_string(+totalAdd) + ".csv";
     }
     PLOG_INFO << "Starting Handstrengths Tool";
 
