@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install cmake -y
 RUN apt-get update && apt-get install gdb -y
 RUN apt-get update && apt-get install locales -y
 RUN apt-get update && apt-get install valgrind -y
-RUN apt-get update && apt-get install doxgen -y
+RUN apt-get update && apt-get install doxygen -y
 RUN apt-get update && apt-get install graphviz -y
 
 
