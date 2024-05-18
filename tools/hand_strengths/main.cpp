@@ -29,6 +29,8 @@ int main(int argc, char** argv) {
             std::cout << "Output file: " << argv[i + 1] << std::endl;
             filename = argv[i + 1];
         } else if (strcmp(argv[i], "--options") == 0) {
+            // TODO error handling
+            // TODO numbers should be between 0 and 9 only
             winnerAdd = std::stoi(argv[i + 1]);
             splitAdd = std::stoi(argv[i + 2]);
             totalAdd = std::stoi(argv[i + 3]);

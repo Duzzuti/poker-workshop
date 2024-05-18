@@ -10,6 +10,7 @@ class HandUtils {
     /// @param totalAdd The amount to add to the total stat for each occurrence
     /// @exception Guarantee No-throw
     /// @note The totalAdd should be greater or equal than the maximum of winnerAdd and splitAdd to keep a meaningful total count
+    /// @note The winnerAdd, splitAdd and totalAdd should be in the range of 0 to 9 (has to be checked by the caller)
     /// @note winnerAdd and splitAdd are used to balance the effects of winning and splitting
     /// @note if splitAdd is 0, a split is treated as a loss, if winnerAdd is twice the value of splitAdd, a split is treated as a half win, etc.
     HandUtils(const u_int8_t winnerAdd, const u_int8_t splitAdd, const u_int8_t totalAdd) noexcept : winnerAdd(winnerAdd), splitAdd(splitAdd), totalAdd(totalAdd) {
