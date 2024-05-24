@@ -278,6 +278,13 @@ class MainArgs {
     /// @note Requires the run() function to be called before
     std::string getArgValue(const u_int index) const noexcept { return this->args[index].value; }
 
+    /// @brief Get the numeric value of an optional argument
+    /// @param index The index of the optional argument (in the order they were set)
+    /// @return The numeric value of the argument
+    /// @exception Guarantee No-throw
+    /// @note Requires the run() function to be called before
+    int64_t getArgNumericValue(const u_int index) const noexcept { return this->args[index].numericValue; }
+
     /// @brief Append a description line to the general help text
     /// @param description The description line to append
     /// @exception Guarantee No-throw
