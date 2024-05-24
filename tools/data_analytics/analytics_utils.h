@@ -4,12 +4,6 @@
 
 #include "handstrengths_utils.h"
 
-/// @brief Enum class for the different types of analytics
-enum class AnalyticsType {
-    NONE = 0,
-    HANDSTRENGTHS,
-};
-
 /// @brief API class containing functionality to analyze data
 /// @note These container class functions are called to perform common analytic workflows
 class AnalyticsUtils {
