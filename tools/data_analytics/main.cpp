@@ -17,9 +17,6 @@ int main(const int argc, const char** argv) {
     mainArgs.setStringArg('t', "type", "The type of analytics to perform. Possible values: 'hs' (handstrengths)");
     if (!mainArgs.run()) return 1;
 
-    mainArgs.printGotArgs();
-    std::cout << mainArgs.getHelpText() << std::endl;
-
     // init logger
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     // add file logger

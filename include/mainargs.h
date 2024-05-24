@@ -147,17 +147,19 @@ class MainArgs {
         }
         helpText += "[options]\n";
         // required arguments
-        helpText += "Required arguments: \n";
-        for (u_int8_t i = 0; i < this->requiredArgCount; i++) {
-            helpText += "\t<" + this->requiredArgs[i].name + ">\n";
-            helpText += "\t\t" + this->requiredArgs[i].helpText + "\n";
+        if (this->requiredArgCount > 0) {
+            helpText += "Required arguments: \n";
+            for (u_int8_t i = 0; i < this->requiredArgCount; i++) {
+                helpText += "\t<" + this->requiredArgs[i].name + ">\n";
+                helpText += "\t\t" + this->requiredArgs[i].helpText + "\n";
+            }
         }
         // optional arguments
         helpText += "Options: \n";
         helpText += "\t\t--help\n";
         helpText += "\t\tShow this help text\n";
         for (u_int8_t i = 0; i < this->argCount; i++) {
-            helpText += "\t-" + std::to_string(this->args[i].arg) + ", \t--" + this->args[i].longArg + "\n";
+            helpText += "\t-" + std::string() + this->args[i].arg + ", \t--" + this->args[i].longArg + "\n";
             helpText += "\t\t" + this->args[i].helpText + "\n";
         }
         return helpText;
@@ -190,7 +192,7 @@ class MainArgs {
             for (int i = this->requiredArgCount + 1; i < this->argc; i++) {
                 for (u_int8_t j = 0; j < this->argCount; j++) {
                     // check if the argument is valid
-                    if (this->argv[i] == "-" + this->args[j].arg || this->argv[i] == "--" + this->args[j].longArg) {
+                    if (std::string() + this->argv[i] == std::string("-") + this->args[j].arg || std::string() + this->argv[i] == std::string("--") + this->args[j].longArg) {
                         // check for duplicate arguments
                         if (this->isArgSet(j)) {
                             std::cerr << "Argument " << this->args[j].longArg << " already set" << std::endl;
@@ -226,11 +228,12 @@ class MainArgs {
                             std::cerr << "No value for " << this->args[j].longArg << " provided" << std::endl;
                             showHelp = true;
                         }
+                        break;  // Argument was found and set
                         // check for help argument
                     } else if (std::strncmp(this->argv[i], "--help", 7) == 0) {
                         showHelp = true;
                         break;
-                    } else {
+                    } else if (j == this->argCount - 1) {
                         std::cerr << "Unknown argument: " << this->argv[i] << std::endl;
                         showHelp = true;
                         break;
