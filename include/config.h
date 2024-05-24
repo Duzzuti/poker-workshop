@@ -79,6 +79,18 @@ const constexpr char STR_TOOL_HANDSTRENGTHS_DEFAULT_FILE_NAME[] = "hand_strength
 /// @brief The number of hands (hole cards) that are differenciated (without suits)
 const constexpr unsigned char HAND_INDEX_COUNT = 91;
 
+/// @brief The maximum number of optional arguments that can be passed to the main function
+const constexpr unsigned char MAX_OPTIONAL_ARGS = 10;
+
+/// @brief The maximum number of required arguments that can be passed to the main function
+const constexpr unsigned char MAX_REQUIRED_ARGS = 3;
+
+/// @brief The default number of iterations for the handstrengths analytics tool
+const constexpr int64_t DEFAULT_HANDSTRENGTHS_ANALYTICS_ITERS = 10000000;
+
+/// @brief The default winner, split and total add values for the handstrengths analytics tool
+const constexpr u_int8_t DEFAULT_HANDSTRENGTHS_ANALYTICS_OPTIONS[3] = {1, 1, 1};
+
 /// @brief The iteration count per gametest
 const constexpr int TEST_ITERS = 1000;
 
